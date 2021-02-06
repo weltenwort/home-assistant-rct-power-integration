@@ -1,0 +1,10 @@
+{
+  "domain": "rct_power",
+  "name": "RCT Power",
+  "documentation": "https://github.com/weltenwort/rct-power",
+  "issue_tracker": "https://github.com/weltenwort/rct-power/issues",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": ["@weltenwort"],
+  "requirements": []
+}

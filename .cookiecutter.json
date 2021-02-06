@@ -1,0 +1,10 @@
+{
+  "_template": "gh:oncleben31/cookiecutter-homeassistant-custom-component",
+  "class_name_prefix": "RctPower",
+  "domain_name": "rct_power",
+  "friendly_name": "RCT Power",
+  "github_user": "weltenwort",
+  "project_name": "rct-power",
+  "test_suite": "yes",
+  "version": "0.1.0"
+}
