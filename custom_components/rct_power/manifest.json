@@ -5,6 +5,9 @@
   "issue_tracker": "https://github.com/weltenwort/rct-power/issues",
   "dependencies": [],
   "config_flow": true,
-  "codeowners": ["@weltenwort"],
-  "requirements": []
+  "codeowners": [
+    "@weltenwort"
+  ],
+  "requirements": [],
+  "version": "0.1.0"
 }

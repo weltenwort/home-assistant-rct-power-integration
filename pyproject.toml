@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "rct-power"
+version = "0.1.0"
+description = ""
+authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+homeassistant = "^2021.2.0"
+pre-commit = "^2.10.0"
+black = "^20.8b1"
+flake8 = "^3.8.4"
+reorder-python-imports = "^2.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
