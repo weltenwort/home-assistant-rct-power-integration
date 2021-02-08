@@ -5,8 +5,9 @@ from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import RctPowerApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
+
+# from .const import CONF_PASSWORD
+# from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
 
@@ -15,7 +16,7 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for rct_power."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
         """Initialize."""
@@ -25,20 +26,16 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user."""
         self._errors = {}
 
-        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="single_instance_allowed")
-
         if user_input is not None:
-            valid = await self._test_credentials(
+            valid = await self._test_connection(
                 user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
             )
-            if valid:
-                return self.async_create_entry(
-                    title=user_input[CONF_USERNAME], data=user_input
-                )
-            else:
-                self._errors["base"] = "auth"
+            # if valid:
+            #     return self.async_create_entry(
+            #         title=user_input[CONF_USERNAME], data=user_input
+            #     )
+            # else:
+            #     self._errors["base"] = "auth"
 
             return await self._show_config_form(user_input)
 
@@ -59,8 +56,8 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password):
-        """Return true if credentials is valid."""
+    async def _test_connection(self, host: str, port: int):
+        """Return true if a connection can be established to the given host."""
         try:
             session = async_create_clientsession(self.hass)
             client = RctPowerApiClient(username, password, session)

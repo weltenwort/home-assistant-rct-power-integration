@@ -5,30 +5,25 @@ DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1.0"
 
-ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
+ATTRIBUTION = "-"
 ISSUE_URL = "https://github.com/weltenwort/rct-power/issues"
 
 # Icons
-ICON = "mdi:format-quote-close"
-
-# Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
+ICON = "mdi:solar-power"
 
 # Platforms
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
-SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
-
+PLATFORMS = [BINARY_SENSOR, SENSOR]
 
 # Configuration and options
 CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
+CONF_HOSTNAME = "hostname"
+CONF_PORT = "port"
+CONF_SCAN_INTERVAL = "scan_interval"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
-
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------

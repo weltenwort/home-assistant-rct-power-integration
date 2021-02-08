@@ -1,5 +1,9 @@
 """RctPowerEntity class"""
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 
 from .const import ATTRIBUTION
 from .const import DOMAIN
@@ -8,7 +12,7 @@ from .const import VERSION
 
 
 class RctPowerEntity(CoordinatorEntity):
-    def __init__(self, coordinator, config_entry):
+    def __init__(self, coordinator: DataUpdateCoordinator, config_entry: ConfigEntry):
         super().__init__(coordinator)
         self.config_entry = config_entry
 

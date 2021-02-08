@@ -7,7 +7,10 @@ https://github.com/weltenwort/rct-power
 import asyncio
 import logging
 from datetime import timedelta
+from dataclasses import dataclass
+from typing import Optional, cast
 
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
@@ -16,16 +19,19 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from .api import RctPowerApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
-from .const import DOMAIN
+from .api import RctPowerApiClient, RctPowerData
+from .const import CONF_HOSTNAME, CONF_PORT, CONF_SCAN_INTERVAL, DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+
+@dataclass
+class RctPowerContext:
+    coordinator: DataUpdateCoordinator
 
 
 async def async_setup(hass: HomeAssistant, config: Config):
@@ -39,51 +45,59 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
+    hostname = cast(str, vol.Schema(str)(entry.data.get(CONF_HOSTNAME)))
+    port = cast(int, vol.Schema(int)(entry.data.get(CONF_PORT)))
+    scan_interval = cast(int, vol.Schema(int)(entry.data.get(CONF_SCAN_INTERVAL)))
 
-    session = async_get_clientsession(hass)
-    client = RctPowerApiClient(username, password, session)
+    client = RctPowerApiClient(hostname=hostname, port=port)
 
-    coordinator = RctPowerDataUpdateCoordinator(hass, client=client)
+    async def async_update_data() -> Optional[RctPowerData]:
+        pass
+
+    coordinator = DataUpdateCoordinator(
+        hass=hass,
+        logger=_LOGGER,
+        name="RCT Power resource status",
+        update_method=async_update_data,
+        update_interval=timedelta(seconds=scan_interval),
+    )
+
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
-    hass.data[DOMAIN][entry.entry_id] = coordinator
+    hass.data[DOMAIN][entry.entry_id] = RctPowerContext(coordinator=coordinator)
 
     for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
+        hass.async_add_job(
+            hass.config_entries.async_forward_entry_setup(entry, platform)
+        )
 
     entry.add_update_listener(async_reload_entry)
     return True
 
 
-class RctPowerDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the API."""
+# class RctPowerDataUpdateCoordinator(DataUpdateCoordinator):
+#     """Class to manage fetching data from the API."""
 
-    def __init__(
-        self,
-        hass: HomeAssistant,
-        client: RctPowerApiClient,
-    ) -> None:
-        """Initialize."""
-        self.api = client
-        self.platforms = []
+#     def __init__(
+#         self,
+#         hass: HomeAssistant,
+#         client: RctPowerApiClient,
+#     ) -> None:
+#         """Initialize."""
+#         self.api = client
+#         self.platforms = []
 
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
+#         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
-    async def _async_update_data(self):
-        """Update data via library."""
-        try:
-            return await self.api.async_get_data()
-        except Exception as exception:
-            raise UpdateFailed() from exception
+#     async def _async_update_data(self):
+#         """Update data via library."""
+#         try:
+#             return await self.api.async_get_data()
+#         except Exception as exception:
+#             raise UpdateFailed() from exception
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
