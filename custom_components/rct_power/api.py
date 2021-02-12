@@ -3,12 +3,11 @@ import asyncio
 from dataclasses import dataclass
 import logging
 import socket
+from typing import Optional
 
-import aiohttp
 import async_timeout
 
 TIMEOUT = 10
-
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -26,53 +25,59 @@ class RctPowerApiClient:
         self._hostname = hostname
         self._port = port
 
-    async def async_get_data(self) -> dict:
-        """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        return await self.api_wrapper("get", url)
+    async def get_serial_number(self) -> Optional[str]:
+        return "serial"  # TODO: get real serial
 
-    async def async_set_title(self, value: str) -> None:
-        """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
+    async def async_get_data(self) -> Optional[RctPowerData]:
+        return None
 
-    async def api_wrapper(
-        self, method: str, url: str, data: dict = {}, headers: dict = {}
-    ) -> dict:
-        """Get information from the API."""
-        try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
-                if method == "get":
-                    response = await self._session.get(url, headers=headers)
-                    return await response.json()
+    # async def async_get_data(self) -> dict:
+    #     """Get data from the API."""
+    #     url = "https://jsonplaceholder.typicode.com/posts/1"
+    #     return await self.api_wrapper("get", url)
 
-                elif method == "put":
-                    await self._session.put(url, headers=headers, json=data)
+    # async def async_set_title(self, value: str) -> None:
+    #     """Get data from the API."""
+    #     url = "https://jsonplaceholder.typicode.com/posts/1"
+    #     await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
 
-                elif method == "patch":
-                    await self._session.patch(url, headers=headers, json=data)
+    # async def api_wrapper(
+    #     self, method: str, url: str, data: dict = {}, headers: dict = {}
+    # ) -> dict:
+    #     """Get information from the API."""
+    #     try:
+    #         async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
+    #             if method == "get":
+    #                 response = await self._session.get(url, headers=headers)
+    #                 return await response.json()
 
-                elif method == "post":
-                    await self._session.post(url, headers=headers, json=data)
+    #             elif method == "put":
+    #                 await self._session.put(url, headers=headers, json=data)
 
-        except asyncio.TimeoutError as exception:
-            _LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
+    #             elif method == "patch":
+    #                 await self._session.patch(url, headers=headers, json=data)
 
-        except (KeyError, TypeError) as exception:
-            _LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            _LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-        except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.error("Something really wrong happened! - %s", exception)
+    #             elif method == "post":
+    #                 await self._session.post(url, headers=headers, json=data)
+
+    #     except asyncio.TimeoutError as exception:
+    #         _LOGGER.error(
+    #             "Timeout error fetching information from %s - %s",
+    #             url,
+    #             exception,
+    #         )
+
+    #     except (KeyError, TypeError) as exception:
+    #         _LOGGER.error(
+    #             "Error parsing information from %s - %s",
+    #             url,
+    #             exception,
+    #         )
+    #     except (aiohttp.ClientError, socket.gaierror) as exception:
+    #         _LOGGER.error(
+    #             "Error fetching information from %s - %s",
+    #             url,
+    #             exception,
+    #         )
+    #     except Exception as exception:  # pylint: disable=broad-except
+    #         _LOGGER.error("Something really wrong happened! - %s", exception)

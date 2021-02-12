@@ -1,4 +1,8 @@
 """Adds config flow for RCT Power."""
+from dataclasses import asdict
+from voluptuous.error import MultipleInvalid
+from custom_components.rct_power.entry import RctPowerConfigEntryData
+from typing import TypedDict
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -24,48 +28,47 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
-        self._errors = {}
+        errors = {}
 
         if user_input is not None:
-            valid = await self._test_connection(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
-            )
-            # if valid:
-            #     return self.async_create_entry(
-            #         title=user_input[CONF_USERNAME], data=user_input
-            #     )
-            # else:
-            #     self._errors["base"] = "auth"
+            try:
+                valid_user_input = RctPowerConfigEntryData.from_user_input(user_input)
 
-            return await self._show_config_form(user_input)
+                unique_id = await RctPowerApiClient(
+                    valid_user_input.hostname, valid_user_input.port
+                ).get_serial_number()
 
-        return await self._show_config_form(user_input)
+                if unique_id != None:
+                    await self.async_set_unique_id(unique_id)
+
+                    return self.async_create_entry(
+                        title=f"Inverter at {valid_user_input.hostname}:{valid_user_input.port}",
+                        data=asdict(valid_user_input),
+                    )
+                else:
+                    errors[
+                        "base"
+                    ] = f"Faild to connect to {valid_user_input.hostname}:{valid_user_input.port}."
+
+            except MultipleInvalid as exc:
+                errors["base"] = str(exc)
+
+        return await self._show_config_form(user_input, errors)
+
+    async def _show_config_form(
+        self, user_input, errors
+    ):  # pylint: disable=unused-argument
+        """Show the configuration form to edit location data."""
+        return self.async_show_form(
+            step_id="user",
+            data_schema=RctPowerConfigEntryData.get_schema(),
+            errors=errors,
+        )
 
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
         return RctPowerOptionsFlowHandler(config_entry)
-
-    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
-        """Show the configuration form to edit location data."""
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(
-                {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
-            ),
-            errors=self._errors,
-        )
-
-    async def _test_connection(self, host: str, port: int):
-        """Return true if a connection can be established to the given host."""
-        try:
-            session = async_create_clientsession(self.hass)
-            client = RctPowerApiClient(username, password, session)
-            await client.async_get_data()
-            return True
-        except Exception:  # pylint: disable=broad-except
-            pass
-        return False
 
 
 class RctPowerOptionsFlowHandler(config_entries.OptionsFlow):

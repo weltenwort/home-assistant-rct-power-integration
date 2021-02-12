@@ -5,12 +5,11 @@ For more details about this integration, please refer to
 https://github.com/weltenwort/rct-power
 """
 import asyncio
-import logging
-from datetime import timedelta
 from dataclasses import dataclass
-from typing import Optional, cast
+from datetime import timedelta
+import logging
+from typing import Callable, Optional, cast
 
-import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
@@ -18,6 +17,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
+import voluptuous as vol
 
 from .api import RctPowerApiClient, RctPowerData
 from .const import CONF_HOSTNAME, CONF_PORT, CONF_SCAN_INTERVAL, DOMAIN
@@ -52,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = RctPowerApiClient(hostname=hostname, port=port)
 
     async def async_update_data() -> Optional[RctPowerData]:
-        pass
+        return None
 
     coordinator = DataUpdateCoordinator(
         hass=hass,
@@ -71,10 +71,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     for platform in PLATFORMS:
         hass.async_add_job(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
+            cast(
+                Callable, hass.config_entries.async_forward_entry_setup(entry, platform)
+            )
         )
 
     entry.add_update_listener(async_reload_entry)
+
     return True
 
 
@@ -102,13 +105,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    context = hass.data[DOMAIN][entry.entry_id]
+
+    if not isinstance(context, RctPowerContext):
+        return False
+
     unloaded = all(
         await asyncio.gather(
             *[
                 hass.config_entries.async_forward_entry_unload(entry, platform)
                 for platform in PLATFORMS
-                if platform in coordinator.platforms
             ]
         )
     )
