@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
-homeassistant = "^2021.2.0"
+homeassistant = "^2021.2.3"
 pre-commit = "^2.10.0"
 black = "^20.8b1"
 flake8 = "^3.8.4"
