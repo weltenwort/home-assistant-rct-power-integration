@@ -4,17 +4,22 @@ from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
+from rctclient.registry import REGISTRY
 
-from .const import ATTRIBUTION
-from .const import DOMAIN
-from .const import NAME
-from .const import VERSION
+from .const import ATTRIBUTION, DOMAIN, NAME, VERSION
 
 
 class RctPowerEntity(CoordinatorEntity):
-    def __init__(self, coordinator: DataUpdateCoordinator, config_entry: ConfigEntry):
+    def __init__(
+        self,
+        coordinator: DataUpdateCoordinator,
+        config_entry: ConfigEntry,
+        object_id: int,
+    ):
         super().__init__(coordinator)
         self.config_entry = config_entry
+        self.object_id = object_id
+        self.object_info = REGISTRY.get_by_id(self.object_id)
 
     @property
     def unique_id(self):
@@ -38,3 +43,8 @@ class RctPowerEntity(CoordinatorEntity):
             "id": str(self.coordinator.data.get("id")),
             "integration": DOMAIN,
         }
+
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return None

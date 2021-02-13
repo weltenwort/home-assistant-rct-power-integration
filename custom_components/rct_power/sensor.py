@@ -1,15 +1,33 @@
 """Sensor platform for RCT Power."""
-from .const import DEFAULT_NAME
-from .const import DOMAIN
-from .const import ICON
-from .const import SENSOR
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from rctclient.registry import REGISTRY
+
+from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
+from .context import RctPowerContext
 from .entity import RctPowerEntity
+
+
+INVERTER_SN_OID = 0x7924ABD9
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
     """Setup sensor platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([RctPowerSensor(coordinator, entry)])
+    context = hass.data[DOMAIN][entry.entry_id]
+
+    if not isinstance(context, RctPowerContext):
+        return False
+
+    enabled_object_ids = [INVERTER_SN_OID]
+
+    async_add_devices(
+        [
+            RctPowerSensor(
+                coordinator=context.coordinator, config_entry=entry, object_id=object_id
+            )
+            for object_id in enabled_object_ids
+        ]
+    )
 
 
 class RctPowerSensor(RctPowerEntity):
@@ -18,7 +36,7 @@ class RctPowerSensor(RctPowerEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{DEFAULT_NAME}_{SENSOR}"
+        return f"{DOMAIN}_{SENSOR}"
 
     @property
     def state(self):
@@ -32,5 +50,5 @@ class RctPowerSensor(RctPowerEntity):
 
     @property
     def device_class(self):
-        """Return de device class of the sensor."""
-        return "rct_power__custom_device_class"
+        """Return the device class of the sensor."""
+        return None

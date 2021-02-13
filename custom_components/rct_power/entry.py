@@ -2,14 +2,14 @@ from dataclasses import Field, MISSING, dataclass, fields
 from typing import ClassVar
 
 from homeassistant.config_entries import ConfigEntry
-import voluptuous as vol
+from voluptuous import Required, Schema
 
 from .const import DOMAIN
 
 
 def get_key_for_field(field: Field):
     if field.default == MISSING:
-        return vol.Required(field.name)
+        return Required(field.name)
 
     return field.name
 
@@ -19,7 +19,7 @@ def get_schema_for_field(field: Field):
 
 
 def get_schema_for_dataclass(cls):
-    return vol.Schema(
+    return Schema(
         {get_key_for_field(field): get_schema_for_field(field) for field in fields(cls)}
     )
 
@@ -49,3 +49,6 @@ class RctPowerConfigEntryData:
     @classmethod
     def get_schema(cls):
         return get_schema_for_dataclass(cls)
+
+    def get_title(self):
+        return f"Inverter at {self.hostname}:{self.port}"

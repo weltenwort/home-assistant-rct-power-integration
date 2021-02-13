@@ -5,33 +5,26 @@ For more details about this integration, please refer to
 https://github.com/weltenwort/rct-power
 """
 import asyncio
-from dataclasses import dataclass
 from datetime import timedelta
 import logging
-from typing import Callable, Optional, cast
+from typing import Callable, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
 import voluptuous as vol
 
 from .api import RctPowerApiClient, RctPowerData
 from .const import CONF_HOSTNAME, CONF_PORT, CONF_SCAN_INTERVAL, DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
+from .context import RctPowerContext
+from .update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-@dataclass
-class RctPowerContext:
-    coordinator: DataUpdateCoordinator
 
 
 async def async_setup(hass: HomeAssistant, config: Config):
@@ -51,15 +44,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = RctPowerApiClient(hostname=hostname, port=port)
 
-    async def async_update_data() -> Optional[RctPowerData]:
-        return None
-
-    coordinator = DataUpdateCoordinator(
+    coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name="RCT Power resource status",
-        update_method=async_update_data,
         update_interval=timedelta(seconds=scan_interval),
+        client=client,
     )
 
     await coordinator.async_refresh()
@@ -79,28 +68,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     entry.add_update_listener(async_reload_entry)
 
     return True
-
-
-# class RctPowerDataUpdateCoordinator(DataUpdateCoordinator):
-#     """Class to manage fetching data from the API."""
-
-#     def __init__(
-#         self,
-#         hass: HomeAssistant,
-#         client: RctPowerApiClient,
-#     ) -> None:
-#         """Initialize."""
-#         self.api = client
-#         self.platforms = []
-
-#         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
-
-#     async def _async_update_data(self):
-#         """Update data via library."""
-#         try:
-#             return await self.api.async_get_data()
-#         except Exception as exception:
-#             raise UpdateFailed() from exception
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

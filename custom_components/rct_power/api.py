@@ -1,9 +1,8 @@
 """Sample API Client."""
 import asyncio
-from dataclasses import dataclass
 import logging
 import socket
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import async_timeout
 
@@ -11,12 +10,7 @@ TIMEOUT = 10
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-HEADERS = {"Content-type": "application/json; charset=UTF-8"}
-
-
-@dataclass
-class RctPowerData:
-    power_ac: float
+RctPowerData = Dict[int, Any]
 
 
 class RctPowerApiClient:
@@ -28,7 +22,7 @@ class RctPowerApiClient:
     async def get_serial_number(self) -> Optional[str]:
         return "serial"  # TODO: get real serial
 
-    async def async_get_data(self) -> Optional[RctPowerData]:
+    async def async_get_data(self, object_ids: List[int]) -> Optional[RctPowerData]:
         return None
 
     # async def async_get_data(self) -> dict:

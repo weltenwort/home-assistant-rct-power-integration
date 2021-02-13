@@ -14,7 +14,7 @@ ICON = "mdi:solar-power"
 # Platforms
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
-PLATFORMS = [BINARY_SENSOR, SENSOR]
+PLATFORMS = [SENSOR]
 
 # Configuration and options
 CONF_ENABLED = "enabled"
