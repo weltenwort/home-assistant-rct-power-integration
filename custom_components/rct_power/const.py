@@ -5,8 +5,13 @@ DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1.0"
 
-ATTRIBUTION = "-"
 ISSUE_URL = "https://github.com/weltenwort/rct-power/issues"
+
+# Inverter
+INVERTER_MODEL = "RCT Power Storage"
+
+# Battery
+BATTERY_MODEL = "RCT Power Battery"
 
 # Icons
 ICON = "mdi:solar-power"

@@ -16,10 +16,20 @@ from homeassistant.exceptions import ConfigEntryNotReady
 import voluptuous as vol
 
 from .api import RctPowerApiClient, RctPowerData
-from .const import CONF_HOSTNAME, CONF_PORT, CONF_SCAN_INTERVAL, DOMAIN
-from .const import PLATFORMS
-from .const import STARTUP_MESSAGE
+from .const import (
+    CONF_HOSTNAME,
+    CONF_PORT,
+    CONF_SCAN_INTERVAL,
+    DOMAIN,
+    PLATFORMS,
+    STARTUP_MESSAGE,
+)
 from .context import RctPowerContext
+from .entry import (
+    RctPowerConfigEntryData,
+    RctPowerConfigEntryOptions,
+)
+from .entities import known_entities
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -38,16 +48,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    hostname = cast(str, vol.Schema(str)(entry.data.get(CONF_HOSTNAME)))
-    port = cast(int, vol.Schema(int)(entry.data.get(CONF_PORT)))
-    scan_interval = cast(int, vol.Schema(int)(entry.data.get(CONF_SCAN_INTERVAL)))
+    config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
+    config_entry_options = RctPowerConfigEntryOptions.from_config_entry(entry)
 
-    client = RctPowerApiClient(hostname=hostname, port=port)
+    client = RctPowerApiClient(
+        hostname=config_entry_data.hostname, port=config_entry_data.port
+    )
 
     coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        update_interval=timedelta(seconds=scan_interval),
+        update_interval=timedelta(seconds=config_entry_options.scan_interval),
+        entity_descriptors=known_entities,
         client=client,
     )
 
@@ -56,7 +68,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
-    hass.data[DOMAIN][entry.entry_id] = RctPowerContext(coordinator=coordinator)
+    remove_update_listener = entry.add_update_listener(async_reload_entry)
 
     for platform in PLATFORMS:
         hass.async_add_job(
@@ -65,13 +77,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
         )
 
-    entry.add_update_listener(async_reload_entry)
+    hass.data[DOMAIN][entry.entry_id] = RctPowerContext(
+        coordinator=coordinator, clean_up=remove_update_listener
+    )
 
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
+
     context = hass.data[DOMAIN][entry.entry_id]
 
     if not isinstance(context, RctPowerContext):
@@ -85,7 +100,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             ]
         )
     )
+
     if unloaded:
+        context.clean_up()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unloaded

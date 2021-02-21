@@ -1,14 +1,21 @@
 """Sample API Client."""
-import asyncio
+from asyncio import StreamReader, StreamWriter, open_connection, TimeoutError
 import logging
 import socket
 from typing import Any, Dict, List, Optional
 
 import async_timeout
+from rctclient.frame import ReceiveFrame, SendFrame
+from rctclient.registry import REGISTRY
+from rctclient.types import Command, FrameType
+from rctclient.utils import decode_value
 
-TIMEOUT = 10
+CONNECTION_TIMEOUT = 5
+READ_TIMEOUT = 10
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+INVERTER_SN_OID = 0x7924ABD9
 
 RctPowerData = Dict[int, Any]
 
@@ -20,58 +27,56 @@ class RctPowerApiClient:
         self._port = port
 
     async def get_serial_number(self) -> Optional[str]:
-        return "serial"  # TODO: get real serial
+        inverter_data = await self.async_get_data([INVERTER_SN_OID])
+
+        return inverter_data.get(INVERTER_SN_OID)
 
     async def async_get_data(self, object_ids: List[int]) -> Optional[RctPowerData]:
-        return None
+        try:
+            async with async_timeout.timeout(CONNECTION_TIMEOUT):
+                reader, writer = await open_connection(
+                    host=self._hostname, port=self._port
+                )
 
-    # async def async_get_data(self) -> dict:
-    #     """Get data from the API."""
-    #     url = "https://jsonplaceholder.typicode.com/posts/1"
-    #     return await self.api_wrapper("get", url)
+                try:
+                    return {
+                        object_id: await self._read_object(
+                            reader=reader, writer=writer, object_id=object_id
+                        )
+                        for object_id in object_ids
+                    }
+                except TimeoutError as timeout_error:
+                    _LOGGER.error(
+                        "Timeout error fetching data from %s:%s",
+                        self._hostname,
+                        self._port,
+                    )
+                    raise
+                finally:
+                    writer.close()
+        except TimeoutError as timeout_error:
+            _LOGGER.error(
+                "Timeout error connecting to %s:%s",
+                self._hostname,
+                self._port,
+            )
+            raise
 
-    # async def async_set_title(self, value: str) -> None:
-    #     """Get data from the API."""
-    #     url = "https://jsonplaceholder.typicode.com/posts/1"
-    #     await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
+    async def _read_object(
+        self, reader: StreamReader, writer: StreamWriter, object_id: int
+    ):
+        read_command_frame = SendFrame(command=Command.READ, id=object_id)
+        response_frame = ReceiveFrame()
 
-    # async def api_wrapper(
-    #     self, method: str, url: str, data: dict = {}, headers: dict = {}
-    # ) -> dict:
-    #     """Get information from the API."""
-    #     try:
-    #         async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
-    #             if method == "get":
-    #                 response = await self._session.get(url, headers=headers)
-    #                 return await response.json()
+        async with async_timeout.timeout(READ_TIMEOUT):
+            await writer.drain()
+            writer.write(read_command_frame.data)
 
-    #             elif method == "put":
-    #                 await self._session.put(url, headers=headers, json=data)
+            while not response_frame.complete() and not reader.at_eof():
+                raw_response = await reader.read(256)
 
-    #             elif method == "patch":
-    #                 await self._session.patch(url, headers=headers, json=data)
+                if len(raw_response) > 0:
+                    response_frame.consume(raw_response)
 
-    #             elif method == "post":
-    #                 await self._session.post(url, headers=headers, json=data)
-
-    #     except asyncio.TimeoutError as exception:
-    #         _LOGGER.error(
-    #             "Timeout error fetching information from %s - %s",
-    #             url,
-    #             exception,
-    #         )
-
-    #     except (KeyError, TypeError) as exception:
-    #         _LOGGER.error(
-    #             "Error parsing information from %s - %s",
-    #             url,
-    #             exception,
-    #         )
-    #     except (aiohttp.ClientError, socket.gaierror) as exception:
-    #         _LOGGER.error(
-    #             "Error fetching information from %s - %s",
-    #             url,
-    #             exception,
-    #         )
-    #     except Exception as exception:  # pylint: disable=broad-except
-    #         _LOGGER.error("Something really wrong happened! - %s", exception)
+        if response_frame.is_complete():
+            return decode_value(REGISTRY.type_by_id(object_id), response_frame.data)

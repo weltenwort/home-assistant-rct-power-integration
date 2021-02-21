@@ -3,13 +3,13 @@
   "name": "RCT Power",
   "documentation": "https://github.com/weltenwort/rct-power",
   "issue_tracker": "https://github.com/weltenwort/rct-power/issues",
-  "dependencies": [
-    "rctclient@0.0.1"
-  ],
+  "dependencies": [],
   "config_flow": true,
   "codeowners": [
     "@weltenwort"
   ],
-  "requirements": [],
+  "requirements": [
+    "git+https://github.com/svalouch/python-rctclient.git@080d96a#rtcclient"
+  ],
   "version": "0.1.0"
 }

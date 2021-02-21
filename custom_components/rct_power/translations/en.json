@@ -5,13 +5,14 @@
         "title": "RCT Power",
         "description": "If you need help with the configuration have a look here: https://github.com/weltenwort/rct-power",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "model": "Model",
+          "hostname": "Host name",
+          "port": "Port"
         }
       }
     },
     "error": {
-      "auth": "Username/Password is wrong."
+      "connect": "Failed to connect to {hostname}:{port}."
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
@@ -21,9 +22,8 @@
     "step": {
       "user": {
         "data": {
-          "binary_sensor": "Binary sensor enabled",
-          "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
+          "objects": "Enabled objects",
+          "scan_interval": "Polling interval"
         }
       }
     }
