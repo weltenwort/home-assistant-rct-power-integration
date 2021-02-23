@@ -7,6 +7,7 @@ from .entity import (
     AttributesEntityDescriptor,
     BatteryEntityDescriptor,
     EntityDescriptor,
+    EntityUpdatePriority,
     InverterEntityDescriptor,
 )
 
@@ -22,23 +23,30 @@ def get_matching_names(expression: str):
 
 known_entities: List[EntityDescriptor] = [
     BatteryEntityDescriptor(
-        ["battery.bms_sn"], entity_name="Battery Management System Serial Number"
+        ["battery.bms_sn"],
+        entity_name="Battery Management System Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
     ),
     BatteryEntityDescriptor(
         ["battery.bms_software_version"],
         entity_name="Battery Management System Software Version",
+        update_priority=EntityUpdatePriority.INFREQUENT,
     ),
     InverterEntityDescriptor(["adc.u_acc"], entity_name="Inverter Battery Voltage"),
     InverterEntityDescriptor(
-        ["android_description"], entity_name="Inverter Device Name"
+        ["android_description"],
+        entity_name="Inverter Device Name",
+        update_priority=EntityUpdatePriority.STATIC,
     ),
     InverterEntityDescriptor(
         ["buf_v_control.power_reduction_max_solar"],
         entity_name="Generator Maximum Power",
+        update_priority=EntityUpdatePriority.STATIC,
     ),
     InverterEntityDescriptor(
         ["buf_v_control.power_reduction_max_solar_grid"],
         entity_name="Grid Maximum Feed Power",
+        update_priority=EntityUpdatePriority.STATIC,
     ),
     InverterEntityDescriptor(["db.core_temp"]),
     InverterEntityDescriptor(["db.temp1"]),
@@ -55,9 +63,6 @@ known_entities: List[EntityDescriptor] = [
     ),
     InverterEntityDescriptor(
         ["dc_conv.dc_conv_struct[0].p_dc"], entity_name="Generator A Power"
-    ),
-    InverterEntityDescriptor(
-        ["dc_conv.dc_conv_struct[0].p_dc_lp"], entity_name="Generator A Power (lp)"
     ),
     InverterEntityDescriptor(
         ["dc_conv.dc_conv_struct[0].rescan_correction"],
@@ -81,9 +86,6 @@ known_entities: List[EntityDescriptor] = [
         ["dc_conv.dc_conv_struct[1].p_dc"], entity_name="Generator B Power"
     ),
     InverterEntityDescriptor(
-        ["dc_conv.dc_conv_struct[1].p_dc_lp"], entity_name="Generator B Power (lp)"
-    ),
-    InverterEntityDescriptor(
         ["dc_conv.dc_conv_struct[1].rescan_correction"],
         entity_name="Generator B MPP Rescan Correction",
     ),
@@ -91,13 +93,25 @@ known_entities: List[EntityDescriptor] = [
         ["dc_conv.dc_conv_struct[1].u_sg_lp"], entity_name="Generator B Voltage"
     ),
     InverterEntityDescriptor(
-        ["dc_conv.start_voltage"], entity_name="Inverter DC Start Voltage"
+        ["dc_conv.start_voltage"],
+        entity_name="Inverter DC Start Voltage",
+        update_priority=EntityUpdatePriority.STATIC,
     ),
     InverterEntityDescriptor(["g_sync.p_ac_sum"], entity_name="Inverter AC Power"),
-    InverterEntityDescriptor(["inverter_sn"], entity_name="Inverter Serial Number"),
-    InverterEntityDescriptor(["svnversion"], entity_name="Inverter Software Version"),
     InverterEntityDescriptor(
-        ["flash_rtc.time_stamp_update"], entity_name="Date of Last Update"
+        ["inverter_sn"],
+        entity_name="Inverter Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    InverterEntityDescriptor(
+        ["svnversion"],
+        entity_name="Inverter Software Version",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["flash_rtc.time_stamp_update"],
+        entity_name="Date of Last Update",
+        update_priority=EntityUpdatePriority.INFREQUENT,
     ),
     InverterEntityDescriptor(["fault[0].flt"], entity_name="Faults 0"),
     InverterEntityDescriptor(["fault[1].flt"], entity_name="Faults 1"),
@@ -114,10 +128,10 @@ known_entities: List[EntityDescriptor] = [
     AttributesEntityDescriptor(
         get_matching_names(r"^p_rec"), entity_name="Group p_rec"
     ),
-    AttributesEntityDescriptor(get_matching_names(r"^nsm\."), entity_name="Group nsm"),
-    AttributesEntityDescriptor(
-        get_matching_names(r"^power_mng\."), entity_name="Group power_mng"
-    ),
+    # AttributesEntityDescriptor(get_matching_names(r"^nsm\."), entity_name="Group nsm"),
+    # AttributesEntityDescriptor(
+    #     get_matching_names(r"^power_mng\."), entity_name="Group power_mng"
+    # ),
 ]
 
 

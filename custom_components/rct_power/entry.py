@@ -41,7 +41,9 @@ def get_title(config_data: RctPowerConfigEntryData):
 
 @dataclass
 class RctPowerConfigEntryOptions:
-    scan_interval: int = 30
+    frequent_scan_interval: int = 30
+    infrequent_scan_interval: int = 60 * 3
+    static_scan_interval: int = 60 * 60
 
     @classmethod
     def from_config_entry(cls, config_entry: ConfigEntry):

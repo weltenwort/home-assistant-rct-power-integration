@@ -25,11 +25,9 @@ from .const import (
     STARTUP_MESSAGE,
 )
 from .context import RctPowerContext
-from .entry import (
-    RctPowerConfigEntryData,
-    RctPowerConfigEntryOptions,
-)
 from .entities import known_entities
+from .entity import EntityUpdatePriority
+from .entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -55,17 +53,56 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hostname=config_entry_data.hostname, port=config_entry_data.port
     )
 
-    coordinator = RctPowerDataUpdateCoordinator(
+    frequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        update_interval=timedelta(seconds=config_entry_options.scan_interval),
-        entity_descriptors=known_entities,
+        name=f"{DOMAIN} {entry.unique_id} frequent",
+        update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
+        entity_descriptors=[
+            entity_descriptor
+            for entity_descriptor in known_entities
+            if entity_descriptor.update_priority == EntityUpdatePriority.FREQUENT
+        ],
         client=client,
     )
 
-    await coordinator.async_refresh()
+    infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
+        hass=hass,
+        logger=_LOGGER,
+        name=f"{DOMAIN} {entry.unique_id} infrequent",
+        update_interval=timedelta(
+            seconds=config_entry_options.infrequent_scan_interval
+        ),
+        entity_descriptors=[
+            entity_descriptor
+            for entity_descriptor in known_entities
+            if entity_descriptor.update_priority == EntityUpdatePriority.INFREQUENT
+        ],
+        client=client,
+    )
 
-    if not coordinator.last_update_success:
+    static_update_coordinator = RctPowerDataUpdateCoordinator(
+        hass=hass,
+        logger=_LOGGER,
+        name=f"{DOMAIN} {entry.unique_id} static",
+        update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
+        entity_descriptors=[
+            entity_descriptor
+            for entity_descriptor in known_entities
+            if entity_descriptor.update_priority == EntityUpdatePriority.STATIC
+        ],
+        client=client,
+    )
+
+    await frequent_update_coordinator.async_refresh()
+    await infrequent_update_coordinator.async_refresh()
+    await static_update_coordinator.async_refresh()
+
+    if not (
+        frequent_update_coordinator.last_update_success
+        and infrequent_update_coordinator.last_update_success
+        and static_update_coordinator.last_update_success
+    ):
         raise ConfigEntryNotReady
 
     remove_update_listener = entry.add_update_listener(async_reload_entry)
@@ -78,7 +115,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
 
     hass.data[DOMAIN][entry.entry_id] = RctPowerContext(
-        coordinator=coordinator, clean_up=remove_update_listener
+        update_coordinators={
+            EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
+            EntityUpdatePriority.INFREQUENT: infrequent_update_coordinator,
+            EntityUpdatePriority.STATIC: static_update_coordinator,
+        },
+        entity_descriptors=known_entities,
+        clean_up=remove_update_listener,
     )
 
     return True

@@ -1,8 +1,9 @@
+from collections import defaultdict
 from datetime import timedelta
 from logging import Logger
-from typing import List, Optional
+from typing import Callable, List, Optional
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
@@ -16,6 +17,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     def __init__(
         self,
         hass: HomeAssistant,
+        name: str,
         logger: Logger,
         client: RctPowerApiClient,
         entity_descriptors: List["EntityDescriptor"],
@@ -25,7 +27,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         self.entity_descriptors = entity_descriptors
 
         super().__init__(
-            hass=hass, logger=logger, name=DOMAIN, update_interval=update_interval
+            hass=hass, logger=logger, name=name, update_interval=update_interval
         )
 
     @property

@@ -45,11 +45,11 @@ async def async_setup_entry(
     async_add_entities(
         [
             entity_descriptor.entity_class(
-                coordinator=context.coordinator,
+                coordinators=list(context.update_coordinators.values()),
                 config_entry=entry,
                 entity_descriptor=entity_descriptor,
             )
-            for entity_descriptor in context.coordinator.entity_descriptors
+            for entity_descriptor in context.entity_descriptors
             if isinstance(entity_descriptor, AttributesEntityDescriptor)
             or all(
                 info.response_data_type in SENSOR_DATA_TYPES

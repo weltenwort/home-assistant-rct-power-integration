@@ -1,12 +1,11 @@
+from asyncio.tasks import gather
 from dataclasses import dataclass, field, fields
-from enum import Enum
+from enum import Enum, auto
 from typing import List, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.core import callback
+from homeassistant.helpers.entity import Entity
 from rctclient.registry import ObjectInfo, REGISTRY
 from rctclient.types import DataType
 
@@ -15,23 +14,67 @@ from .entry import RctPowerConfigEntryData
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
-class RctPowerEntity(CoordinatorEntity):
+class MultiCoordinatorEntity(Entity):
+    """A class for entities using multiple DataUpdateCoordinators."""
+
+    def __init__(self, coordinators: List[RctPowerDataUpdateCoordinator]) -> None:
+        self.coordinators = coordinators
+
+    @property
+    def should_poll(self) -> bool:
+        return False
+
+    @property
+    def available(self) -> bool:
+        return all(coordinator.last_update_success for coordinator in self.coordinators)
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        for coordinator in self.coordinators:
+            self.async_on_remove(
+                coordinator.async_add_listener(self._handle_coordinator_update)
+            )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self.async_write_ha_state()
+
+    async def async_update(self) -> None:
+        # Ignore manual update requests if the entity is disabled
+        if not self.enabled:
+            return
+
+        await gather(
+            *[coordinator.async_request_refresh() for coordinator in self.coordinators]
+        )
+
+
+class RctPowerEntity(MultiCoordinatorEntity):
     def __init__(
         self,
-        coordinator: RctPowerDataUpdateCoordinator,
+        coordinators: List[RctPowerDataUpdateCoordinator],
         config_entry: ConfigEntry,
         entity_descriptor: "EntityDescriptor",
     ):
-        super().__init__(coordinator)
+        super().__init__(coordinators)
         self.config_entry = config_entry
         self.entity_descriptor = entity_descriptor
 
+    def get_object_data_by_id(self, object_id: int):
+        for coordinator in self.coordinators:
+            if object_id in coordinator.data:
+                return coordinator.data[object_id]
+
     def get_object_data_by_name(self, object_name: str):
-        return self.coordinator.data.get(REGISTRY.get_by_name(object_name).object_id)
+        return self.get_object_data_by_id(REGISTRY.get_by_name(object_name).object_id)
 
     @property
     def object_infos(self):
         return self.entity_descriptor.object_infos
+
+    @property
+    def object_ids(self):
+        return [object_info.object_id for object_info in self.object_infos]
 
     @property
     def config_entry_data(self):
@@ -56,7 +99,7 @@ class RctPowerEntity(CoordinatorEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.coordinator.data.get(self.object_infos[0].object_id)
+        return self.get_object_data_by_id(self.object_ids[0])
 
     @property
     def unit_of_measurement(self):
@@ -142,6 +185,12 @@ class EntityGroup(Enum):
     OTHERS = "Others"
 
 
+class EntityUpdatePriority(Enum):
+    FREQUENT = auto()
+    INFREQUENT = auto()
+    STATIC = auto()
+
+
 @dataclass
 class EntityDescriptor:
     object_names: List[str]
@@ -150,6 +199,7 @@ class EntityDescriptor:
     icon: Optional[str] = ICON
     object_infos: List[ObjectInfo] = field(init=False)
     entity_class: Type[RctPowerEntity] = RctPowerEntity
+    update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
 
     def __post_init__(self):
         self.object_infos = [
