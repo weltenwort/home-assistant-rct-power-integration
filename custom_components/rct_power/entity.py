@@ -1,5 +1,5 @@
 from asyncio.tasks import gather
-from dataclasses import dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields
 from enum import Enum, auto
 from typing import List, Optional, Type
 
@@ -9,6 +9,12 @@ from homeassistant.helpers.entity import Entity
 from rctclient.registry import ObjectInfo, REGISTRY
 from rctclient.types import DataType
 
+from .api import (
+    ApiResponse,
+    ApiResponseValue,
+    ValidApiResponse,
+    get_valid_response_value_or,
+)
 from .const import BATTERY_MODEL, DOMAIN, ICON, INVERTER_MODEL, NAME, VERSION
 from .entry import RctPowerConfigEntryData
 from .update_coordinator import RctPowerDataUpdateCoordinator
@@ -26,10 +32,11 @@ class MultiCoordinatorEntity(Entity):
 
     @property
     def available(self) -> bool:
-        return all(coordinator.last_update_success for coordinator in self.coordinators)
+        return any(coordinator.last_update_success for coordinator in self.coordinators)
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
+
         for coordinator in self.coordinators:
             self.async_on_remove(
                 coordinator.async_add_listener(self._handle_coordinator_update)
@@ -60,13 +67,31 @@ class RctPowerEntity(MultiCoordinatorEntity):
         self.config_entry = config_entry
         self.entity_descriptor = entity_descriptor
 
-    def get_object_data_by_id(self, object_id: int):
+    def get_api_response_by_id(self, object_id: int, default=None):
         for coordinator in self.coordinators:
-            if object_id in coordinator.data:
-                return coordinator.data[object_id]
+            if (coordinator.data is not None) and (object_id in coordinator.data):
+                return coordinator.data.get(object_id)
 
-    def get_object_data_by_name(self, object_name: str):
-        return self.get_object_data_by_id(REGISTRY.get_by_name(object_name).object_id)
+        return default
+
+    def get_api_response_by_name(self, object_name: str, default=None):
+        return self.get_api_response_by_id(
+            REGISTRY.get_by_name(object_name).object_id, default
+        )
+
+    def get_valid_api_response_value_by_id(
+        self, object_id: int, default: ApiResponseValue = None
+    ):
+        return get_valid_response_value_or(
+            self.get_api_response_by_id(object_id, None), default
+        )
+
+    def get_valid_api_response_value_by_name(
+        self, object_name: str, default: ApiResponseValue = None
+    ):
+        return get_valid_response_value_or(
+            self.get_api_response_by_name(object_name, None), default
+        )
 
     @property
     def object_infos(self):
@@ -94,12 +119,20 @@ class RctPowerEntity(MultiCoordinatorEntity):
             and self.entity_descriptor.entity_name != None
             else slugify_entity_name(self.object_infos[0].name)
         )
+
         return f"{self.config_entry_data.entity_prefix} {entity_name}"
+
+    @property
+    def available(self) -> bool:
+        return all(
+            isinstance(self.get_api_response_by_id(object_id), ValidApiResponse)
+            for object_id in self.object_ids
+        )
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.get_object_data_by_id(self.object_ids[0])
+        return self.get_valid_api_response_value_by_id(self.object_ids[0], None)
 
     @property
     def unit_of_measurement(self):
@@ -110,16 +143,38 @@ class RctPowerEntity(MultiCoordinatorEntity):
         """Return the icon of the sensor."""
         return self.entity_descriptor.icon
 
+    @property
+    def device_state_attributes(self):
+        api_responses = (
+            self.get_api_response_by_id(object_id) for object_id in self.object_ids
+        )
+
+        return {
+            "latest_api_responses": [
+                asdict(api_response)
+                for api_response in api_responses
+                if api_response is not None
+            ]
+        }
+
 
 class RctPowerInverterEntity(RctPowerEntity):
     @property
     def device_info(self):
         return {
             "identifiers": {
-                (DOMAIN, "STORAGE", self.get_object_data_by_name("inverter_sn"))
+                (
+                    DOMAIN,
+                    "STORAGE",
+                    self.get_valid_api_response_value_by_name("inverter_sn", None),
+                )
             },
-            "name": str(self.get_object_data_by_name("android_description")),
-            "sw_version": str(self.get_object_data_by_name("svnversion")),
+            "name": str(
+                self.get_valid_api_response_value_by_name("android_description", ""),
+            ),
+            "sw_version": str(
+                self.get_valid_api_response_value_by_name("svnversion", "")
+            ),
             "model": INVERTER_MODEL,
             "manufacturer": NAME,
         }
@@ -130,10 +185,33 @@ class RctPowerInverterEntity(RctPowerEntity):
         return None
 
 
-# class RctPowerInverterFaultEntity(RctPowerInverterEntity):
-#     @property
-#     def state(self):
-#         fault_bitmask = super().state
+class RctPowerInverterFaultEntity(RctPowerInverterEntity):
+    @property
+    def fault_bitmasks(self):
+        return [
+            self.get_valid_api_response_value_by_id(object_id, 0)
+            for object_id in self.object_ids
+        ]
+
+    @property
+    def state(self):
+        fault_bitmasks = self.fault_bitmasks
+
+        if all(isinstance(bitmask, int) for bitmask in fault_bitmasks):
+            return "{0:b}{1:b}{2:b}{3:b}".format(*fault_bitmasks)
+
+        return None
+
+    @property
+    def unit_of_measurement(self):
+        return None
+
+    @property
+    def device_state_attributes(self):
+        return {
+            **(super().device_state_attributes),
+            "fault_bitmasks": self.fault_bitmasks,
+        }
 
 
 class RctPowerBatteryEntity(RctPowerEntity):
@@ -141,15 +219,24 @@ class RctPowerBatteryEntity(RctPowerEntity):
     def device_info(self):
         return {
             "identifiers": {
-                (DOMAIN, "BATTERY", self.get_object_data_by_name("battery.bms_sn"))
+                (
+                    DOMAIN,
+                    "BATTERY",
+                    self.get_valid_api_response_value_by_name("battery.bms_sn", None),
+                )
             },
-            "name": f"Battery at {self.get_object_data_by_name('android_description')}",
+            "name": f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
             "sw_version": str(
-                self.get_object_data_by_name("battery.bms_software_version")
+                self.get_valid_api_response_value_by_name(
+                    "battery.bms_software_version", ""
+                )
             ),
             "model": BATTERY_MODEL,
             "manufacturer": NAME,
-            "via_device": (DOMAIN, self.get_object_data_by_name("inverter_sn")),
+            "via_device": (
+                DOMAIN,
+                self.get_valid_api_response_value_by_name("inverter_sn", None),
+            ),
         }
 
     @property
@@ -174,8 +261,13 @@ class RctPowerAttributesEntity(RctPowerEntity):
     @property
     def device_state_attributes(self):
         return {
-            object_info.name: self.get_object_data_by_name(object_info.name)
-            for object_info in self.entity_descriptor.object_infos
+            **(super().device_state_attributes),
+            **{
+                object_info.name: self.get_valid_api_response_value_by_name(
+                    object_info.name, None
+                )
+                for object_info in self.entity_descriptor.object_infos
+            },
         }
 
 
@@ -230,11 +322,141 @@ class AttributesEntityDescriptor(EntityDescriptor):
     entity_class: Type[RctPowerEntity] = RctPowerAttributesEntity
 
 
-# @dataclass
-# class FaultEntityDescriptor(EntityDescriptor):
-#     def __post_init__(self):
-#         self.object_info = REGISTRY.get_by_name(self.object_name)
+@dataclass
+class FaultEntityDescriptor(EntityDescriptor):
+    pass
 
 
 def slugify_entity_name(name: str):
     return name.replace(".", "_").replace("[", "_").replace("]", "_").replace("?", "_")
+
+
+known_faults = [
+    "TRAP occurred",
+    "RTC can't be configured",
+    "RTC 1Hz signal timeout",
+    "Hardware Stop by 3.3V fault",
+    "Hardware Stop by PWM Logic",
+    "Hardware Stop by Uzk overvoltage",
+    "Uzk+ is over limit",
+    "Uzk- is over limit",
+    "Throttle Phase L1 overcurrent",
+    "Throttle Phase L2 overcurrent",
+    "Throttle Phase L3 overcurrent",
+    "Buffer capacitor voltage",
+    "Quartz fault",
+    "Grid under_voltage phase 1",
+    "Grid under_voltage phase 2",
+    "Grid under_voltage phase 3",
+    "Battery overcurrent",
+    "Relays Test failed",
+    "Board Over Temperature",
+    "Core Over Temperature",
+    "Sink 1 Over Temperature",
+    "Sink 2 Over Temperature",
+    "Error by I2C communication with Power Board",
+    "Power Board Error",
+    "PWM output ports defect",
+    "Insulation is too small or not plausible",
+    "I DC Component Max (1 A)",
+    "I DC Component Max Slow (47 mA)",
+    "One of the DSD channels possibly defect (too big current offset)",
+    "Error by RS485 communication with Relays BoxIGBT L1 BH defect",
+    "Phase to phase over voltage",
+    "IGBT L1 BH defect",
+    "IGBT L1 BL defect",
+    "IGBT L2 BH defect",
+    "IGBT L2 BL defect",
+    "IGBT L3 BH defect",
+    "IGBT L3 BL defect",
+    "Long Term over voltage phase 1",
+    "Long Term over voltage phase 2",
+    "Long Term over voltage phase 3",
+    "Over voltage phase 1, level 1",
+    "Over voltage phase 1, level 2",
+    "Over voltage phase 2, level 1",
+    "Over voltage phase 2, level 2",
+    "Over voltage phase 3, level 1",
+    "Over voltage phase 3, level 2",
+    "Over frequency, level 1",
+    "Over frequency, level 2",
+    "Under voltage phase 1, level 1",
+    "Under voltage phase 1, level 2",
+    "Under voltage phase 2, level 1",
+    "Under voltage phase 2, level 2",
+    "Under voltage phase 3, level 1",
+    "Under voltage phase 3, level 2",
+    "Under frequency, level 1",
+    "Under frequency, level 2",
+    "CPU Exception NMI",
+    "CPU Exception HardFault",
+    "CPU Exception MemManage",
+    "CPU Exception BusFault",
+    "CPU Exception UsageFault",
+    "RTC Power on reset",
+    "RTC Oscillation stops",
+    "RTC Supply voltage drop",
+    "Jump of RCD current DC + AC > 30mA was noticed",
+    "Jump of RCD current DC > 60mA was noticed",
+    "Jump of RCD current AC > 150mA was noticed",
+    "RCD current > 300mA was noticed",
+    "incorrect 5V was noticed",
+    "incorrect -9V was noticed",
+    "incorrect 9V was noticed",
+    "incorrect 3V3 was noticed",
+    "failure of RDC calibration was noticed",
+    "failure of I2C was noticed",
+    "afi frequency generator failure",
+    "sink temperature too high",
+    "Uzk is over limit",
+    "Usg A is over limit",
+    "Usg B is over limit",
+    "Switching On Conditions Umin phase 1",
+    "Switching On Conditions Umax phase 1",
+    "Switching On Conditions Fmin phase 1",
+    "Switching On Conditions Fmax phase 1",
+    "Switching On Conditions Umin phase 2",
+    "Switching On Conditions Umax phase 2",
+    "Battery current sensor defect",
+    "Battery booster damaged",
+    "Switching On Conditions Umin phase 3",
+    "Switching On Conditions Umax phase 3",
+    "Voltage surge or average offset is too big on AC-terminals (phase failure detected)",
+    "Inverter is disconnected from the household grid",
+    "Difference of the measured +9V between DSP and PIC is too big",
+    "1.5V error",
+    "2.5V error",
+    "1.5V measurement difference",
+    "2.5V measurement difference",
+    "The battery voltage is outside of the expected range",
+    "Unable to start the main PIC software",
+    "PIC bootloader detected unexpectedly",
+    "Phase position error (not 120° as expected)",
+    "Battery overvoltage",
+    "Throttle current is unstable",
+    "Difference between internal and external measured grid voltage is too big in phase",
+    "Difference between internal and external measured grid voltage is too big in phase",
+    "Difference between internal and external measured grid voltage is too big in phase",
+    "External emergency turn off signal is active",
+    "Battery is empty, not more energy for standby",
+    "CAN communication timeout with battery",
+    "Timing problem",
+    "Battery IGBT's Heat Sink Over Temperature",
+    "Battery heat sink temperature too high",
+    "Internal Relays Box error",
+    "Relays Box PE off error",
+    "Relays Box PE on error",
+    "Internal battery error",
+    "Parameter changed",
+    "3 attempts of island building are failed",
+    "Phase to phase under voltage",
+    "System reset detected",
+    "Update detected",
+    "FRT over-voltage",
+    "FRT under-voltage",
+    "IGBT L1 free wheeling diode defect",
+    "IGBT L2 free wheeling diode defect",
+    "IGBT L3 free wheeling diode defect",
+    "1 phase mode is activated but not allowed for this device class (e.g. 10K)",
+    "Island detected",
+]

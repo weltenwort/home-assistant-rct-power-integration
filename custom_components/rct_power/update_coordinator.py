@@ -5,7 +5,6 @@ from typing import Callable, List, Optional
 
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import RctPowerApiClient, RctPowerData
 from .const import DOMAIN
@@ -39,10 +38,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         ]
 
     async def _async_update_data(self):
-        try:
-            return await self.client.async_get_data(object_ids=self.object_ids)
-        except Exception as exception:
-            raise UpdateFailed(str(exception)) from exception
+        return await self.client.async_get_data(object_ids=self.object_ids)
 
 
 from .entity import EntityDescriptor

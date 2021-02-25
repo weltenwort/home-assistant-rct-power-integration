@@ -8,6 +8,7 @@ from .entity import (
     BatteryEntityDescriptor,
     EntityDescriptor,
     EntityUpdatePriority,
+    FaultEntityDescriptor,
     InverterEntityDescriptor,
 )
 
@@ -97,7 +98,6 @@ known_entities: List[EntityDescriptor] = [
         entity_name="Inverter DC Start Voltage",
         update_priority=EntityUpdatePriority.STATIC,
     ),
-    InverterEntityDescriptor(["g_sync.p_ac_sum"], entity_name="Inverter AC Power"),
     InverterEntityDescriptor(
         ["inverter_sn"],
         entity_name="Inverter Serial Number",
@@ -113,21 +113,37 @@ known_entities: List[EntityDescriptor] = [
         entity_name="Date of Last Update",
         update_priority=EntityUpdatePriority.INFREQUENT,
     ),
-    InverterEntityDescriptor(["fault[0].flt"], entity_name="Faults 0"),
-    InverterEntityDescriptor(["fault[1].flt"], entity_name="Faults 1"),
-    InverterEntityDescriptor(["fault[2].flt"], entity_name="Faults 2"),
-    InverterEntityDescriptor(["fault[3].flt"], entity_name="Faults 3"),
-    InverterEntityDescriptor(["g_sync.p_ac_load_sum_lp"], entity_name="Consumer Load"),
-    InverterEntityDescriptor(["g_sync.p_acc_lp"], entity_name="Battery Load"),
-    AttributesEntityDescriptor(
-        get_matching_names(r"^g_sync\."), entity_name="Group g_sync"
+    InverterEntityDescriptor(["g_sync.p_ac_sum"], entity_name="Inverter AC Power"),
+    InverterEntityDescriptor(["g_sync.p_ac[0]"], entity_name="Inverter Power P1"),
+    InverterEntityDescriptor(["g_sync.p_ac[1]"], entity_name="Inverter Power P2"),
+    InverterEntityDescriptor(["g_sync.p_ac[2]"], entity_name="Inverter Power P3"),
+    InverterEntityDescriptor(["g_sync.p_ac_load_sum_lp"], entity_name="Consumer Power"),
+    InverterEntityDescriptor(["g_sync.p_ac_load[0]"], entity_name="Consumer Power P1"),
+    InverterEntityDescriptor(["g_sync.p_ac_load[1]"], entity_name="Consumer Power P2"),
+    InverterEntityDescriptor(["g_sync.p_ac_load[2]"], entity_name="Consumer Power P3"),
+    InverterEntityDescriptor(["g_sync.p_acc_lp"], entity_name="Battery Power"),
+    InverterEntityDescriptor(["g_sync.p_ac_grid_sum_lp"], entity_name="Grid Power"),
+    InverterEntityDescriptor(["rb485.f_grid[0]"], entity_name="Grid Frequency P1"),
+    InverterEntityDescriptor(["rb485.f_grid[1]"], entity_name="Grid Frequency P2"),
+    InverterEntityDescriptor(["rb485.f_grid[2]"], entity_name="Grid Frequency P3"),
+    InverterEntityDescriptor(["rb485.u_l_grid[0]"], entity_name="Grid Voltage P1"),
+    InverterEntityDescriptor(["rb485.u_l_grid[1]"], entity_name="Grid Voltage P2"),
+    InverterEntityDescriptor(["rb485.u_l_grid[2]"], entity_name="Grid Voltage P3"),
+    FaultEntityDescriptor(
+        [
+            "fault[0].flt",
+            "fault[1].flt",
+            "fault[2].flt",
+            "fault[3].flt",
+        ],
+        entity_name="Faults",
     ),
-    AttributesEntityDescriptor(
-        get_matching_names(r"^rb485\."), entity_name="Group rb485"
-    ),
-    AttributesEntityDescriptor(
-        get_matching_names(r"^p_rec"), entity_name="Group p_rec"
-    ),
+    # AttributesEntityDescriptor(
+    #     get_matching_names(r"^g_sync\."), entity_name="Group g_sync"
+    # ),
+    # AttributesEntityDescriptor(
+    #     get_matching_names(r"^rb485\."), entity_name="Group rb485"
+    # ),
     # AttributesEntityDescriptor(get_matching_names(r"^nsm\."), entity_name="Group nsm"),
     # AttributesEntityDescriptor(
     #     get_matching_names(r"^power_mng\."), entity_name="Group power_mng"
