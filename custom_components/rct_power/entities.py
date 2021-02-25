@@ -138,16 +138,6 @@ known_entities: List[EntityDescriptor] = [
         ],
         entity_name="Faults",
     ),
-    # AttributesEntityDescriptor(
-    #     get_matching_names(r"^g_sync\."), entity_name="Group g_sync"
-    # ),
-    # AttributesEntityDescriptor(
-    #     get_matching_names(r"^rb485\."), entity_name="Group rb485"
-    # ),
-    # AttributesEntityDescriptor(get_matching_names(r"^nsm\."), entity_name="Group nsm"),
-    # AttributesEntityDescriptor(
-    #     get_matching_names(r"^power_mng\."), entity_name="Group power_mng"
-    # ),
 ]
 
 
