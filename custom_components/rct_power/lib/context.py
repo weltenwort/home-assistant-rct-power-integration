@@ -11,4 +11,4 @@ class RctPowerContext:
     clean_up: Callable
 
 
-from .entity import EntityDescriptor, EntityUpdatePriority
+from .entity import EntityDescriptor, EntityUpdatePriority  # noqa: E402
