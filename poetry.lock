@@ -35,7 +35,7 @@ python-versions = "*"
 
 [[package]]
 name = "aspy.refactor-imports"
-version = "2.1.1"
+version = "2.2.0"
 description = "Utilities for refactoring imports in python-like syntax."
 category = "dev"
 optional = false
@@ -99,6 +99,14 @@ azure-pipelines = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six
 dev = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "sphinx", "pre-commit"]
 docs = ["sphinx", "zope.interface"]
 tests = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
+
+[[package]]
+name = "awesomeversion"
+version = "21.2.2"
+description = "One version package to rule them all, One version package to find them, One version package to bring them all, and in the darkness bind them."
+category = "dev"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "bcrypt"
@@ -287,7 +295,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "homeassistant"
-version = "2021.2.0"
+version = "2021.2.3"
 description = "Open-source home automation platform running on Python 3."
 category = "dev"
 optional = false
@@ -298,6 +306,7 @@ aiohttp = "3.7.3"
 astral = "1.10.1"
 async-timeout = "3.0.1"
 attrs = "19.3.0"
+awesomeversion = "21.2.2"
 bcrypt = "3.1.7"
 certifi = ">=2020.12.5"
 ciso8601 = "2.1.3"
@@ -804,22 +813,15 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 [[package]]
 name = "rctclient"
 version = "0.0.2"
-description = ""
+description = "Implementation of the RCT Power communication protocol"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
-develop = false
 
 [package.extras]
 cli = ["click"]
+docs = ["click", "Sphinx (>=2.0)", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-rtd-theme", "recommonmark (>=0.5.0)"]
 tests = ["mypy", "pylint", "pytest", "pytest-cov", "pytest-pylint"]
-docs = ["click", "Sphinx (>=2.0)", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-rtd-theme"]
-
-[package.source]
-type = "git"
-url = "https://github.com/svalouch/python-rctclient.git"
-reference = "080d96a"
-resolved_reference = "080d96ab6091ade64e602a0302557d43489d120e"
 
 [[package]]
 name = "regex"
@@ -1110,7 +1112,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e6d50f3c7ef04a2b4199a9d7f901f97a2ac2feab9ecf92b9ac42d72a92d8def3"
+content-hash = "e3a41205dd2daf3577340c44b2df0a26d8138e0daee0ed3ea03ff6db5c7f2cb8"
 
 [metadata.files]
 aiohttp = [
@@ -1161,8 +1163,8 @@ appdirs = [
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 "aspy.refactor-imports" = [
-    {file = "aspy.refactor_imports-2.1.1-py2.py3-none-any.whl", hash = "sha256:9df76bf19ef81620068b785a386740ab3c8939fcbdcebf20c4a4e0057230d782"},
-    {file = "aspy.refactor_imports-2.1.1.tar.gz", hash = "sha256:eec8d1a73bedf64ffb8b589ad919a030c1fb14acf7d1ce0ab192f6eedae895c5"},
+    {file = "aspy.refactor_imports-2.2.0-py2.py3-none-any.whl", hash = "sha256:7a18039d2e8be6b02b4791ce98891deb46b459b575c52ed35ab818c4eaa0c098"},
+    {file = "aspy.refactor_imports-2.2.0.tar.gz", hash = "sha256:78ca24122963fd258ebfc4a8dc708d23a18040ee39dca8767675821e84e9ea0a"},
 ]
 astral = [
     {file = "astral-1.10.1-py2.py3-none-any.whl", hash = "sha256:5cca85e6e810cb6a38d248622c49e82f14e768bae791468aefbfe3c4c90cc00e"},
@@ -1183,6 +1185,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-19.3.0-py2.py3-none-any.whl", hash = "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c"},
     {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
+]
+awesomeversion = [
+    {file = "awesomeversion-21.2.2-py3-none-any.whl", hash = "sha256:614ddcfd4993fbb7b729acde7046b0083577498382db37e87d7df81183b6492b"},
+    {file = "awesomeversion-21.2.2.tar.gz", hash = "sha256:7313f78e057b252603b7ca81bf5ea168a78c09ec651f4f759e6ff754ce825afa"},
 ]
 bcrypt = [
     {file = "bcrypt-3.1.7-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:d7bdc26475679dd073ba0ed2766445bb5b20ca4793ca0db32b399dccc6bc84b7"},
@@ -1370,8 +1376,8 @@ h11 = [
     {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
 ]
 homeassistant = [
-    {file = "homeassistant-2021.2.0-py3-none-any.whl", hash = "sha256:89b219eb1e4dc0fc8e0297bd8e6c0522816d5b20d9d43b5300f6650e13599be5"},
-    {file = "homeassistant-2021.2.0.tar.gz", hash = "sha256:6bd593ead7e39627a47dd47af8216a7aba56f9963fe2c4d7b1f5c9e8e3fd72bf"},
+    {file = "homeassistant-2021.2.3-py3-none-any.whl", hash = "sha256:c44ab9bd52a8ef920aac57a1e74743c666aae5e7d09427ddef418a62504519ea"},
+    {file = "homeassistant-2021.2.3.tar.gz", hash = "sha256:ecc7e36a77fa2204ab5bc7fffa82a60f08fe008a4d1316a5e133e00a5437e37d"},
 ]
 httpcore = [
     {file = "httpcore-0.12.3-py3-none-any.whl", hash = "sha256:93e822cd16c32016b414b789aeff4e855d0ccbfc51df563ee34d4dbadbb3bcdc"},
@@ -1660,7 +1666,10 @@ pyyaml = [
     {file = "PyYAML-5.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:c20cfa2d49991c8b4147af39859b167664f2ad4561704ee74c1de03318e898db"},
     {file = "PyYAML-5.4.1.tar.gz", hash = "sha256:607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"},
 ]
-rctclient = []
+rctclient = [
+    {file = "rctclient-0.0.2-py3-none-any.whl", hash = "sha256:bc7c815368557628c046ae5c962d37551093f97e5eb142c39565fd8aedbf6822"},
+    {file = "rctclient-0.0.2.tar.gz", hash = "sha256:48a65d5b671d1e8e7bf6ae95989ead89d6e37794535c55c59f0cadb65f627e21"},
+]
 regex = [
     {file = "regex-2020.11.13-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8b882a78c320478b12ff024e81dc7d43c1462aa4a3341c754ee65d857a521f85"},
     {file = "regex-2020.11.13-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:a63f1a07932c9686d2d416fb295ec2c01ab246e89b4d58e5fa468089cab44b70"},

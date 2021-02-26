@@ -14,7 +14,7 @@ black = "^20.8b1"
 flake8 = "^3.8.4"
 homeassistant = "^2021.2.0"
 pre-commit = "^2.10.0"
-rctclient = { git = "https://github.com/svalouch/python-rctclient.git", rev = "080d96a" }
+rctclient = "^0.0.2"
 reorder-python-imports = "^2.4.0"
 pytest-homeassistant-custom-component = "^0.2.0"
 
