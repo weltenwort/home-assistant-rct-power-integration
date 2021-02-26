@@ -16,9 +16,9 @@
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                       |
-| --------------- | --------------------------------- |
-| `sensor`        | Show info from RCT Power API.     |
+| Platform | Description                   |
+| -------- | ----------------------------- |
+| `sensor` | Show info from RCT Power API. |
 
 ## Installation
 
