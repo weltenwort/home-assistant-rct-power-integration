@@ -1,4 +1,4 @@
-# RCT Power
+# RCT Power integration
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
@@ -18,10 +18,7 @@
 
 | Platform        | Description                       |
 | --------------- | --------------------------------- |
-| `binary_sensor` | Show something `True` or `False`. |
 | `sensor`        | Show info from RCT Power API.     |
-
-![example][exampleimg]
 
 ## Installation
 
@@ -32,26 +29,6 @@
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "RCT Power"
-
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/rct_power/translations/en.json
-custom_components/rct_power/translations/fr.json
-custom_components/rct_power/translations/nb.json
-custom_components/rct_power/translations/sensor.en.json
-custom_components/rct_power/translations/sensor.fr.json
-custom_components/rct_power/translations/sensor.nb.json
-custom_components/rct_power/translations/sensor.nb.json
-custom_components/rct_power/__init__.py
-custom_components/rct_power/api.py
-custom_components/rct_power/binary_sensor.py
-custom_components/rct_power/config_flow.py
-custom_components/rct_power/const.py
-custom_components/rct_power/manifest.json
-custom_components/rct_power/sensor.py
-custom_components/rct_power/switch.py
-```
 
 ## Configuration is done in the UI
 
