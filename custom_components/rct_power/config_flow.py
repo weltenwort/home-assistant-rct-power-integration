@@ -1,14 +1,13 @@
 """Adds config flow for RCT Power."""
 from dataclasses import asdict
 from logging import Logger, getLogger
-from typing import TypedDict
 
 from homeassistant import config_entries
 from homeassistant.core import callback
 from voluptuous.error import MultipleInvalid
 
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN, PLATFORMS
+from .lib.const import DOMAIN
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions, get_title
 
 
@@ -37,7 +36,7 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     valid_user_input.hostname, valid_user_input.port
                 ).get_serial_number()
 
-                if unique_id != None:
+                if unique_id is not None:
                     await self.async_set_unique_id(unique_id)
 
                     return self.async_create_entry(
@@ -84,7 +83,7 @@ class RctPowerOptionsFlowHandler(config_entries.OptionsFlow):
                     user_input
                 )
 
-                self.options.update(user_input)
+                self.options.update(asdict(valid_user_input))
                 return self.async_create_entry(
                     title=get_title(
                         RctPowerConfigEntryData.from_config_entry(self.config_entry)

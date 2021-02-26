@@ -13,13 +13,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
-import voluptuous as vol
 
-from .lib.api import RctPowerApiClient, RctPowerData
+from .lib.api import RctPowerApiClient
 from .lib.const import (
-    CONF_HOSTNAME,
-    CONF_PORT,
-    CONF_SCAN_INTERVAL,
     DOMAIN,
     PLATFORMS,
     STARTUP_MESSAGE,

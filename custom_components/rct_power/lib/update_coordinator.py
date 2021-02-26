@@ -1,13 +1,11 @@
-from collections import defaultdict
 from datetime import timedelta
 from logging import Logger
-from typing import Callable, List, Optional, TypeVar
+from typing import List, Optional
 
-from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .api import ApiResponseValue, RctPowerApiClient, RctPowerData, ValidApiResponse
-from .const import DOMAIN
 
 
 class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
@@ -56,4 +54,4 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         return await self.client.async_get_data(object_ids=self.object_ids)
 
 
-from .entity import EntityDescriptor
+from .entity import EntityDescriptor  # noqa: E402

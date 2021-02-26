@@ -1,8 +1,8 @@
 """Switch platform for RCT Power."""
-from homeassistant.components.switch import SwitchEntity
+# from homeassistant.components.switch import SwitchEntity
 
-from .lib.const import DEFAULT_NAME, DOMAIN, ICON  # , SWITCH
-from .lib.entity import RctPowerEntity
+# from .lib.const import DEFAULT_NAME, DOMAIN, ICON  # , SWITCH
+# from .lib.entity import RctPowerEntity
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
