@@ -17,43 +17,8 @@ from .api import (
 )
 from .const import BATTERY_MODEL, DOMAIN, ICON, INVERTER_MODEL, NAME, VERSION
 from .entry import RctPowerConfigEntryData
+from .multi_coordinator_entity import MultiCoordinatorEntity
 from .update_coordinator import RctPowerDataUpdateCoordinator
-
-
-class MultiCoordinatorEntity(Entity):
-    """A class for entities using multiple DataUpdateCoordinators."""
-
-    def __init__(self, coordinators: List[RctPowerDataUpdateCoordinator]) -> None:
-        self.coordinators = coordinators
-
-    @property
-    def should_poll(self) -> bool:
-        return False
-
-    @property
-    def available(self) -> bool:
-        return any(coordinator.last_update_success for coordinator in self.coordinators)
-
-    async def async_added_to_hass(self) -> None:
-        await super().async_added_to_hass()
-
-        for coordinator in self.coordinators:
-            self.async_on_remove(
-                coordinator.async_add_listener(self._handle_coordinator_update)
-            )
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        self.async_write_ha_state()
-
-    async def async_update(self) -> None:
-        # Ignore manual update requests if the entity is disabled
-        if not self.enabled:
-            return
-
-        await gather(
-            *[coordinator.async_request_refresh() for coordinator in self.coordinators]
-        )
 
 
 class RctPowerEntity(MultiCoordinatorEntity):
@@ -67,10 +32,14 @@ class RctPowerEntity(MultiCoordinatorEntity):
         self.config_entry = config_entry
         self.entity_descriptor = entity_descriptor
 
-    def get_api_response_by_id(self, object_id: int, default=None):
+    def get_api_response_by_id(
+        self, object_id: int, default: Optional[ApiResponse] = None
+    ):
         for coordinator in self.coordinators:
-            if (coordinator.data is not None) and (object_id in coordinator.data):
-                return coordinator.data.get(object_id)
+            latest_response = coordinator.get_latest_response(object_id)
+
+            if latest_response is not None:
+                return latest_response
 
         return default
 

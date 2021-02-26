@@ -7,10 +7,9 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from voluptuous.error import MultipleInvalid
 
-from .api import RctPowerApiClient
-from .const import DOMAIN
-from .const import PLATFORMS
-from .entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions, get_title
+from .lib.api import RctPowerApiClient
+from .lib.const import DOMAIN, PLATFORMS
+from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions, get_title
 
 
 _LOGGER: Logger = getLogger(__package__)

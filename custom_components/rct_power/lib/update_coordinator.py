@@ -30,7 +30,8 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         )
 
     def get_latest_response(self, object_id: int):
-        return self.data.get(object_id)
+        if self.data is not None:
+            return self.data.get(object_id)
 
     def get_valid_value_or(self, object_id: int, default_value: ApiResponseValue):
         latest_response = self.get_latest_response(object_id)
@@ -39,6 +40,9 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
             return latest_response.value
         else:
             return default_value
+
+    def has_valid_value(self, object_id: int):
+        return isinstance(self.get_latest_response(object_id), ValidApiResponse)
 
     @property
     def object_ids(self):

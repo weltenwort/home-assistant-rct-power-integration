@@ -15,8 +15,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 import voluptuous as vol
 
-from .api import RctPowerApiClient, RctPowerData
-from .const import (
+from .lib.api import RctPowerApiClient, RctPowerData
+from .lib.const import (
     CONF_HOSTNAME,
     CONF_PORT,
     CONF_SCAN_INTERVAL,
@@ -24,11 +24,11 @@ from .const import (
     PLATFORMS,
     STARTUP_MESSAGE,
 )
-from .context import RctPowerContext
-from .entities import known_entities
-from .entity import EntityUpdatePriority
-from .entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
-from .update_coordinator import RctPowerDataUpdateCoordinator
+from .lib.context import RctPowerContext
+from .lib.entities import known_entities
+from .lib.entity import EntityUpdatePriority
+from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
+from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
