@@ -1,13 +1,11 @@
-from collections import defaultdict
 from datetime import timedelta
 from logging import Logger
-from typing import Callable, List, Optional, TypeVar
+from typing import List, Optional
 
-from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .api import ApiResponseValue, RctPowerApiClient, RctPowerData, ValidApiResponse
-from .const import DOMAIN
 
 
 class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
@@ -30,7 +28,8 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         )
 
     def get_latest_response(self, object_id: int):
-        return self.data.get(object_id)
+        if self.data is not None:
+            return self.data.get(object_id)
 
     def get_valid_value_or(self, object_id: int, default_value: ApiResponseValue):
         latest_response = self.get_latest_response(object_id)
@@ -39,6 +38,9 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
             return latest_response.value
         else:
             return default_value
+
+    def has_valid_value(self, object_id: int):
+        return isinstance(self.get_latest_response(object_id), ValidApiResponse)
 
     @property
     def object_ids(self):
@@ -52,4 +54,4 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         return await self.client.async_get_data(object_ids=self.object_ids)
 
 
-from .entity import EntityDescriptor
+from .entity import EntityDescriptor  # noqa: E402

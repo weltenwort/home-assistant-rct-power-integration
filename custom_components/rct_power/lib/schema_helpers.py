@@ -20,6 +20,6 @@ def get_schema_for_dataclass(cls, allow_fields: Optional[List[str]] = None):
         {
             get_key_for_field(field): get_schema_for_field(field)
             for field in fields(cls)
-            if allow_fields == None or field.name in allow_fields
+            if allow_fields is None or field.name in allow_fields
         }
     )

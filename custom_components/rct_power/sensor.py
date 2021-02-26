@@ -4,17 +4,12 @@ from typing import Callable, List
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from rctclient.registry import REGISTRY
-from rctclient.types import DataType, ObjectGroup
+from rctclient.types import DataType
 
-from .api import INVERTER_SN_OID
-from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
-from .context import RctPowerContext
-from .entity import (
+from .lib.const import DOMAIN
+from .lib.context import RctPowerContext
+from .lib.entity import (
     AttributesEntityDescriptor,
-    RctPowerBatteryEntity,
-    RctPowerInverterEntity,
 )
 
 
@@ -57,31 +52,3 @@ async def async_setup_entry(
             )
         ]
     )
-
-
-# class RctPowerInverterSensor(RctPowerInverterEntity):
-#     """rct_power storage sensor class."""
-
-#     @property
-#     def icon(self):
-#         """Return the icon of the sensor."""
-#         return ICON
-
-#     @property
-#     def device_class(self):
-#         """Return the device class of the sensor."""
-#         return None
-
-
-# class RctPowerBatterySensor(RctPowerBatteryEntity):
-#     """rct_power battery sensor class."""
-
-#     @property
-#     def icon(self):
-#         """Return the icon of the sensor."""
-#         return ICON
-
-#     @property
-#     def device_class(self):
-#         """Return the device class of the sensor."""
-#         return None

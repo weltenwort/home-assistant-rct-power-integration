@@ -4,7 +4,6 @@ from typing import List
 from rctclient.registry import REGISTRY
 
 from .entity import (
-    AttributesEntityDescriptor,
     BatteryEntityDescriptor,
     EntityDescriptor,
     EntityUpdatePriority,
@@ -18,7 +17,7 @@ def get_matching_names(expression: str):
     return [
         object_info.name
         for object_info in REGISTRY.all()
-        if compiled_expression.match(object_info.name) != None
+        if compiled_expression.match(object_info.name) is not None
     ]
 
 

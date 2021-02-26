@@ -1,11 +1,11 @@
 """Sample API Client."""
-from asyncio import StreamReader, StreamWriter, open_connection, TimeoutError
+from asyncio import StreamReader, StreamWriter, TimeoutError, open_connection
 from asyncio.locks import Lock
 from dataclasses import dataclass
 from datetime import datetime
 import logging
 import struct
-from typing import Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
 import async_timeout
 from homeassistant.helpers.update_coordinator import UpdateFailed

@@ -1,9 +1,6 @@
-from dataclasses import Field, MISSING, dataclass, fields
-from typing import ClassVar, Dict, List, Literal, Optional, TypedDict, Union
+from dataclasses import dataclass
 
 from homeassistant.config_entries import ConfigEntry
-from rctclient.registry import REGISTRY
-from voluptuous import Required, Schema
 
 from .const import DOMAIN
 from .schema_helpers import get_schema_for_dataclass

@@ -5,9 +5,7 @@
   "issue_tracker": "https://github.com/weltenwort/rct-power/issues",
   "dependencies": [],
   "config_flow": true,
-  "codeowners": [
-    "@weltenwort"
-  ],
+  "codeowners": ["@weltenwort"],
   "requirements": [
     "git+https://github.com/svalouch/python-rctclient.git@080d96a#rtcclient",
     "async_timeout==3.0.1"

@@ -16,10 +16,10 @@
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                                                               |
-| --------------- | ------------------------------------------------------------------------- |
-| `binary_sensor` | Show something `True` or `False`.                                         |
-| `sensor`        | Show info from RCT Power API. |
+| Platform        | Description                       |
+| --------------- | --------------------------------- |
+| `binary_sensor` | Show something `True` or `False`. |
+| `sensor`        | Show info from RCT Power API.     |
 
 ![example][exampleimg]
 
