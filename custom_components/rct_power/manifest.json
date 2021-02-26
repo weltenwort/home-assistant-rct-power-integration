@@ -10,5 +10,5 @@
     "git+https://github.com/svalouch/python-rctclient.git@080d96a#rtcclient",
     "async_timeout==3.0.1"
   ],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }
