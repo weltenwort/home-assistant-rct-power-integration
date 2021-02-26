@@ -1,13 +1,9 @@
-from asyncio.tasks import gather
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
 from typing import List, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import callback
-from homeassistant.helpers.entity import Entity
 from rctclient.registry import ObjectInfo, REGISTRY
-from rctclient.types import DataType
 
 from .api import (
     ApiResponse,
@@ -15,7 +11,7 @@ from .api import (
     ValidApiResponse,
     get_valid_response_value_or,
 )
-from .const import BATTERY_MODEL, DOMAIN, ICON, INVERTER_MODEL, NAME, VERSION
+from .const import BATTERY_MODEL, DOMAIN, ICON, INVERTER_MODEL, NAME
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
 from .update_coordinator import RctPowerDataUpdateCoordinator
@@ -84,8 +80,8 @@ class RctPowerEntity(MultiCoordinatorEntity):
         """Return the name of the entity."""
         entity_name = (
             self.entity_descriptor.entity_name
-            if self.entity_descriptor != None
-            and self.entity_descriptor.entity_name != None
+            if self.entity_descriptor is not None
+            and self.entity_descriptor.entity_name is not None
             else slugify_entity_name(self.object_infos[0].name)
         )
 
