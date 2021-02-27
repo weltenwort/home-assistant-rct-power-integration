@@ -27,3 +27,14 @@ template: |
   ## Changes
 
   $CHANGES
+version-resolver:
+  major:
+    labels:
+      - 'major version'
+  minor:
+    labels:
+      - 'minor version'
+  patch:
+    labels:
+      - 'patch version'
+  default: minor
