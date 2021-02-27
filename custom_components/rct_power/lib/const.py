@@ -3,7 +3,7 @@
 NAME = "RCT Power"
 DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 ISSUE_URL = "https://github.com/weltenwort/rct-power/issues"
 
