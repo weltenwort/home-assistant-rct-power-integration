@@ -30,11 +30,11 @@ template: |
 version-resolver:
   major:
     labels:
-      - 'major version'
+      - "major version"
   minor:
     labels:
-      - 'minor version'
+      - "minor version"
   patch:
     labels:
-      - 'patch version'
+      - "patch version"
   default: minor
