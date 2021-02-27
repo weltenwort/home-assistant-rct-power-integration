@@ -137,16 +137,144 @@ known_entities: List[EntityDescriptor] = [
         ],
         entity_name="Faults",
     ),
+    InverterEntityDescriptor(
+        ["energy.e_load_day"],
+        entity_name="Consumer Energy Consumption Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_load_month"],
+        entity_name="Consumer Energy Consumption Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_load_year"],
+        entity_name="Consumer Energy Consumption Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_load_total"],
+        entity_name="Consumer Energy Consumption Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ac_day"],
+        entity_name="Inverter Energy Production Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ac_month"],
+        entity_name="Inverter Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ac_year"],
+        entity_name="Inverter Energy Production Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ac_total"],
+        entity_name="Inverter Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_feed_day"],
+        entity_name="Grid Energy Production Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_feed_month"],
+        entity_name="Grid Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_feed_year"],
+        entity_name="Grid Energy Production Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_feed_total"],
+        entity_name="Grid Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_load_day"],
+        entity_name="Grid Energy Consumption Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_load_month"],
+        entity_name="Grid Energy Consumption Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_load_year"],
+        entity_name="Grid Energy Consumption Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_grid_load_total"],
+        entity_name="Grid Energy Consumption Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ext_day"],
+        entity_name="External Energy Production Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ext_month"],
+        entity_name="External Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ext_year"],
+        entity_name="External Energy Production Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_ext_total"],
+        entity_name="External Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_day[0]"],
+        entity_name="Generator A Energy Production Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_month[0]"],
+        entity_name="Generator A Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_year[0]"],
+        entity_name="Generator A Energy Production Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_total[0]"],
+        entity_name="Generator A Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_day[1]"],
+        entity_name="Generator B Energy Production Day",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_month[1]"],
+        entity_name="Generator B Energy Production Month",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_year[1]"],
+        entity_name="Generator B Energy Production Year",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    InverterEntityDescriptor(
+        ["energy.e_dc_total[1]"],
+        entity_name="Generator B Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
 ]
-
-
-# DEVICE_OBJECT_IDS = list(
-#     REGISTRY.get_by_name(object_name).object_id
-#     for object_name in [
-#         "inverter_sn",
-#         "svnversion",
-#         "battery.bms_sn",
-#         "battery.bms_software_version",
-#         "android_description",
-#     ]
-# )
