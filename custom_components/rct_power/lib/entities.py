@@ -30,6 +30,116 @@ known_entities: List[EntityDescriptor] = [
     BatteryEntityDescriptor(
         ["battery.bms_software_version"],
         entity_name="Battery Management System Software Version",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[0]"],
+        entity_name="Battery Module 1 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[1]"],
+        entity_name="Battery Module 2 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[2]"],
+        entity_name="Battery Module 3 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[3]"],
+        entity_name="Battery Module 4 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[4]"],
+        entity_name="Battery Module 5 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.module_sn[5]"],
+        entity_name="Battery Module 6 Serial Number",
+        update_priority=EntityUpdatePriority.STATIC,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.charged_amp_hours"],
+        entity_name="Battery Charge Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.discharged_amp_hours"],
+        entity_name="Battery Discharge Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.current"],
+        entity_name="Battery Current",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.voltage"],
+        entity_name="Battery Voltage",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.maximum_charge_voltage"],
+        entity_name="Battery Maximum Charging Voltage",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.minimum_discharge_voltage"],
+        entity_name="Battery Minimum Discharging Voltage",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.maximum_discharge_current"],
+        entity_name="Battery Maximum Discharging Current",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.temperature"],
+        entity_name="Battery Temperature",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.stored_energy"],
+        entity_name="Battery Stored Energy",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.ah_capacity"],
+        entity_name="Battery Charge Capacity",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.soc"],
+        entity_name="Battery State of Charge",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.soc_target"],
+        entity_name="Battery State of Charge Target",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.soc_target_low"],
+        entity_name="Battery State of Charge Low Target",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.soc_target_high"],
+        entity_name="Battery State of Charge High Target",
+        update_priority=EntityUpdatePriority.FREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.soh"],
+        entity_name="Battery State of Health",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+    ),
+    BatteryEntityDescriptor(
+        ["battery.cycles"],
+        entity_name="Battery Cycles",
         update_priority=EntityUpdatePriority.INFREQUENT,
     ),
     InverterEntityDescriptor(["adc.u_acc"], entity_name="Inverter Battery Voltage"),
