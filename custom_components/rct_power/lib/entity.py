@@ -1,5 +1,6 @@
 from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
+from numbers import Number
 from typing import List, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
@@ -97,7 +98,12 @@ class RctPowerEntity(MultiCoordinatorEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self.get_valid_api_response_value_by_id(self.object_ids[0], None)
+        value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
+
+        if self.unit_of_measurement == "%" and isinstance(value, Number):
+            return value * 100
+
+        return value
 
     @property
     def unit_of_measurement(self):
