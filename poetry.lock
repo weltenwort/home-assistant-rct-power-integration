@@ -701,7 +701,7 @@ pytest = ">=3.10"
 
 [[package]]
 name = "pytest-homeassistant-custom-component"
-version = "0.2.1"
+version = "0.3.1"
 description = "Experimental package to automatically extract test plugins for Home Assistant custom components"
 category = "dev"
 optional = false
@@ -709,7 +709,7 @@ python-versions = ">=3.8"
 
 [package.dependencies]
 coverage = "5.5"
-homeassistant = "*"
+homeassistant = "2021.4.4"
 jsonpickle = "1.4.1"
 mock-open = "1.4.0"
 pipdeptree = "1.0.0"
@@ -1112,7 +1112,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "44f2241a206e39fa4156525fd0291ca8b2bd4e0a2f57e0bad7270b632ab26378"
+content-hash = "21a9c16a1f72a901b7dd24a4c0ae1062a0219bd4e49b0f6bc46edfe46bc8d946"
 
 [metadata.files]
 aiohttp = [
@@ -1614,8 +1614,8 @@ pytest-forked = [
     {file = "pytest_forked-1.3.0-py2.py3-none-any.whl", hash = "sha256:dc4147784048e70ef5d437951728825a131b81714b398d5d52f17c7c144d8815"},
 ]
 pytest-homeassistant-custom-component = [
-    {file = "pytest-homeassistant-custom-component-0.2.1.tar.gz", hash = "sha256:24241ab4570432ceeef7bda6e1fbeeb1b87bb2b587b219caea43f0a5c7448864"},
-    {file = "pytest_homeassistant_custom_component-0.2.1-py3-none-any.whl", hash = "sha256:3272897eab4002d786fb46e480e1574cb3551dd3333890e283aacbfb09e8a7e9"},
+    {file = "pytest-homeassistant-custom-component-0.3.1.tar.gz", hash = "sha256:a765ced2923b87cb1aa9ca2f2dfb3e2a8005ceaae281293ae5bfb6123146b03c"},
+    {file = "pytest_homeassistant_custom_component-0.3.1-py3-none-any.whl", hash = "sha256:e7213751b0eb5863e31d7ceb45a0d7a1436c8d47c3f276bf241ec1e912e9a290"},
 ]
 pytest-sugar = [
     {file = "pytest-sugar-0.9.4.tar.gz", hash = "sha256:b1b2186b0a72aada6859bea2a5764145e3aaa2c1cfbb23c3a19b5f7b697563d3"},

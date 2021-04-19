@@ -16,7 +16,7 @@ homeassistant = "^2021.4.4"
 pre-commit = "^2.12.0"
 rctclient = "^0.0.2"
 reorder-python-imports = "^2.4.0"
-pytest-homeassistant-custom-component = "^0.2.1"
+pytest-homeassistant-custom-component = "^0.3.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
