@@ -3,9 +3,15 @@
   "name": "RCT Power",
   "documentation": "https://github.com/weltenwort/rct-power",
   "issue_tracker": "https://github.com/weltenwort/rct-power/issues",
+  "iot_class": "local_polling",
   "dependencies": [],
   "config_flow": true,
-  "codeowners": ["@weltenwort"],
-  "requirements": ["rctclient==0.0.2", "async_timeout==3.0.1"],
+  "codeowners": [
+    "@weltenwort"
+  ],
+  "requirements": [
+    "rctclient==0.0.2",
+    "async_timeout==3.0.1"
+  ],
   "version": "0.4.0"
 }
