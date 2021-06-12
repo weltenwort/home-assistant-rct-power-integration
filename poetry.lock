@@ -125,7 +125,7 @@ tests = ["pytest (>=3.2.1,!=3.3.0)"]
 
 [[package]]
 name = "black"
-version = "21.4b1"
+version = "21.6b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -141,8 +141,9 @@ toml = ">=0.10.1"
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
-d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
+d = ["aiohttp (>=3.6.0)", "aiohttp-cors (>=0.4.0)"]
 python2 = ["typed-ast (>=1.4.2)"]
+uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "cached-property"
@@ -1103,7 +1104,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "52c1666bb8667ecfa2ad969093546bfbc1f437e3e2b5cb94126a2c5b8ee9db2e"
+content-hash = "4f718ddacd4b3aef4c421876feb08a045467b44f245852850505108fd92c2d9d"
 
 [metadata.files]
 aiohttp = [
@@ -1203,8 +1204,8 @@ bcrypt = [
     {file = "bcrypt-3.1.7.tar.gz", hash = "sha256:0b0069c752ec14172c5f78208f1863d7ad6755a6fae6fe76ec2c80d13be41e42"},
 ]
 black = [
-    {file = "black-21.4b1-py3-none-any.whl", hash = "sha256:c9601dc863779db2fb1bf18b345bbfa2bb868463123cde6a7eff44b59e4ef739"},
-    {file = "black-21.4b1.tar.gz", hash = "sha256:20d326de75d13be6290925a95c94a9f368aca2f71cb7b753a938a5ae20f34a37"},
+    {file = "black-21.6b0-py3-none-any.whl", hash = "sha256:dfb8c5a069012b2ab1e972e7b908f5fb42b6bbabcba0a788b86dc05067c7d9c7"},
+    {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
 ]
 cached-property = [
     {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
