@@ -1,7 +1,7 @@
 from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
 from numbers import Number
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Literal, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo
@@ -115,6 +115,11 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return value
 
     @property
+    def state_class(self):
+        """Return the state class of the sensor."""
+        return self.entity_descriptor.state_class
+
+    @property
     def unit_of_measurement(self):
         return self.object_infos[0].unit
 
@@ -137,17 +142,30 @@ class RctPowerEntity(MultiCoordinatorEntity):
             ]
         }
 
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return self.entity_descriptor.device_class
+
 
 class RctPowerInverterEntity(RctPowerEntity):
     @property
     def device_info(self):
+        inverter_sn = str(
+            self.get_valid_api_response_value_by_name("inverter_sn", None)
+        )
+
         return DeviceInfo(
             identifiers={
                 (
                     DOMAIN,
                     "STORAGE",
-                    str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
-                )
+                    inverter_sn,
+                ),
+                (
+                    DOMAIN,
+                    inverter_sn,
+                ),
             },  # type: ignore
             name=str(
                 self.get_valid_api_response_value_by_name("android_description", ""),
@@ -156,11 +174,6 @@ class RctPowerInverterEntity(RctPowerEntity):
             model=INVERTER_MODEL,
             manufacturer=NAME,
         )
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return None
 
 
 class RctPowerInverterFaultEntity(RctPowerInverterEntity):
@@ -195,16 +208,18 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
 class RctPowerBatteryEntity(RctPowerEntity):
     @property
     def device_info(self):
+        bms_sn = str(self.get_valid_api_response_value_by_name("battery.bms_sn", None))
+
         return DeviceInfo(
             identifiers={
                 (
                     DOMAIN,
                     "BATTERY",
-                    str(
-                        self.get_valid_api_response_value_by_name(
-                            "battery.bms_sn", None
-                        )
-                    ),
+                    bms_sn,
+                ),
+                (
+                    DOMAIN,
+                    bms_sn,
                 ),
             },  # type: ignore
             name=f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
@@ -220,11 +235,6 @@ class RctPowerBatteryEntity(RctPowerEntity):
                 str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
             ),
         )
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return None
 
 
 class RctPowerPowerSensorEntity(RctPowerEntity):
@@ -274,6 +284,8 @@ class EntityDescriptor:
     object_infos: List[ObjectInfo] = field(init=False)
     entity_class: Type[RctPowerEntity] = RctPowerEntity
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
+    state_class: Optional[Literal["measurement"]] = "measurement"
+    device_class: Optional[str] = None
 
     def __post_init__(self):
         self.object_infos = [
