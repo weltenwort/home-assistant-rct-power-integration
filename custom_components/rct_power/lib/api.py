@@ -183,7 +183,7 @@ class RctPowerApiClient:
 
         except TimeoutError as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id,
@@ -192,35 +192,35 @@ class RctPowerApiClient:
             )
         except FrameCRCMismatch as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="CRC_ERROR"
             )
         except FrameLengthExceeded as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="FRAME_LENGTH_EXCEEDED"
             )
         except InvalidCommand as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="INVALID_COMMAND"
             )
         except struct.error as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="PARSING_ERROR"
             )
         except Exception as exc:
             _LOGGER.debug(
-                "Error reading object %x (%s): %s", object_id, object_name, exc
+                "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="UNKNOWN_ERROR"
