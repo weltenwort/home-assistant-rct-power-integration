@@ -1,28 +1,30 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "image": "ludeeus/container:integration-debian",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "VARIANT": "3.9"
+    }
+  },
   "name": "RCT Power integration development",
-  "context": "..",
-  "appPort": ["9123:8123"],
-  "postCreateCommand": "container install",
+  "appPort": [
+    "8123:8123"
+  ],
   "extensions": [
     "ms-python.python",
     "github.vscode-pull-request-github",
-    "ryanluker.vscode-coverage-gutters",
-    "ms-python.vscode-pylance"
+    "ms-python.vscode-pylance",
+    "bungcip.better-toml"
   ],
   "settings": {
-    "files.eol": "\n",
-    "editor.tabSize": 4,
-    "terminal.integrated.shell.linux": "/bin/bash",
-    "python.pythonPath": "/usr/bin/python3",
-    "python.analysis.autoSearchPaths": false,
-    "python.linting.pylintEnabled": true,
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "python.venvPath": "~/.cache/pypoetry/virtualenvs",
     "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
-    "editor.formatOnPaste": false,
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "files.trimTrailingWhitespace": true
-  }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "poetry install",
 }
