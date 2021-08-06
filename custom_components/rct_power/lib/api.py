@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
 import async_timeout
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from rctclient.exceptions import FrameCRCMismatch
+from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidCommand
 from rctclient.frame import ReceiveFrame, SendFrame
 from rctclient.registry import REGISTRY
 from rctclient.types import Command, EventEntry
@@ -130,7 +130,7 @@ class RctPowerApiClient:
                         if len(raw_response) > 0:
                             response_frame.consume(raw_response)
 
-                    if response_frame.is_complete():
+                    if response_frame.complete():
                         response_object_info = REGISTRY.get_by_id(response_frame.id)
                         data_type = response_object_info.response_data_type
                         received_object_name = response_object_info.name
@@ -146,7 +146,17 @@ class RctPowerApiClient:
                             )
                             continue
 
-                        decoded_value = decode_value(data_type, response_frame.data)
+                        decoded_value: Union[
+                            bool,
+                            bytes,
+                            float,
+                            int,
+                            str,
+                            Tuple[datetime, Dict[datetime, int]],
+                            Tuple[datetime, Dict[datetime, EventEntry]],
+                        ] = decode_value(
+                            data_type, response_frame.data
+                        )  # type: ignore
 
                         _LOGGER.debug(
                             "Decoded data for object %x (%s): %s",
@@ -165,7 +175,7 @@ class RctPowerApiClient:
                             "Error decoding object %x (%s): %s",
                             object_id,
                             object_name,
-                            response_frame._data,
+                            response_frame.data,
                         )
                         return InvalidApiResponse(
                             object_id=object_id, time=request_time, cause="INCOMPLETE"
@@ -186,6 +196,20 @@ class RctPowerApiClient:
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="CRC_ERROR"
+            )
+        except FrameLengthExceeded as exc:
+            _LOGGER.debug(
+                "Error reading object %x (%s): %s", object_id, object_name, exc
+            )
+            return InvalidApiResponse(
+                object_id=object_id, time=request_time, cause="FRAME_LENGTH_EXCEEDED"
+            )
+        except InvalidCommand as exc:
+            _LOGGER.debug(
+                "Error reading object %x (%s): %s", object_id, object_name, exc
+            )
+            return InvalidApiResponse(
+                object_id=object_id, time=request_time, cause="INVALID_COMMAND"
             )
         except struct.error as exc:
             _LOGGER.debug(
