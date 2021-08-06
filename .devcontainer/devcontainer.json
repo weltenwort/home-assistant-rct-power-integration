@@ -8,14 +8,13 @@
     }
   },
   "name": "RCT Power integration development",
-  "appPort": [
-    "8123:8123"
-  ],
+  "appPort": ["8123:8123"],
   "extensions": [
     "ms-python.python",
     "github.vscode-pull-request-github",
     "ms-python.vscode-pylance",
-    "bungcip.better-toml"
+    "bungcip.better-toml",
+    "esbenp.prettier-vscode"
   ],
   "settings": {
     "terminal.integrated.defaultProfile.linux": "zsh",
@@ -24,7 +23,9 @@
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "poetry install",
+  "postCreateCommand": "poetry install"
 }
