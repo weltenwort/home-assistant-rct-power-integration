@@ -1,9 +1,10 @@
 from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
 from numbers import Number
-from typing import List, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity import DeviceInfo
 from rctclient.registry import ObjectInfo, REGISTRY
 
 from .api import (
@@ -40,20 +41,22 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
         return default
 
-    def get_api_response_by_name(self, object_name: str, default=None):
+    def get_api_response_by_name(
+        self, object_name: str, default: Optional[ApiResponse] = None
+    ):
         return self.get_api_response_by_id(
             REGISTRY.get_by_name(object_name).object_id, default
         )
 
     def get_valid_api_response_value_by_id(
-        self, object_id: int, default: ApiResponseValue = None
+        self, object_id: int, default: Optional[ApiResponseValue] = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_id(object_id, None), default
         )
 
     def get_valid_api_response_value_by_name(
-        self, object_name: str, default: ApiResponseValue = None
+        self, object_name: str, default: Optional[ApiResponseValue] = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_name(object_name, None), default
@@ -100,6 +103,12 @@ class RctPowerEntity(MultiCoordinatorEntity):
         """Return the state of the sensor."""
         value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
 
+        if isinstance(value, bytes):
+            return value.hex()
+
+        if isinstance(value, tuple):
+            return None
+
         if self.unit_of_measurement == "%" and isinstance(value, Number):
             return value * 100
 
@@ -115,7 +124,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return self.entity_descriptor.icon
 
     @property
-    def device_state_attributes(self):
+    def device_state_attributes(self) -> Dict[str, Any]:
         api_responses = (
             self.get_api_response_by_id(object_id) for object_id in self.object_ids
         )
@@ -132,23 +141,21 @@ class RctPowerEntity(MultiCoordinatorEntity):
 class RctPowerInverterEntity(RctPowerEntity):
     @property
     def device_info(self):
-        return {
-            "identifiers": {
+        return DeviceInfo(
+            identifiers={
                 (
                     DOMAIN,
                     "STORAGE",
-                    self.get_valid_api_response_value_by_name("inverter_sn", None),
+                    str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
                 )
-            },
-            "name": str(
+            },  # type: ignore
+            name=str(
                 self.get_valid_api_response_value_by_name("android_description", ""),
             ),
-            "sw_version": str(
-                self.get_valid_api_response_value_by_name("svnversion", "")
-            ),
-            "model": INVERTER_MODEL,
-            "manufacturer": NAME,
-        }
+            sw_version=str(self.get_valid_api_response_value_by_name("svnversion", "")),
+            model=INVERTER_MODEL,
+            manufacturer=NAME,
+        )
 
     @property
     def device_class(self):
@@ -188,27 +195,31 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
 class RctPowerBatteryEntity(RctPowerEntity):
     @property
     def device_info(self):
-        return {
-            "identifiers": {
+        return DeviceInfo(
+            identifiers={
                 (
                     DOMAIN,
                     "BATTERY",
-                    self.get_valid_api_response_value_by_name("battery.bms_sn", None),
-                )
-            },
-            "name": f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
-            "sw_version": str(
+                    str(
+                        self.get_valid_api_response_value_by_name(
+                            "battery.bms_sn", None
+                        )
+                    ),
+                ),
+            },  # type: ignore
+            name=f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
+            sw_version=str(
                 self.get_valid_api_response_value_by_name(
                     "battery.bms_software_version", ""
                 )
             ),
-            "model": BATTERY_MODEL,
-            "manufacturer": NAME,
-            "via_device": (
+            model=BATTERY_MODEL,
+            manufacturer=NAME,
+            via_device=(
                 DOMAIN,
-                self.get_valid_api_response_value_by_name("inverter_sn", None),
+                str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
             ),
-        }
+        )
 
     @property
     def device_class(self):
