@@ -18,13 +18,16 @@
   ],
   "settings": {
     "terminal.integrated.defaultProfile.linux": "zsh",
-    "python.venvPath": "~/.cache/pypoetry/virtualenvs",
+    "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.python"
+    }
   },
   "remoteUser": "vscode",
   "postCreateCommand": "poetry install"
