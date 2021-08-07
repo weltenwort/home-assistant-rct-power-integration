@@ -14,7 +14,7 @@ black = "^21.7b0"
 flake8 = "^3.9.2"
 homeassistant = "^2021.8.2"
 pre-commit = "^2.13.0"
-rctclient = "^0.0.2"
+rctclient = "^0.0.3"
 reorder-python-imports = "^2.6.0"
 pytest-homeassistant-custom-component = "^0.2.1"
 

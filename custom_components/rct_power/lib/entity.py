@@ -1,10 +1,16 @@
+from homeassistant.components.sensor import SensorEntity
+from custom_components.rct_power.lib.device_class_helpers import (
+    guess_device_class_from_unit,
+)
 from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
 from numbers import Number
-from typing import List, Optional, Type
+from typing import Any, Dict, List, Literal, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
-from rctclient.registry import ObjectInfo, REGISTRY
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.util.dt import start_of_local_day, utc_from_timestamp
+from rctclient.registry import REGISTRY, ObjectInfo
 
 from .api import (
     ApiResponse,
@@ -18,7 +24,7 @@ from .multi_coordinator_entity import MultiCoordinatorEntity
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
-class RctPowerEntity(MultiCoordinatorEntity):
+class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
     def __init__(
         self,
         coordinators: List[RctPowerDataUpdateCoordinator],
@@ -40,20 +46,22 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
         return default
 
-    def get_api_response_by_name(self, object_name: str, default=None):
+    def get_api_response_by_name(
+        self, object_name: str, default: Optional[ApiResponse] = None
+    ):
         return self.get_api_response_by_id(
             REGISTRY.get_by_name(object_name).object_id, default
         )
 
     def get_valid_api_response_value_by_id(
-        self, object_id: int, default: ApiResponseValue = None
+        self, object_id: int, default: Optional[ApiResponseValue] = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_id(object_id, None), default
         )
 
     def get_valid_api_response_value_by_name(
-        self, object_name: str, default: ApiResponseValue = None
+        self, object_name: str, default: Optional[ApiResponseValue] = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_name(object_name, None), default
@@ -100,10 +108,21 @@ class RctPowerEntity(MultiCoordinatorEntity):
         """Return the state of the sensor."""
         value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
 
+        if isinstance(value, bytes):
+            return value.hex()
+
+        if isinstance(value, tuple):
+            return None
+
         if self.unit_of_measurement == "%" and isinstance(value, Number):
             return value * 100
 
         return value
+
+    @property
+    def state_class(self):
+        """Return the state class of the sensor."""
+        return self.entity_descriptor.state_class
 
     @property
     def unit_of_measurement(self):
@@ -115,7 +134,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return self.entity_descriptor.icon
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self) -> Dict[str, Any]:
         api_responses = (
             self.get_api_response_by_id(object_id) for object_id in self.object_ids
         )
@@ -128,32 +147,58 @@ class RctPowerEntity(MultiCoordinatorEntity):
             ]
         }
 
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        if (
+            self.entity_descriptor.device_class is None
+            and self.unit_of_measurement is not None
+        ):
+            return guess_device_class_from_unit(self.unit_of_measurement)
+
+        return self.entity_descriptor.device_class
+
+    @property
+    def last_reset(self):
+        """Return time of last reset, if any."""
+        if self.entity_descriptor.metered_reset == MeteredResetFrequency.NEVER:
+            return None
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.INITIALLY:
+            return utc_from_timestamp(0)
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.DAILY:
+            return start_of_local_day()
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.MONTHLY:
+            return start_of_local_day().replace(day=1)
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.YEARLY:
+            return start_of_local_day().replace(month=1, day=1)
+
 
 class RctPowerInverterEntity(RctPowerEntity):
     @property
     def device_info(self):
-        return {
-            "identifiers": {
+        inverter_sn = str(
+            self.get_valid_api_response_value_by_name("inverter_sn", None)
+        )
+
+        return DeviceInfo(
+            identifiers={
                 (
                     DOMAIN,
                     "STORAGE",
-                    self.get_valid_api_response_value_by_name("inverter_sn", None),
-                )
-            },
-            "name": str(
+                    inverter_sn,
+                ),
+                (
+                    DOMAIN,
+                    inverter_sn,
+                ),
+            },  # type: ignore
+            name=str(
                 self.get_valid_api_response_value_by_name("android_description", ""),
             ),
-            "sw_version": str(
-                self.get_valid_api_response_value_by_name("svnversion", "")
-            ),
-            "model": INVERTER_MODEL,
-            "manufacturer": NAME,
-        }
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return None
+            sw_version=str(self.get_valid_api_response_value_by_name("svnversion", "")),
+            model=INVERTER_MODEL,
+            manufacturer=NAME,
+        )
 
 
 class RctPowerInverterFaultEntity(RctPowerInverterEntity):
@@ -178,9 +223,9 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
         return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {
-            **(super().device_state_attributes),
+            **(super().extra_state_attributes),
             "fault_bitmasks": self.fault_bitmasks,
         }
 
@@ -188,32 +233,33 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
 class RctPowerBatteryEntity(RctPowerEntity):
     @property
     def device_info(self):
-        return {
-            "identifiers": {
+        bms_sn = str(self.get_valid_api_response_value_by_name("battery.bms_sn", None))
+
+        return DeviceInfo(
+            identifiers={
                 (
                     DOMAIN,
                     "BATTERY",
-                    self.get_valid_api_response_value_by_name("battery.bms_sn", None),
-                )
-            },
-            "name": f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
-            "sw_version": str(
+                    bms_sn,
+                ),
+                (
+                    DOMAIN,
+                    bms_sn,
+                ),
+            },  # type: ignore
+            name=f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
+            sw_version=str(
                 self.get_valid_api_response_value_by_name(
                     "battery.bms_software_version", ""
                 )
             ),
-            "model": BATTERY_MODEL,
-            "manufacturer": NAME,
-            "via_device": (
+            model=BATTERY_MODEL,
+            manufacturer=NAME,
+            via_device=(
                 DOMAIN,
-                self.get_valid_api_response_value_by_name("inverter_sn", None),
+                str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
             ),
-        }
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return None
+        )
 
 
 class RctPowerPowerSensorEntity(RctPowerEntity):
@@ -223,16 +269,16 @@ class RctPowerPowerSensorEntity(RctPowerEntity):
 class RctPowerAttributesEntity(RctPowerEntity):
     @property
     def state(self):
-        return f"{len(self.device_state_attributes.keys())} attributes"
+        return f"{len(self.extra_state_attributes.keys())} attributes"
 
     @property
     def unit_of_measurement(self):
         return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {
-            **(super().device_state_attributes),
+            **(super().extra_state_attributes),
             **{
                 object_info.name: self.get_valid_api_response_value_by_name(
                     object_info.name, None
@@ -254,6 +300,14 @@ class EntityUpdatePriority(Enum):
     STATIC = auto()
 
 
+class MeteredResetFrequency(Enum):
+    NEVER = auto()
+    INITIALLY = auto()
+    DAILY = auto()
+    MONTHLY = auto()
+    YEARLY = auto()
+
+
 @dataclass
 class EntityDescriptor:
     object_names: List[str]
@@ -263,6 +317,9 @@ class EntityDescriptor:
     object_infos: List[ObjectInfo] = field(init=False)
     entity_class: Type[RctPowerEntity] = RctPowerEntity
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
+    state_class: Optional[Literal["measurement"]] = None
+    device_class: Optional[str] = None
+    metered_reset: Optional[MeteredResetFrequency] = MeteredResetFrequency.NEVER
 
     def __post_init__(self):
         self.object_infos = [
