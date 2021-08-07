@@ -36,7 +36,7 @@ jobs:
           pip install --constraint=.github/workflows/constraints.txt poetry
 
       - name: Enable caching
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
