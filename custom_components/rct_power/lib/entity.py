@@ -1,3 +1,7 @@
+from homeassistant.components.sensor import SensorEntity
+from custom_components.rct_power.lib.device_class_helpers import (
+    guess_device_class_from_unit,
+)
 from dataclasses import asdict, dataclass, field
 from enum import Enum, auto
 from numbers import Number
@@ -5,7 +9,8 @@ from typing import Any, Dict, List, Literal, Optional, Type
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo
-from rctclient.registry import ObjectInfo, REGISTRY
+from homeassistant.util.dt import start_of_local_day, utc_from_timestamp
+from rctclient.registry import REGISTRY, ObjectInfo
 
 from .api import (
     ApiResponse,
@@ -19,7 +24,7 @@ from .multi_coordinator_entity import MultiCoordinatorEntity
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
-class RctPowerEntity(MultiCoordinatorEntity):
+class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
     def __init__(
         self,
         coordinators: List[RctPowerDataUpdateCoordinator],
@@ -129,7 +134,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return self.entity_descriptor.icon
 
     @property
-    def device_state_attributes(self) -> Dict[str, Any]:
+    def extra_state_attributes(self) -> Dict[str, Any]:
         api_responses = (
             self.get_api_response_by_id(object_id) for object_id in self.object_ids
         )
@@ -145,7 +150,27 @@ class RctPowerEntity(MultiCoordinatorEntity):
     @property
     def device_class(self):
         """Return the device class of the sensor."""
+        if (
+            self.entity_descriptor.device_class is None
+            and self.unit_of_measurement is not None
+        ):
+            return guess_device_class_from_unit(self.unit_of_measurement)
+
         return self.entity_descriptor.device_class
+
+    @property
+    def last_reset(self):
+        """Return time of last reset, if any."""
+        if self.entity_descriptor.metered_reset == MeteredResetFrequency.NEVER:
+            return None
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.INITIALLY:
+            return utc_from_timestamp(0)
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.DAILY:
+            return start_of_local_day()
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.MONTHLY:
+            return start_of_local_day().replace(day=1)
+        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.YEARLY:
+            return start_of_local_day().replace(month=1, day=1)
 
 
 class RctPowerInverterEntity(RctPowerEntity):
@@ -198,9 +223,9 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
         return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {
-            **(super().device_state_attributes),
+            **(super().extra_state_attributes),
             "fault_bitmasks": self.fault_bitmasks,
         }
 
@@ -244,16 +269,16 @@ class RctPowerPowerSensorEntity(RctPowerEntity):
 class RctPowerAttributesEntity(RctPowerEntity):
     @property
     def state(self):
-        return f"{len(self.device_state_attributes.keys())} attributes"
+        return f"{len(self.extra_state_attributes.keys())} attributes"
 
     @property
     def unit_of_measurement(self):
         return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return {
-            **(super().device_state_attributes),
+            **(super().extra_state_attributes),
             **{
                 object_info.name: self.get_valid_api_response_value_by_name(
                     object_info.name, None
@@ -275,6 +300,14 @@ class EntityUpdatePriority(Enum):
     STATIC = auto()
 
 
+class MeteredResetFrequency(Enum):
+    NEVER = auto()
+    INITIALLY = auto()
+    DAILY = auto()
+    MONTHLY = auto()
+    YEARLY = auto()
+
+
 @dataclass
 class EntityDescriptor:
     object_names: List[str]
@@ -284,8 +317,9 @@ class EntityDescriptor:
     object_infos: List[ObjectInfo] = field(init=False)
     entity_class: Type[RctPowerEntity] = RctPowerEntity
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
-    state_class: Optional[Literal["measurement"]] = "measurement"
+    state_class: Optional[Literal["measurement"]] = None
     device_class: Optional[str] = None
+    metered_reset: Optional[MeteredResetFrequency] = MeteredResetFrequency.NEVER
 
     def __post_init__(self):
         self.object_infos = [
