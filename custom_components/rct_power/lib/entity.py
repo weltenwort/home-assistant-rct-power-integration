@@ -288,12 +288,6 @@ class RctPowerAttributesEntity(RctPowerEntity):
         }
 
 
-class EntityGroup(Enum):
-    BATTERY = "Battery"
-    INVERTER = "Inverter"
-    OTHERS = "Others"
-
-
 class EntityUpdatePriority(Enum):
     FREQUENT = auto()
     INFREQUENT = auto()
@@ -311,7 +305,6 @@ class MeteredResetFrequency(Enum):
 @dataclass
 class EntityDescriptor:
     object_names: List[str]
-    entity_group: EntityGroup = EntityGroup.OTHERS
     entity_name: Optional[str] = None
     icon: Optional[str] = ICON
     object_infos: List[ObjectInfo] = field(init=False)
@@ -329,19 +322,16 @@ class EntityDescriptor:
 
 @dataclass
 class BatteryEntityDescriptor(EntityDescriptor):
-    entity_group: EntityGroup = EntityGroup.BATTERY
     entity_class: Type[RctPowerEntity] = RctPowerBatteryEntity
 
 
 @dataclass
 class PowerSensorEntityDescriptor(EntityDescriptor):
-    entity_group: EntityGroup = EntityGroup.BATTERY
     entity_class: Type[RctPowerEntity] = RctPowerPowerSensorEntity
 
 
 @dataclass
 class InverterEntityDescriptor(EntityDescriptor):
-    entity_group: EntityGroup = EntityGroup.INVERTER
     entity_class: Type[RctPowerEntity] = RctPowerInverterEntity
 
 
