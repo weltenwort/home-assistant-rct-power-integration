@@ -1,14 +1,10 @@
-from homeassistant.components.sensor import SensorEntity
-from custom_components.rct_power.lib.device_class_helpers import (
-    guess_device_class_from_unit,
-)
 from dataclasses import asdict, dataclass, field
-from enum import Enum, auto
 from numbers import Number
-from typing import Any, Dict, List, Literal, Optional, Type
+from typing import Any, Dict, List, Optional
 
+from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import DeviceInfo, EntityDescription
 from homeassistant.util.dt import start_of_local_day, utc_from_timestamp
 from rctclient.registry import REGISTRY, ObjectInfo
 
@@ -18,22 +14,33 @@ from .api import (
     ValidApiResponse,
     get_valid_response_value_or,
 )
-from .const import BATTERY_MODEL, DOMAIN, ICON, INVERTER_MODEL, NAME
+from .const import (
+    BATTERY_MODEL,
+    DOMAIN,
+    ICON,
+    INVERTER_MODEL,
+    NAME,
+    EntityUpdatePriority,
+    MeteredResetFrequency,
+)
+from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
-class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
+class RctPowerEntity(MultiCoordinatorEntity):
+    entity_description: "RctPowerEntityDescription"
+
     def __init__(
         self,
         coordinators: List[RctPowerDataUpdateCoordinator],
         config_entry: ConfigEntry,
-        entity_descriptor: "EntityDescriptor",
+        entity_description: "RctPowerEntityDescription",
     ):
         super().__init__(coordinators)
         self.config_entry = config_entry
-        self.entity_descriptor = entity_descriptor
+        self.entity_description = entity_description
 
     def get_api_response_by_id(
         self, object_id: int, default: Optional[ApiResponse] = None
@@ -69,7 +76,7 @@ class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
 
     @property
     def object_infos(self):
-        return self.entity_descriptor.object_infos
+        return self.entity_description.object_infos
 
     @property
     def object_ids(self):
@@ -87,11 +94,8 @@ class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
     @property
     def name(self):
         """Return the name of the entity."""
-        entity_name = (
-            self.entity_descriptor.entity_name
-            if self.entity_descriptor is not None
-            and self.entity_descriptor.entity_name is not None
-            else slugify_entity_name(self.object_infos[0].name)
+        entity_name = self.entity_description.name or slugify_entity_name(
+            self.object_infos[0].name
         )
 
         return f"{self.config_entry_data.entity_prefix} {entity_name}"
@@ -120,18 +124,11 @@ class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
         return value
 
     @property
-    def state_class(self):
-        """Return the state class of the sensor."""
-        return self.entity_descriptor.state_class
-
-    @property
     def unit_of_measurement(self):
-        return self.object_infos[0].unit
+        if unit_of_measurement := super().unit_of_measurement:
+            return unit_of_measurement
 
-    @property
-    def icon(self):
-        """Return the icon of the sensor."""
-        return self.entity_descriptor.icon
+        return self.object_infos[0].unit
 
     @property
     def extra_state_attributes(self) -> Dict[str, Any]:
@@ -150,26 +147,30 @@ class RctPowerEntity(MultiCoordinatorEntity, SensorEntity):
     @property
     def device_class(self):
         """Return the device class of the sensor."""
-        if (
-            self.entity_descriptor.device_class is None
-            and self.unit_of_measurement is not None
-        ):
+        if device_class := super().device_class:
+            return device_class
+
+        if self.unit_of_measurement:
             return guess_device_class_from_unit(self.unit_of_measurement)
 
-        return self.entity_descriptor.device_class
+        return None
+
+
+class RctPowerSensorEntity(RctPowerEntity, SensorEntity):
+    entity_description: "RctPowerSensorEntityDescription"
 
     @property
     def last_reset(self):
         """Return time of last reset, if any."""
-        if self.entity_descriptor.metered_reset == MeteredResetFrequency.NEVER:
+        if self.entity_description.metered_reset == MeteredResetFrequency.NEVER:
             return None
-        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.INITIALLY:
+        elif self.entity_description.metered_reset == MeteredResetFrequency.INITIALLY:
             return utc_from_timestamp(0)
-        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.DAILY:
+        elif self.entity_description.metered_reset == MeteredResetFrequency.DAILY:
             return start_of_local_day()
-        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.MONTHLY:
+        elif self.entity_description.metered_reset == MeteredResetFrequency.MONTHLY:
             return start_of_local_day().replace(day=1)
-        elif self.entity_descriptor.metered_reset == MeteredResetFrequency.YEARLY:
+        elif self.entity_description.metered_reset == MeteredResetFrequency.YEARLY:
             return start_of_local_day().replace(month=1, day=1)
 
 
@@ -201,7 +202,11 @@ class RctPowerInverterEntity(RctPowerEntity):
         )
 
 
-class RctPowerInverterFaultEntity(RctPowerInverterEntity):
+class RctPowerInverterSensorEntity(RctPowerInverterEntity, RctPowerSensorEntity):
+    pass
+
+
+class RctPowerInverterFaultEntity(RctPowerEntity):
     @property
     def fault_bitmasks(self):
         return [
@@ -228,6 +233,12 @@ class RctPowerInverterFaultEntity(RctPowerInverterEntity):
             **(super().extra_state_attributes),
             "fault_bitmasks": self.fault_bitmasks,
         }
+
+
+class RctPowerInverterFaultSensorEntity(
+    RctPowerInverterFaultEntity, RctPowerSensorEntity
+):
+    pass
 
 
 class RctPowerBatteryEntity(RctPowerEntity):
@@ -262,7 +273,7 @@ class RctPowerBatteryEntity(RctPowerEntity):
         )
 
 
-class RctPowerPowerSensorEntity(RctPowerEntity):
+class RctPowerBatterySensorEntity(RctPowerBatteryEntity, RctPowerSensorEntity):
     pass
 
 
@@ -283,66 +294,31 @@ class RctPowerAttributesEntity(RctPowerEntity):
                 object_info.name: self.get_valid_api_response_value_by_name(
                     object_info.name, None
                 )
-                for object_info in self.entity_descriptor.object_infos
+                for object_info in self.entity_description.object_infos
             },
         }
 
 
-class EntityUpdatePriority(Enum):
-    FREQUENT = auto()
-    INFREQUENT = auto()
-    STATIC = auto()
-
-
-class MeteredResetFrequency(Enum):
-    NEVER = auto()
-    INITIALLY = auto()
-    DAILY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
-
-
 @dataclass
-class EntityDescriptor:
-    object_names: List[str]
-    entity_name: Optional[str] = None
+class RctPowerEntityDescription(EntityDescription):
     icon: Optional[str] = ICON
     object_infos: List[ObjectInfo] = field(init=False)
-    entity_class: Type[RctPowerEntity] = RctPowerEntity
+    object_names: List[str] = field(default_factory=list)
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
-    state_class: Optional[Literal["measurement"]] = None
-    device_class: Optional[str] = None
-    metered_reset: Optional[MeteredResetFrequency] = MeteredResetFrequency.NEVER
 
     def __post_init__(self):
+        if not self.object_names:
+            self.object_names = [self.key]
         self.object_infos = [
             REGISTRY.get_by_name(object_name) for object_name in self.object_names
         ]
 
 
 @dataclass
-class BatteryEntityDescriptor(EntityDescriptor):
-    entity_class: Type[RctPowerEntity] = RctPowerBatteryEntity
-
-
-@dataclass
-class PowerSensorEntityDescriptor(EntityDescriptor):
-    entity_class: Type[RctPowerEntity] = RctPowerPowerSensorEntity
-
-
-@dataclass
-class InverterEntityDescriptor(EntityDescriptor):
-    entity_class: Type[RctPowerEntity] = RctPowerInverterEntity
-
-
-@dataclass
-class AttributesEntityDescriptor(EntityDescriptor):
-    entity_class: Type[RctPowerEntity] = RctPowerAttributesEntity
-
-
-@dataclass
-class FaultEntityDescriptor(EntityDescriptor):
-    pass
+class RctPowerSensorEntityDescription(
+    RctPowerEntityDescription, SensorEntityDescription
+):
+    metered_reset: Optional[MeteredResetFrequency] = MeteredResetFrequency.NEVER
 
 
 def slugify_entity_name(name: str):
