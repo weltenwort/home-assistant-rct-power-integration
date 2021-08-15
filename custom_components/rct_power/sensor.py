@@ -5,7 +5,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 
-from .lib.const import DOMAIN
 from .lib.context import RctPowerContext
 from .lib.entities import (
     battery_sensor_entity_descriptions,
@@ -25,9 +24,7 @@ async def async_setup_entry(
     async_add_entities: Callable[[List[Entity]], None],
 ):
     """Setup sensor platform."""
-    context = hass.data[DOMAIN][entry.entry_id]  # type: ignore
-
-    if not isinstance(context, RctPowerContext):
+    if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:
         return False
 
     battery_sensor_entities = [
