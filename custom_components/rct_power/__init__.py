@@ -7,7 +7,7 @@ https://github.com/weltenwort/rct-power
 import asyncio
 from datetime import timedelta
 import logging
-from typing import Callable, cast
+from typing import Any, Callable, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
@@ -21,7 +21,8 @@ from .lib.const import (
     STARTUP_MESSAGE,
 )
 from .lib.context import RctPowerContext
-from .lib.entities import known_entities
+from .lib.domain_data import get_domain_data
+from .lib.entities import all_entity_descriptions
 from .lib.entity import EntityUpdatePriority
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
@@ -38,8 +39,7 @@ async def async_setup(hass: HomeAssistant, config: Config):
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
-    if hass.data.get(DOMAIN) is None:
-        hass.data.setdefault(DOMAIN, {})
+    if len(domain_data := get_domain_data(hass)) == 0:
         _LOGGER.info(STARTUP_MESSAGE)
 
     config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
@@ -54,10 +54,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         logger=_LOGGER,
         name=f"{DOMAIN} {entry.unique_id} frequent",
         update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
-        entity_descriptors=[
-            entity_descriptor
-            for entity_descriptor in known_entities
-            if entity_descriptor.update_priority == EntityUpdatePriority.FREQUENT
+        object_ids=[
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.FREQUENT
+            for object_info in entity_description.object_infos
         ],
         client=client,
     )
@@ -69,10 +70,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         update_interval=timedelta(
             seconds=config_entry_options.infrequent_scan_interval
         ),
-        entity_descriptors=[
-            entity_descriptor
-            for entity_descriptor in known_entities
-            if entity_descriptor.update_priority == EntityUpdatePriority.INFREQUENT
+        object_ids=[
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
+            for object_info in entity_description.object_infos
         ],
         client=client,
     )
@@ -82,10 +84,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         logger=_LOGGER,
         name=f"{DOMAIN} {entry.unique_id} static",
         update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
-        entity_descriptors=[
-            entity_descriptor
-            for entity_descriptor in known_entities
-            if entity_descriptor.update_priority == EntityUpdatePriority.STATIC
+        object_ids=[
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.STATIC
+            for object_info in entity_description.object_infos
         ],
         client=client,
     )
@@ -104,19 +107,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     remove_update_listener = entry.add_update_listener(async_reload_entry)
 
     for platform in PLATFORMS:
-        hass.async_add_job(
+        hass.async_add_job(  # type: ignore
             cast(
-                Callable, hass.config_entries.async_forward_entry_setup(entry, platform)
+                Callable[[Any, Any], Any],
+                hass.config_entries.async_forward_entry_setup(entry, platform),
             )
         )
 
-    hass.data[DOMAIN][entry.entry_id] = RctPowerContext(
+    domain_data[entry.entry_id] = RctPowerContext(
         update_coordinators={
             EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
             EntityUpdatePriority.INFREQUENT: infrequent_update_coordinator,
             EntityUpdatePriority.STATIC: static_update_coordinator,
         },
-        entity_descriptors=known_entities,
         clean_up=remove_update_listener,
     )
 
@@ -125,10 +128,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-
-    context = hass.data[DOMAIN][entry.entry_id]
-
-    if not isinstance(context, RctPowerContext):
+    if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:
         return False
 
     unloaded = all(
@@ -142,7 +142,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if unloaded:
         context.clean_up()
-        hass.data[DOMAIN].pop(entry.entry_id)
+        context.remove_from_domain_data(hass, entry)
 
     return unloaded
 
