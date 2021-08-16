@@ -1,5 +1,8 @@
 """Constants for RCT Power."""
 # Base component constants
+from enum import Enum, auto
+
+
 NAME = "RCT Power"
 DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
@@ -39,3 +42,17 @@ If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
+
+
+class EntityUpdatePriority(Enum):
+    FREQUENT = auto()
+    INFREQUENT = auto()
+    STATIC = auto()
+
+
+class MeteredResetFrequency(Enum):
+    NEVER = auto()
+    INITIALLY = auto()
+    DAILY = auto()
+    MONTHLY = auto()
+    YEARLY = auto()

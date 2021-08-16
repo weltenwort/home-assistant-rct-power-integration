@@ -17,11 +17,11 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         name: str,
         logger: Logger,
         client: RctPowerApiClient,
-        entity_descriptors: List["EntityDescriptor"],
+        object_ids: List[int],
         update_interval: Optional[timedelta] = None,
     ) -> None:
         self.client = client
-        self.entity_descriptors = entity_descriptors
+        self.object_ids = object_ids
 
         super().__init__(
             hass=hass, logger=logger, name=name, update_interval=update_interval
@@ -42,16 +42,5 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     def has_valid_value(self, object_id: int):
         return isinstance(self.get_latest_response(object_id), ValidApiResponse)
 
-    @property
-    def object_ids(self):
-        return [
-            object_info.object_id
-            for entity_descriptor in self.entity_descriptors
-            for object_info in entity_descriptor.object_infos
-        ]
-
     async def _async_update_data(self):
         return await self.client.async_get_data(object_ids=self.object_ids)
-
-
-from .entity import EntityDescriptor  # noqa: E402

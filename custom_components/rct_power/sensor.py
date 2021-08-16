@@ -4,26 +4,18 @@ from typing import Callable, List
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
-from rctclient.types import DataType
 
-from .lib.const import DOMAIN
 from .lib.context import RctPowerContext
-from .lib.entity import (
-    AttributesEntityDescriptor,
+from .lib.entities import (
+    battery_sensor_entity_descriptions,
+    fault_sensor_entity_descriptions,
+    inverter_sensor_entity_descriptions,
 )
-
-
-SENSOR_DATA_TYPES = [
-    DataType.UINT8,
-    DataType.INT8,
-    DataType.UINT16,
-    DataType.INT16,
-    DataType.UINT32,
-    DataType.INT32,
-    DataType.ENUM,
-    DataType.FLOAT,
-    DataType.STRING,
-]
+from .lib.entity import (
+    RctPowerBatterySensorEntity,
+    RctPowerInverterFaultSensorEntity,
+    RctPowerInverterSensorEntity,
+)
 
 
 async def async_setup_entry(
@@ -32,23 +24,40 @@ async def async_setup_entry(
     async_add_entities: Callable[[List[Entity]], None],
 ):
     """Setup sensor platform."""
-    context = hass.data[DOMAIN][entry.entry_id]
-
-    if not isinstance(context, RctPowerContext):
+    if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:
         return False
+
+    battery_sensor_entities = [
+        RctPowerBatterySensorEntity(
+            coordinators=list(context.update_coordinators.values()),
+            config_entry=entry,
+            entity_description=entity_description,
+        )
+        for entity_description in battery_sensor_entity_descriptions
+    ]
+
+    inverter_sensor_entities = [
+        RctPowerInverterSensorEntity(
+            coordinators=list(context.update_coordinators.values()),
+            config_entry=entry,
+            entity_description=entity_description,
+        )
+        for entity_description in inverter_sensor_entity_descriptions
+    ]
+
+    inverter_fault_sensor_entities = [
+        RctPowerInverterFaultSensorEntity(
+            coordinators=list(context.update_coordinators.values()),
+            config_entry=entry,
+            entity_description=entity_description,
+        )
+        for entity_description in fault_sensor_entity_descriptions
+    ]
 
     async_add_entities(
         [
-            entity_descriptor.entity_class(
-                coordinators=list(context.update_coordinators.values()),
-                config_entry=entry,
-                entity_descriptor=entity_descriptor,
-            )
-            for entity_descriptor in context.entity_descriptors
-            if isinstance(entity_descriptor, AttributesEntityDescriptor)
-            or all(
-                info.response_data_type in SENSOR_DATA_TYPES
-                for info in entity_descriptor.object_infos
-            )
+            *battery_sensor_entities,
+            *inverter_sensor_entities,
+            *inverter_fault_sensor_entities,
         ]
     )
