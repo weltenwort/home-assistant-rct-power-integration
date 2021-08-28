@@ -280,16 +280,19 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         key="g_sync.p_ac[0]",
         name="Inverter Power P1",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac[1]",
         name="Inverter Power P2",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac[2]",
         name="Inverter Power P3",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac_load_sum_lp",
