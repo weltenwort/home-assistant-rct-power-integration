@@ -257,6 +257,11 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
+        key="is_struct.Riso",
+        name="Total Insulation Resistance",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
         key="inverter_sn",
         name="Inverter Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
