@@ -257,6 +257,26 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
+        key="iso_struct.Riso",
+        name="Insulation Resistance",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.r_min",
+        name="Minimum Insulation Resistance",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.Rn",
+        name="Insulation Resistance Negative Input",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.Rp",
+        name="Insulation Resistance Positive Input",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
         key="inverter_sn",
         name="Inverter Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
@@ -280,16 +300,19 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         key="g_sync.p_ac[0]",
         name="Inverter Power P1",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac[1]",
         name="Inverter Power P2",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac[2]",
         name="Inverter Power P3",
         state_class=STATE_CLASS_MEASUREMENT,
+        unit_of_measurement="W",
     ),
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac_load_sum_lp",
@@ -319,6 +342,21 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     RctPowerSensorEntityDescription(
         key="g_sync.p_ac_grid_sum_lp",
         name="Grid Power",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[0]",
+        name="Grid Power P1",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[1]",
+        name="Grid Power P2",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[2]",
+        name="Grid Power P3",
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(

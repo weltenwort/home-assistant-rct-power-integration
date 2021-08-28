@@ -1,4 +1,4 @@
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from numbers import Number
 from typing import Any, Dict, List, Optional
 
@@ -132,17 +132,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
     @property
     def extra_state_attributes(self) -> Dict[str, Any]:
-        api_responses = (
-            self.get_api_response_by_id(object_id) for object_id in self.object_ids
-        )
-
-        return {
-            "latest_api_responses": [
-                asdict(api_response)
-                for api_response in api_responses
-                if api_response is not None
-            ]
-        }
+        return {}
 
     @property
     def device_class(self):
