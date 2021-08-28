@@ -325,6 +325,21 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[0]",
+        name="Grid Power P1",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[1]",
+        name="Grid Power P2",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="g_sync.p_ac_sc[2]",
+        name="Grid Power P3",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
         key="rb485.f_grid[0]",
         name="Grid Frequency P1",
         state_class=STATE_CLASS_MEASUREMENT,
