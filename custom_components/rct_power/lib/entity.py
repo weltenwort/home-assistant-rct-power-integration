@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from numbers import Number
 from typing import Any, Dict, List, Optional
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
@@ -20,6 +19,7 @@ from .const import (
     ICON,
     INVERTER_MODEL,
     NAME,
+    NUMERIC_STATE_DECIMAL_DIGITS,
     EntityUpdatePriority,
     MeteredResetFrequency,
 )
@@ -118,8 +118,11 @@ class RctPowerEntity(MultiCoordinatorEntity):
         if isinstance(value, tuple):
             return None
 
-        if self.unit_of_measurement == "%" and isinstance(value, Number):
-            return value * 100
+        if isinstance(value, (int, float)) and self.unit_of_measurement == "%":
+            return round(value * 100, NUMERIC_STATE_DECIMAL_DIGITS)
+
+        if isinstance(value, (int, float)):
+            return round(value, NUMERIC_STATE_DECIMAL_DIGITS)
 
         return value
 
