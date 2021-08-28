@@ -257,8 +257,23 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
-        key="is_struct.Riso",
-        name="Total Insulation Resistance",
+        key="iso_struct.Riso",
+        name="Insulation Resistance",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.r_min",
+        name="Minimum Insulation Resistance",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.Rn",
+        name="Insulation Resistance Negative Input",
+        state_class=STATE_CLASS_MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        key="iso_struct.Rp",
+        name="Insulation Resistance Positive Input",
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
