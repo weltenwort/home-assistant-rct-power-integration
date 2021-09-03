@@ -134,6 +134,13 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
+        key="battery.used_energy",
+        name="Battery Used Energy",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
         key="battery.ah_capacity",
         name="Battery Charge Capacity",
         update_priority=EntityUpdatePriority.INFREQUENT,
