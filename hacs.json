@@ -3,5 +3,5 @@
   "hacs": "1.6.0",
   "domains": ["binary_sensor", "sensor"],
   "iot_class": "Local Polling",
-  "homeassistant": "0.118.0"
+  "homeassistant": "2021.9.0"
 }

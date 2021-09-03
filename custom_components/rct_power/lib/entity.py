@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
-from homeassistant.util.dt import start_of_local_day, utc_from_timestamp
 from rctclient.registry import REGISTRY, ObjectInfo
 
 from .api import (
@@ -13,16 +12,7 @@ from .api import (
     ValidApiResponse,
     get_valid_response_value_or,
 )
-from .const import (
-    BATTERY_MODEL,
-    DOMAIN,
-    ICON,
-    INVERTER_MODEL,
-    NAME,
-    NUMERIC_STATE_DECIMAL_DIGITS,
-    EntityUpdatePriority,
-    MeteredResetFrequency,
-)
+from .const import ICON, NUMERIC_STATE_DECIMAL_DIGITS, EntityUpdatePriority
 from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
@@ -108,25 +98,6 @@ class RctPowerEntity(MultiCoordinatorEntity):
         )
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
-        value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
-
-        if isinstance(value, bytes):
-            return value.hex()
-
-        if isinstance(value, tuple):
-            return None
-
-        if isinstance(value, (int, float)) and self.unit_of_measurement == "%":
-            return round(value * 100, NUMERIC_STATE_DECIMAL_DIGITS)
-
-        if isinstance(value, (int, float)):
-            return round(value, NUMERIC_STATE_DECIMAL_DIGITS)
-
-        return value
-
-    @property
     def unit_of_measurement(self):
         if unit_of_measurement := super().unit_of_measurement:
             return unit_of_measurement
@@ -148,58 +119,42 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
         return None
 
+    @property
+    def device_info(self):
+        return self.entity_description.get_device_info(self)
 
-class RctPowerSensorEntity(RctPowerEntity, SensorEntity):
+
+class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
     entity_description: "RctPowerSensorEntityDescription"
 
     @property
-    def last_reset(self):
-        """Return time of last reset, if any."""
-        if self.entity_description.metered_reset == MeteredResetFrequency.NEVER:
+    def native_value(self):
+        """Return the state of the sensor."""
+        value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
+
+        if isinstance(value, bytes):
+            return value.hex()
+
+        if isinstance(value, tuple):
             return None
-        elif self.entity_description.metered_reset == MeteredResetFrequency.INITIALLY:
-            return utc_from_timestamp(0)
-        elif self.entity_description.metered_reset == MeteredResetFrequency.DAILY:
-            return start_of_local_day()
-        elif self.entity_description.metered_reset == MeteredResetFrequency.MONTHLY:
-            return start_of_local_day().replace(day=1)
-        elif self.entity_description.metered_reset == MeteredResetFrequency.YEARLY:
-            return start_of_local_day().replace(month=1, day=1)
 
+        if isinstance(value, (int, float)) and self.native_unit_of_measurement == "%":
+            return round(value * 100, NUMERIC_STATE_DECIMAL_DIGITS)
 
-class RctPowerInverterEntity(RctPowerEntity):
+        if isinstance(value, (int, float)):
+            return round(value, NUMERIC_STATE_DECIMAL_DIGITS)
+
+        return value
+
     @property
-    def device_info(self):
-        inverter_sn = str(
-            self.get_valid_api_response_value_by_name("inverter_sn", None)
-        )
+    def native_unit_of_measurement(self):
+        if native_unit_of_measurement := super().native_unit_of_measurement:
+            return native_unit_of_measurement
 
-        return DeviceInfo(
-            identifiers={
-                (
-                    DOMAIN,
-                    "STORAGE",
-                    inverter_sn,
-                ),
-                (
-                    DOMAIN,
-                    inverter_sn,
-                ),
-            },  # type: ignore
-            name=str(
-                self.get_valid_api_response_value_by_name("android_description", ""),
-            ),
-            sw_version=str(self.get_valid_api_response_value_by_name("svnversion", "")),
-            model=INVERTER_MODEL,
-            manufacturer=NAME,
-        )
+        return self.object_infos[0].unit
 
 
-class RctPowerInverterSensorEntity(RctPowerInverterEntity, RctPowerSensorEntity):
-    pass
-
-
-class RctPowerInverterFaultEntity(RctPowerEntity):
+class RctPowerFaultSensorEntity(RctPowerSensorEntity):
     @property
     def fault_bitmasks(self):
         return [
@@ -208,7 +163,7 @@ class RctPowerInverterFaultEntity(RctPowerEntity):
         ]
 
     @property
-    def state(self):
+    def native_value(self):
         fault_bitmasks = self.fault_bitmasks
 
         if all(isinstance(bitmask, int) for bitmask in fault_bitmasks):
@@ -217,7 +172,7 @@ class RctPowerInverterFaultEntity(RctPowerEntity):
         return None
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         return None
 
     @property
@@ -228,76 +183,13 @@ class RctPowerInverterFaultEntity(RctPowerEntity):
         }
 
 
-class RctPowerInverterFaultSensorEntity(
-    RctPowerInverterFaultEntity, RctPowerSensorEntity
-):
-    pass
-
-
-class RctPowerBatteryEntity(RctPowerEntity):
-    @property
-    def device_info(self):
-        bms_sn = str(self.get_valid_api_response_value_by_name("battery.bms_sn", None))
-
-        return DeviceInfo(
-            identifiers={
-                (
-                    DOMAIN,
-                    "BATTERY",
-                    bms_sn,
-                ),
-                (
-                    DOMAIN,
-                    bms_sn,
-                ),
-            },  # type: ignore
-            name=f"Battery at {self.get_valid_api_response_value_by_name('android_description', '')}",
-            sw_version=str(
-                self.get_valid_api_response_value_by_name(
-                    "battery.bms_software_version", ""
-                )
-            ),
-            model=BATTERY_MODEL,
-            manufacturer=NAME,
-            via_device=(
-                DOMAIN,
-                str(self.get_valid_api_response_value_by_name("inverter_sn", None)),
-            ),
-        )
-
-
-class RctPowerBatterySensorEntity(RctPowerBatteryEntity, RctPowerSensorEntity):
-    pass
-
-
-class RctPowerAttributesEntity(RctPowerEntity):
-    @property
-    def state(self):
-        return f"{len(self.extra_state_attributes.keys())} attributes"
-
-    @property
-    def unit_of_measurement(self):
-        return None
-
-    @property
-    def extra_state_attributes(self):
-        return {
-            **(super().extra_state_attributes),
-            **{
-                object_info.name: self.get_valid_api_response_value_by_name(
-                    object_info.name, None
-                )
-                for object_info in self.entity_description.object_infos
-            },
-        }
-
-
 @dataclass
 class RctPowerEntityDescription(EntityDescription):
     icon: Optional[str] = ICON
     object_infos: List[ObjectInfo] = field(init=False)
     object_names: List[str] = field(default_factory=list)
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
+    get_device_info: Callable[[RctPowerEntity], Optional[DeviceInfo]] = lambda e: None
 
     def __post_init__(self):
         if not self.object_names:
@@ -311,7 +203,7 @@ class RctPowerEntityDescription(EntityDescription):
 class RctPowerSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
-    metered_reset: Optional[MeteredResetFrequency] = MeteredResetFrequency.NEVER
+    pass
 
 
 def slugify_entity_name(name: str):

@@ -12,9 +12,8 @@ from .lib.entities import (
     inverter_sensor_entity_descriptions,
 )
 from .lib.entity import (
-    RctPowerBatterySensorEntity,
-    RctPowerInverterFaultSensorEntity,
-    RctPowerInverterSensorEntity,
+    RctPowerFaultSensorEntity,
+    RctPowerSensorEntity,
 )
 
 
@@ -28,7 +27,7 @@ async def async_setup_entry(
         return False
 
     battery_sensor_entities = [
-        RctPowerBatterySensorEntity(
+        RctPowerSensorEntity(
             coordinators=list(context.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
@@ -37,7 +36,7 @@ async def async_setup_entry(
     ]
 
     inverter_sensor_entities = [
-        RctPowerInverterSensorEntity(
+        RctPowerSensorEntity(
             coordinators=list(context.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
@@ -45,8 +44,8 @@ async def async_setup_entry(
         for entity_description in inverter_sensor_entity_descriptions
     ]
 
-    inverter_fault_sensor_entities = [
-        RctPowerInverterFaultSensorEntity(
+    fault_sensor_entities = [
+        RctPowerFaultSensorEntity(
             coordinators=list(context.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
@@ -58,6 +57,6 @@ async def async_setup_entry(
         [
             *battery_sensor_entities,
             *inverter_sensor_entities,
-            *inverter_fault_sensor_entities,
+            *fault_sensor_entities,
         ]
     )
