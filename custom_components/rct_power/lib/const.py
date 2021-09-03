@@ -50,11 +50,3 @@ class EntityUpdatePriority(Enum):
     FREQUENT = auto()
     INFREQUENT = auto()
     STATIC = auto()
-
-
-class MeteredResetFrequency(Enum):
-    NEVER = auto()
-    INITIALLY = auto()
-    DAILY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
