@@ -97,6 +97,74 @@ depending on your preference.
 | Battery systems - Energy going into the battery    | `Battery Stored Energy` |
 | Battery systems - Energy coming out of the battery | `Battery Used Energy`   |
 
+## Most commonly used entities
+
+:warning: This list is incomplete and the interpretations might be incorrect due to a lack of official documentation.
+
+### Grid
+
+| Entity name                                  | Unit | Description                                                                      |
+| -------------------------------------------- | ---- | -------------------------------------------------------------------------------- |
+| Grid Frequency P1/P2/P3                      | Hz   | the instantaneous grid frequency on phase 1/2/3                                  |
+| Grid Power                                   | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the grid       |
+| Grid Power P1/P2/P3                          | W    | the instantaneous power consumed from or fed into the grid on phase 1/2/3        |
+| Grid Voltage P1/P2/P3                        | W    | the instantaneous grid voltage on phase 1/2/3                                    |
+| Grid Energy Consumption Day/Month/Year/Total | Wh   | the cumulative energy consumed from the grid                                     |
+| Grid Energy Production Day/Month/Year/Total  | Wh   | the cumulative energy fed into the grid                                          |
+| Grid Energy Production Absolute Total        | kWh  | the absolute value of the cumulative energy fed into the grid since installation |
+| Grid Maximum Feed Power                      | W    | the maximum power the inverter is configured to feed into the grid               |
+
+### Battery
+
+| Entity name                    | Unit | Description                                                                   |
+| ------------------------------ | ---- | ----------------------------------------------------------------------------- |
+| Battery Power                  | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the battery |
+| Battery Current                | A    | the instantaneous current flowing from or to the battery                      |
+| Battery Voltage                | V    | the instantaneous voltage of the battery                                      |
+| Battery Temperature            | °C   | the instantaneous temperature of the battery                                  |
+| Battery Cycles                 |      | the recorded full charge/discharge cycles of the battery                      |
+| Battery State of Charge        | %    | the instantaneous state of charge of the battery                              |
+| Battery State of Charge Target | %    | the state of charge of the battery aimed for by the system                    |
+| Battery State of Health        | %    | the estimated state of health of the battery                                  |
+| Battery Stored Energy          | Wh   | the cumulative energy fed into the battery                                    |
+| Battery Used Energy            | Wh   | the cumulative energy consumed from the battery                               |
+
+### Household consumers and producers
+
+| Entity name                                      | Unit | Description                                                            |
+| ------------------------------------------------ | ---- | ---------------------------------------------------------------------- |
+| Consumer Energy Consumption Day/Month/Year/Total | Wh   | the cumulative energy consumed by the household (from any source)      |
+| Consumer Power                                   | W    | the instantaneous power consumed by the household                      |
+| Consumer Power P1/P2/P3                          | W    | the instantaneous power consumed by the household on phase 1/2/3       |
+| External Energy Production Day/Month/Year/Total  | Wh   | the cumulative energy produced by the external producer (if installed) |
+
+### Photovoltaic generators
+
+| Entity name                                        | Unit | Description                                                           |
+| -------------------------------------------------- | ---- | --------------------------------------------------------------------- |
+| Generator A Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string A                  |
+| Generator B Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by generator string B                  |
+| All Generators Energy Production Total             | Wh   | the sum of the cumulative energy produced by both generator strings   |
+| Generator A Power                                  | W    | the instantaneous power produced by generator string A                |
+| Generator B Power                                  | W    | the instantaneous power produced by generator string B                |
+| All Generators Power                               | W    | the sum of the instantaneous power produced by both generator strings |
+| Generator A Voltage                                | V    | the instantaneous voltage produced by generator string A              |
+| Generator B Voltage                                | V    | the instantaneous voltage produced by generator string B              |
+| Generator Maximum Power                            | W    | the configured combined maximum power of both generator strings       |
+| Insulation Resistance                              | Ohm  |                                                                       |
+| Insulation Resistance Positive/Negative Input      | Ohm  |                                                                       |
+| Minimum Insulation Resistance                      | Ohm  |                                                                       |
+
+### Inverter
+
+| Entity name                                     | Unit | Description                                                   |
+| ----------------------------------------------- | ---- | ------------------------------------------------------------- |
+| Inverter AC Power                               | W    | the instantaneous AC power transmitted by the inverter        |
+| Inverter Energy Production Day/Month/Year/Total | Wh   | the cumulative energy produced by the inverter                |
+| Inverter Power P1/P2/P3                         | W    | the instantaneous power consumed or generated by the inverter |
+| Inverter Serial Number                          |      | the serial number of the inverter                             |
+| Faults                                          |      | a bitmask of the failures reported by the inverter            |
+
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
