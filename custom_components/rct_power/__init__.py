@@ -49,20 +49,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hostname=config_entry_data.hostname, port=config_entry_data.port
     )
 
+    frequently_updated_object_ids = list(
+        {
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.FREQUENT
+            for object_info in entity_description.object_infos
+        }
+    )
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
         name=f"{DOMAIN} {entry.unique_id} frequent",
         update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
-        object_ids=[
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.FREQUENT
-            for object_info in entity_description.object_infos
-        ],
+        object_ids=frequently_updated_object_ids,
         client=client,
     )
 
+    infrequently_updated_object_ids = list(
+        {
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
+            for object_info in entity_description.object_infos
+        }
+    )
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
@@ -70,26 +81,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         update_interval=timedelta(
             seconds=config_entry_options.infrequent_scan_interval
         ),
-        object_ids=[
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
-            for object_info in entity_description.object_infos
-        ],
+        object_ids=infrequently_updated_object_ids,
         client=client,
     )
 
+    static_object_ids = list(
+        {
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == EntityUpdatePriority.STATIC
+            for object_info in entity_description.object_infos
+        }
+    )
     static_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
         name=f"{DOMAIN} {entry.unique_id} static",
         update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
-        object_ids=[
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.STATIC
-            for object_info in entity_description.object_infos
-        ],
+        object_ids=static_object_ids,
         client=client,
     )
 

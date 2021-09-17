@@ -22,7 +22,7 @@ class RctPowerConfigEntryData:
         return cls(**config_entry.data)
 
     @classmethod
-    def from_user_input(cls, user_input):
+    def from_user_input(cls, user_input: object):
         valid_user_input = get_schema_for_dataclass(cls)(user_input)
 
         return cls(**valid_user_input)
