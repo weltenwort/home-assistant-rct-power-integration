@@ -705,7 +705,7 @@ fault_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
             "fault[3].flt",
         ],
         name="Faults",
-        unique_id="fault[0].flt",  # for backwards-compatibility
+        unique_id=f"{0x37F9D5CA}",  # for backwards-compatibility
     ),
 ]
 

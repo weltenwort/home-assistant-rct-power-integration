@@ -84,7 +84,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
         # this allows for keeping the entity identity stable for existing
         # sensors when the algorithm below changes
         if uid := self.entity_description.unique_id:
-            return uid
+            return f"{self.config_entry.entry_id}-{uid}"
 
         object_ids = [str(object_id) for object_id in self.object_ids]
         return "-".join([self.config_entry.entry_id, *object_ids])
