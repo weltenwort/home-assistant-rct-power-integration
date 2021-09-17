@@ -10,6 +10,10 @@ from rctclient.registry import REGISTRY
 
 from .device_info_helpers import get_battery_device_info, get_inverter_device_info
 from .entity import EntityUpdatePriority, RctPowerSensorEntityDescription
+from .state_helpers import (
+    get_first_api_reponse_value_as_absolute_state,
+    sum_api_response_values_as_state,
+)
 
 
 def get_matching_names(expression: str):
@@ -548,6 +552,16 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
+        key="energy.e_grid_feed_absolute_total",
+        unique_id="energy.e_grid_feed_absolute_total",  # to avoid collision
+        object_names=["energy.e_grid_feed_total"],
+        name="Grid Energy Production Absolute Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
+        get_native_value=get_first_api_reponse_value_as_absolute_state,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
         key="energy.e_grid_load_day",
         name="Grid Energy Consumption Day",
         update_priority=EntityUpdatePriority.INFREQUENT,
@@ -658,6 +672,15 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="energy.e_dc_total",
+        object_names=["energy.e_dc_total[0]", "energy.e_dc_total[1]"],
+        name="All Generators Energy Production Total",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
+        get_native_value=sum_api_response_values_as_state,
+    ),
 ]
 
 fault_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
@@ -671,6 +694,7 @@ fault_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
             "fault[3].flt",
         ],
         name="Faults",
+        unique_id="fault[0].flt",  # for backwards-compatibility
     ),
 ]
 
