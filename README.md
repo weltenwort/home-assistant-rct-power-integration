@@ -22,6 +22,13 @@
 
 ## Installation
 
+### Via the HACS integration
+
+1. Install the "RCT Power" integration using [HACS].
+2. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "RCT Power"
+
+### Via manual download
+
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `rct_power`.
@@ -30,9 +37,19 @@
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "RCT Power"
 
-## Configuration is done in the UI
+## Configuration
 
-<!---->
+Upon installation the integration accepts the following configuration parameters:
+
+- `Host name`: The local IP address or host name of the inverter.
+- `Port`: The port of the inverter's API, defaults to `8899`.
+- `Name`: This name is used as a prefix to the entities created by this integration and can be used to disambiguate multiple inverters.
+
+After installation the integration allows for the following configuration parameters to be changed:
+
+- `Frequent polling interval`: The polling interval in seconds for entities updated frequently, defaults to `30`.
+- `Infrequent polling interval`: The polling interval in seconds for entities updated infrequently, defaults to `180`.
+- `Static polling interval`: The polling interval in seconds for entities updated seldomly, defaults to `3600`.
 
 ## Contributions are welcome!
 
