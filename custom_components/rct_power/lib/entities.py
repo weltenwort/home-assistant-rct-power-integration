@@ -302,6 +302,17 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
+        key="dc_conv.dc_conv_struct.p_dc",
+        object_names=[
+            "dc_conv.dc_conv_struct[0].p_dc",
+            "dc_conv.dc_conv_struct[1].p_dc",
+        ],
+        name="All Generators Power",
+        state_class=STATE_CLASS_MEASUREMENT,
+        get_native_value=sum_api_response_values_as_state,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
         key="dc_conv.start_voltage",
         name="Inverter DC Start Voltage",
         update_priority=EntityUpdatePriority.STATIC,
