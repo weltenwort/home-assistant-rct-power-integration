@@ -51,6 +51,52 @@ After installation the integration allows for the following configuration parame
 - `Infrequent polling interval`: The polling interval in seconds for entities updated infrequently, defaults to `180`.
 - `Static polling interval`: The polling interval in seconds for entities updated seldomly, defaults to `3600`.
 
+## Usage with the built-in energy dashboard
+
+You can use the entities provided by this integration on Home Assistant's
+built-in energy dashboard. For that purpose, navigate to "Configuration" ->
+"Energy" and choose the following entities.
+
+Please note that the entity names in your installation are prefixed with the
+inverter name chosen during installation of the integration, so interpret the
+entity names mentioned below to be entity name suffixes.
+
+Also note that after configuration the energy dashboard might take several hours
+to show any data, because Home Assistant calculates the underlying statistics
+only on an hourly basis.
+
+### Electricity grid
+
+| Configuration item | Entity name                             | Note                                                   |
+| ------------------ | --------------------------------------- | ------------------------------------------------------ |
+| Grid consumption   | `Grid Energy Consumption Total`         |                                                        |
+| Return to grid     | `Grid Energy Production Absolute Total` | Make sure to use the "Absolute" variant of this entity |
+
+### Solar panels
+
+You can configure the two generator strings A and B separately or combined
+depending on your preference.
+
+#### Separate generator strings
+
+| Configuration item | Entity name                           |
+| ------------------ | ------------------------------------- |
+| Solar Production   | `Generator A Energy Production Total` |
+| Solar Production   | `Generator B Energy Production Total` |
+
+#### Combined generator strings
+
+| Configuration item | Entity name                              |
+| ------------------ | ---------------------------------------- |
+| Solar Production   | `All Generators Energy Production Total` |
+
+### Home Battery Storage
+
+| Configuration item                                 | Entity name             |
+| -------------------------------------------------- | ----------------------- |
+| Battery systems - Energy going into the battery    | `Battery Stored Energy` |
+| Battery systems - Energy coming out of the battery | `Battery Used Energy`   |
+
 ## Contributions are welcome!
 
 If you want to contribute to this please read the [Contribution guidelines](CONTRIBUTING.md)
