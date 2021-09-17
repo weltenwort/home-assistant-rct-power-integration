@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Optional
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
+from homeassistant.helpers.typing import StateType
 from rctclient.registry import REGISTRY, ObjectInfo
 
 from .api import (
@@ -12,10 +13,11 @@ from .api import (
     ValidApiResponse,
     get_valid_response_value_or,
 )
-from .const import ICON, NUMERIC_STATE_DECIMAL_DIGITS, EntityUpdatePriority
+from .const import ICON, EntityUpdatePriority
 from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
+from .state_helpers import get_first_api_response_value_as_state
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
@@ -79,7 +81,13 @@ class RctPowerEntity(MultiCoordinatorEntity):
     @property
     def unique_id(self):
         """Return a unique ID to use for this entity."""
-        return f"{self.config_entry.entry_id}-{self.object_infos[0].object_id}"
+        # this allows for keeping the entity identity stable for existing
+        # sensors when the algorithm below changes
+        if uid := self.entity_description.unique_id:
+            return uid
+
+        object_ids = [str(object_id) for object_id in self.object_ids]
+        return "-".join([self.config_entry.entry_id, *object_ids])
 
     @property
     def name(self):
@@ -129,22 +137,11 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
-        value = self.get_valid_api_response_value_by_id(self.object_ids[0], None)
-
-        if isinstance(value, bytes):
-            return value.hex()
-
-        if isinstance(value, tuple):
-            return None
-
-        if isinstance(value, (int, float)) and self.native_unit_of_measurement == "%":
-            return round(value * 100, NUMERIC_STATE_DECIMAL_DIGITS)
-
-        if isinstance(value, (int, float)):
-            return round(value, NUMERIC_STATE_DECIMAL_DIGITS)
-
-        return value
+        values = [
+            self.get_valid_api_response_value_by_id(object_id, None)
+            for object_id in self.object_ids
+        ]
+        return self.entity_description.get_native_value(self, values)
 
     @property
     def native_unit_of_measurement(self):
@@ -188,6 +185,8 @@ class RctPowerEntityDescription(EntityDescription):
     icon: Optional[str] = ICON
     object_infos: List[ObjectInfo] = field(init=False)
     object_names: List[str] = field(default_factory=list)
+    # to allow for stable enitity identities even if the object ids change
+    unique_id: Optional[str] = None
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
     get_device_info: Callable[[RctPowerEntity], Optional[DeviceInfo]] = lambda e: None
 
@@ -203,7 +202,9 @@ class RctPowerEntityDescription(EntityDescription):
 class RctPowerSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
-    pass
+    get_native_value: Callable[
+        [RctPowerSensorEntity, list[Optional[ApiResponseValue]]], StateType
+    ] = get_first_api_response_value_as_state
 
 
 def slugify_entity_name(name: str):
