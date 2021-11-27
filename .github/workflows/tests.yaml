@@ -60,7 +60,6 @@ jobs:
         uses: "hacs/action@21.11.0"
         with:
           category: "integration"
-          ignore: brands
 
   hassfest:
     runs-on: "ubuntu-latest"
