@@ -3,6 +3,7 @@ from typing import List
 
 from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL,
     STATE_CLASS_TOTAL_INCREASING,
 )
 from homeassistant.const import DEVICE_CLASS_BATTERY
@@ -538,28 +539,28 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         key="energy.e_grid_feed_day",
         name="Grid Energy Production Day",
         update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=STATE_CLASS_TOTAL_INCREASING,
+        state_class=STATE_CLASS_TOTAL,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="energy.e_grid_feed_month",
         name="Grid Energy Production Month",
         update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=STATE_CLASS_TOTAL_INCREASING,
+        state_class=STATE_CLASS_TOTAL,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="energy.e_grid_feed_year",
         name="Grid Energy Production Year",
         update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=STATE_CLASS_TOTAL_INCREASING,
+        state_class=STATE_CLASS_TOTAL,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="energy.e_grid_feed_total",
         name="Grid Energy Production Total",
         update_priority=EntityUpdatePriority.INFREQUENT,
-        state_class=STATE_CLASS_TOTAL_INCREASING,
+        state_class=STATE_CLASS_TOTAL,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
