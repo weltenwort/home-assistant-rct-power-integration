@@ -1,9 +1,4 @@
 from homeassistant.const import (
-    DEVICE_CLASS_CURRENT,
-    DEVICE_CLASS_ENERGY,
-    DEVICE_CLASS_POWER,
-    DEVICE_CLASS_TEMPERATURE,
-    DEVICE_CLASS_VOLTAGE,
     ELECTRIC_CURRENT_AMPERE,
     ELECTRIC_CURRENT_MILLIAMPERE,
     ELECTRIC_POTENTIAL_MILLIVOLT,
@@ -18,27 +13,29 @@ from homeassistant.const import (
     TEMP_KELVIN,
 )
 
+from homeassistant.components.sensor import SensorDeviceClass
+
 
 def guess_device_class_from_unit(unit: str):
     if unit in [TEMP_CELSIUS, TEMP_FAHRENHEIT, TEMP_KELVIN]:
-        return DEVICE_CLASS_TEMPERATURE
+        return SensorDeviceClass.TEMPERATURE
     elif unit in [
         ELECTRIC_POTENTIAL_VOLT,
         ELECTRIC_POTENTIAL_MILLIVOLT,
     ]:
-        return DEVICE_CLASS_VOLTAGE
+        return SensorDeviceClass.VOLTAGE
     elif unit in [
         ELECTRIC_CURRENT_AMPERE,
         ELECTRIC_CURRENT_MILLIAMPERE,
     ]:
-        return DEVICE_CLASS_CURRENT
+        return SensorDeviceClass.CURRENT
     elif unit in [
         POWER_WATT,
         POWER_KILO_WATT,
         POWER_VOLT_AMPERE,
     ]:
-        return DEVICE_CLASS_POWER
+        return SensorDeviceClass.POWER
     elif unit in [ENERGY_KILO_WATT_HOUR, ENERGY_WATT_HOUR]:
-        return DEVICE_CLASS_ENERGY
+        return SensorDeviceClass.ENERGY
 
     return None
