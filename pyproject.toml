@@ -9,14 +9,14 @@ license = "MIT"
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
-async_timeout = "^3.0.1"
+async_timeout = "^4.0.0"
 black = "^21.11b1"
 flake8 = "^4.0.1"
-homeassistant = "^2021.11.3"
+homeassistant = "^2021.12.1"
 pre-commit = "^2.16.0"
 rctclient = "^0.0.3"
 reorder-python-imports = "^2.6.0"
-pytest-homeassistant-custom-component = "^0.4.10"
+pytest-homeassistant-custom-component = "^0.5.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

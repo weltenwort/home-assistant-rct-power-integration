@@ -117,6 +117,14 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return {}
 
     @property
+    def device_info(self):
+        return self.entity_description.get_device_info(self)
+
+
+class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
+    entity_description: "RctPowerSensorEntityDescription"
+
+    @property
     def device_class(self):
         """Return the device class of the sensor."""
         if device_class := super().device_class:
@@ -126,14 +134,6 @@ class RctPowerEntity(MultiCoordinatorEntity):
             return guess_device_class_from_unit(self.unit_of_measurement)
 
         return None
-
-    @property
-    def device_info(self):
-        return self.entity_description.get_device_info(self)
-
-
-class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
-    entity_description: "RctPowerSensorEntityDescription"
 
     @property
     def native_value(self):
