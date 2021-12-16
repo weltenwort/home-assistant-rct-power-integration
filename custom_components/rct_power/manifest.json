@@ -8,5 +8,5 @@
   "config_flow": true,
   "codeowners": ["@weltenwort"],
   "requirements": ["rctclient==0.0.3"],
-  "version": "0.8.2"
+  "version": "0.9.0"
 }
