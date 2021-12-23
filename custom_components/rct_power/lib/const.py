@@ -44,6 +44,7 @@ If you have any issues with this you need to open an issue here:
 """
 
 NUMERIC_STATE_DECIMAL_DIGITS = 1
+FREQUENCY_STATE_DECIMAL_DIGITS = 3
 
 
 class EntityUpdatePriority(Enum):

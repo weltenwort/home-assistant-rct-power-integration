@@ -4,7 +4,7 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
 
 from .api import ApiResponseValue
-from .const import NUMERIC_STATE_DECIMAL_DIGITS
+from .const import FREQUENCY_STATE_DECIMAL_DIGITS, NUMERIC_STATE_DECIMAL_DIGITS
 
 
 def get_first_api_response_value_as_state(
@@ -29,6 +29,9 @@ def get_api_response_value_as_state(
 
     if isinstance(value, (int, float)) and entity.native_unit_of_measurement == "%":
         return round(value * 100, NUMERIC_STATE_DECIMAL_DIGITS)
+
+    if isinstance(value, (int, float)) and entity.native_unit_of_measurement == "Hz":
+        return round(value, FREQUENCY_STATE_DECIMAL_DIGITS)
 
     if isinstance(value, (int, float)):
         return round(value, NUMERIC_STATE_DECIMAL_DIGITS)
