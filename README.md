@@ -105,6 +105,7 @@ depending on your preference.
 
 | Entity name                                  | Unit | Description                                                                      |
 | -------------------------------------------- | ---- | -------------------------------------------------------------------------------- |
+| Grid Frequency                               | Hz   | the instantaneous overall grid frequency                                         |
 | Grid Frequency P1/P2/P3                      | Hz   | the instantaneous grid frequency on phase 1/2/3                                  |
 | Grid Power                                   | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the grid       |
 | Grid Power P1/P2/P3                          | W    | the instantaneous power consumed from or fed into the grid on phase 1/2/3        |
