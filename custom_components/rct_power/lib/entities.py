@@ -439,6 +439,12 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
+        key="grid_pll[0].f",
+        name="Grid Frequency",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
         key="rb485.f_grid[0]",
         name="Grid Frequency P1",
         state_class=SensorStateClass.MEASUREMENT,
