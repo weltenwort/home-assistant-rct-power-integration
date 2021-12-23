@@ -5,8 +5,8 @@ from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
     STATE_CLASS_TOTAL,
     STATE_CLASS_TOTAL_INCREASING,
+    SensorDeviceClass,
 )
-from homeassistant.const import DEVICE_CLASS_BATTERY
 from rctclient.registry import REGISTRY
 
 from .device_info_helpers import get_battery_device_info, get_inverter_device_info
@@ -157,7 +157,7 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Battery State of Charge",
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=STATE_CLASS_MEASUREMENT,
-        device_class=DEVICE_CLASS_BATTERY,
+        device_class=SensorDeviceClass.BATTERY,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
