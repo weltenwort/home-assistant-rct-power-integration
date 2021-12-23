@@ -6,7 +6,7 @@ from enum import Enum, auto
 NAME = "RCT Power"
 DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.9.1"
+VERSION = "0.9.2"
 
 ISSUE_URL = "https://github.com/weltenwort/rct-power/issues"
 
