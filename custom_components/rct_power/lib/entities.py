@@ -437,7 +437,6 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Grid Power P3",
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="rb485.f_grid[0]",
