@@ -48,11 +48,11 @@ trio = ["trio (>=0.16)"]
 
 [[package]]
 name = "aspy.refactor-imports"
-version = "2.2.0"
+version = "2.2.1"
 description = "Utilities for refactoring imports in python-like syntax."
 category = "dev"
 optional = false
-python-versions = ">=3.6.1"
+python-versions = ">=3.7"
 
 [package.dependencies]
 cached-property = "*"
@@ -960,14 +960,14 @@ tests = ["mypy", "pylint", "pytest", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "reorder-python-imports"
-version = "2.7.0"
+version = "2.7.1"
 description = "Tool for reordering python imports"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-"aspy.refactor-imports" = ">=2.1.0"
+"aspy.refactor-imports" = ">=2.2.1"
 
 [[package]]
 name = "requests"
@@ -1240,7 +1240,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d86784f59c890de045476b054d482f4d8524f569068f91efa4585b791bbbb358"
+content-hash = "9e368840cbd2982f1ddb3dfffb810d8562e8cb8f247eb5fd91dbb8e8e7341e2e"
 
 [metadata.files]
 aiohttp = [
@@ -1326,8 +1326,8 @@ anyio = [
     {file = "anyio-3.4.0.tar.gz", hash = "sha256:24adc69309fb5779bc1e06158e143e0b6d2c56b302a3ac3de3083c705a6ed39d"},
 ]
 "aspy.refactor-imports" = [
-    {file = "aspy.refactor_imports-2.2.0-py2.py3-none-any.whl", hash = "sha256:7a18039d2e8be6b02b4791ce98891deb46b459b575c52ed35ab818c4eaa0c098"},
-    {file = "aspy.refactor_imports-2.2.0.tar.gz", hash = "sha256:78ca24122963fd258ebfc4a8dc708d23a18040ee39dca8767675821e84e9ea0a"},
+    {file = "aspy.refactor_imports-2.2.1-py2.py3-none-any.whl", hash = "sha256:ace9ca78abf6cfdd20ea1a321b75b20c8cc2c1af58aecb9dc4ba9d6f70f74645"},
+    {file = "aspy.refactor_imports-2.2.1.tar.gz", hash = "sha256:f5b2fcbf9fd68361168588f14eda64d502d029eefe632d15094cd0683ae12984"},
 ]
 astral = [
     {file = "astral-2.2-py2.py3-none-any.whl", hash = "sha256:b9ef70faf32e81a8ba174d21e8f29dc0b53b409ef035f27e0749ddc13cb5982a"},
@@ -2101,8 +2101,8 @@ rctclient = [
     {file = "rctclient-0.0.3.tar.gz", hash = "sha256:d0b64b374d16d8c5f5d276020b7aec351cdd5d5636e1992b443cd335fbefa553"},
 ]
 reorder-python-imports = [
-    {file = "reorder_python_imports-2.7.0-py2.py3-none-any.whl", hash = "sha256:76ac259aa8ada10808a63c6816087c84aec6334c2049a5049e80b74cac575f43"},
-    {file = "reorder_python_imports-2.7.0.tar.gz", hash = "sha256:8f6e8ea23905058f964d12a03b7dfb1227d11a877c2d1db0535039a10b568cbb"},
+    {file = "reorder_python_imports-2.7.1-py2.py3-none-any.whl", hash = "sha256:5477c008cd7a5f2dbe32a35e90d74b5a3427468731441f033034310e427143a3"},
+    {file = "reorder_python_imports-2.7.1.tar.gz", hash = "sha256:1ae34422f13f5a4b4669f340774909d721bfc0a8311973c70b3a50540b595bc5"},
 ]
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
