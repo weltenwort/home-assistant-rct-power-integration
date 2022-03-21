@@ -55,4 +55,8 @@ def sum_api_response_values_as_state(
     entity: SensorEntity,
     values: list[Optional[ApiResponseValue]],
 ) -> StateType:
-    return sum(value for value in values if isinstance(value, (int, float)))
+    return sum(
+        get_api_response_value_as_state(entity, value)
+        for value in values
+        if isinstance(value, (int, float))
+    )
