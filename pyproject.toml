@@ -12,11 +12,11 @@ python = "^3.9"
 async_timeout = "^4.0.0"
 black = "^22.3"
 flake8 = "^4.0.1"
-homeassistant = "^2021.12.1"
-pre-commit = "^2.17.0"
+homeassistant = "^2022.5.2"
+pre-commit = "^2.19.0"
 rctclient = "^0.0.3"
-reorder-python-imports = "^3.0.1"
-pytest-homeassistant-custom-component = "^0.5.5"
+reorder-python-imports = "^3.1.0"
+pytest-homeassistant-custom-component = "^0.9.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
