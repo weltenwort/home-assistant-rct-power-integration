@@ -130,8 +130,8 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
         if device_class := super().device_class:
             return device_class
 
-        if self.unit_of_measurement:
-            return guess_device_class_from_unit(self.unit_of_measurement)
+        if self.native_unit_of_measurement:
+            return guess_device_class_from_unit(self.native_unit_of_measurement)
 
         return None
 
