@@ -1,7 +1,5 @@
 {
   "name": "RCT Power",
   "hacs": "1.6.0",
-  "domains": ["binary_sensor", "sensor"],
-  "iot_class": "Local Polling",
   "homeassistant": "2021.12.0"
 }
