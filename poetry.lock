@@ -193,7 +193,7 @@ python-versions = "*"
 
 [[package]]
 name = "classify-imports"
-version = "4.0.2"
+version = "4.1.0"
 description = "Utilities for refactoring imports in python-like syntax."
 category = "dev"
 optional = false
@@ -951,14 +951,14 @@ tests = ["mypy", "pylint", "pytest", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "reorder-python-imports"
-version = "3.3.0"
+version = "3.8.1"
 description = "Tool for reordering python imports"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-classify-imports = "*"
+classify-imports = ">=4.1"
 
 [[package]]
 name = "requests"
@@ -1210,7 +1210,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "899b664f2f56e6cad49e7189944377f249a74875a4c9bdc83a17d764437e3e0d"
+content-hash = "b83187f45b7c0ff672c1656015cbc637063b1bacbcfdaa1b17f80eb69d50c21b"
 
 [metadata.files]
 aiohttp = []
