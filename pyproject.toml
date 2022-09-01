@@ -10,7 +10,7 @@ python = "^3.9"
 
 [tool.poetry.dev-dependencies]
 async_timeout = "^4.0.0"
-black = "^22.6"
+black = "^22.8"
 flake8 = "^5.0.4"
 homeassistant = "^2022.6.5"
 pre-commit = "^2.20.0"
