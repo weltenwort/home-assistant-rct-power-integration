@@ -961,7 +961,7 @@ tests = ["mypy", "pylint", "pytest", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "reorder-python-imports"
-version = "3.8.2"
+version = "3.9.0"
 description = "Tool for reordering python imports"
 category = "dev"
 optional = false
@@ -1233,7 +1233,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5ca689dcd3f4a1c1d10957e9c18a6b14d7b879e96e102f76d0ad698fbdd46837"
+content-hash = "886f1568e2c6029fa1d50479429f7ddc75ea59185bc9a43d83ce0b69b018e7fa"
 
 [metadata.files]
 aiohttp = [
@@ -2040,8 +2040,8 @@ rctclient = [
     {file = "rctclient-0.0.3.tar.gz", hash = "sha256:d0b64b374d16d8c5f5d276020b7aec351cdd5d5636e1992b443cd335fbefa553"},
 ]
 reorder-python-imports = [
-    {file = "reorder_python_imports-3.8.2-py2.py3-none-any.whl", hash = "sha256:c362190fc61f28c9ed3657de0ae702694ce97f90da54617716b23d70b4d4771c"},
-    {file = "reorder_python_imports-3.8.2.tar.gz", hash = "sha256:bc5bd5e01548423fdcf62da767b28d5df6e613b03f9f795438f72b08b75dfba8"},
+    {file = "reorder_python_imports-3.9.0-py2.py3-none-any.whl", hash = "sha256:3f9c16e8781f54c944756d0d1eb34a8c863554f7a4eb3693f574fe19b1a29b56"},
+    {file = "reorder_python_imports-3.9.0.tar.gz", hash = "sha256:49292ed537829a6bece9fb3746fc1bbe98f52643be5de01a4e13680268a5b0ec"},
 ]
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
