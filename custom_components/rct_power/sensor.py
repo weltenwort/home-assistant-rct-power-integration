@@ -8,10 +8,12 @@ from homeassistant.helpers.entity import Entity
 from .lib.context import RctPowerContext
 from .lib.entities import (
     battery_sensor_entity_descriptions,
+    battery_binary_sensor_entity_descriptions,
     fault_sensor_entity_descriptions,
     inverter_sensor_entity_descriptions,
 )
 from .lib.entity import (
+    RctPowerBinarySensorEntity,
     RctPowerFaultSensorEntity,
     RctPowerSensorEntity,
 )
@@ -35,6 +37,15 @@ async def async_setup_entry(
         for entity_description in battery_sensor_entity_descriptions
     ]
 
+    battery_binary_sensor_entities = [
+        RctPowerBinarySensorEntity(
+            coordinators=list(context.update_coordinators.values()),
+            config_entry=entry,
+            entity_description=entity_description,
+        )
+        for entity_description in battery_binary_sensor_entity_descriptions
+    ]
+
     inverter_sensor_entities = [
         RctPowerSensorEntity(
             coordinators=list(context.update_coordinators.values()),
@@ -56,6 +67,7 @@ async def async_setup_entry(
     async_add_entities(
         [
             *battery_sensor_entities,
+            *battery_binary_sensor_entities,
             *inverter_sensor_entities,
             *fault_sensor_entities,
         ]

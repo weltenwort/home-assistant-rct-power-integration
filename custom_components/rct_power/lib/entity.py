@@ -2,6 +2,10 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.binary_sensor import (
+    BinarySensorEntity,
+    BinarySensorEntityDescription,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
 from homeassistant.helpers.typing import StateType
@@ -17,7 +21,10 @@ from .const import ICON, EntityUpdatePriority
 from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
-from .state_helpers import get_first_api_response_value_as_state
+from .state_helpers import (
+    get_first_api_response_value_as_state,
+    get_first_api_response_value_as_binary_state,
+)
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
@@ -121,6 +128,30 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return self.entity_description.get_device_info(self)
 
 
+class RctPowerBinarySensorEntity(BinarySensorEntity, RctPowerEntity):
+    entity_description: "RctPowerBinarySensorEntityDescription"
+
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        if device_class := super().device_class:
+            return device_class
+
+        return None
+
+    @property
+    def native_value(self):
+        values = [
+            self.get_valid_api_response_value_by_id(object_id, None)
+            for object_id in self.object_ids
+        ]
+        return self.entity_description.get_native_binary_value(self, values)
+
+    @property
+    def is_on(self):
+        return self.native_value
+
+
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
     entity_description: "RctPowerSensorEntityDescription"
 
@@ -196,6 +227,15 @@ class RctPowerEntityDescription(EntityDescription):
         self.object_infos = [
             REGISTRY.get_by_name(object_name) for object_name in self.object_names
         ]
+
+
+@dataclass
+class RctPowerBinarySensorEntityDescription(
+    RctPowerEntityDescription, BinarySensorEntityDescription
+):
+    get_native_binary_value: Callable[
+        [RctPowerBinarySensorEntity, list[Optional[ApiResponseValue]]], StateType
+    ] = get_first_api_response_value_as_binary_state
 
 
 @dataclass

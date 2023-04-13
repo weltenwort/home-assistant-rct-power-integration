@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Optional, Union
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import Entity, SensorEntity
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.typing import StateType
 
 from .api import ApiResponseValue
@@ -60,3 +61,48 @@ def sum_api_response_values_as_state(
         for value in values
         if isinstance(value, (int, float))
     )
+
+
+def get_first_api_response_value_as_binary_state(
+    entity: BinarySensorEntity,
+    values: list[Optional[ApiResponseValue]],
+) -> Union[None, bool]:
+    if len(values) <= 0:
+        return None
+
+    return get_api_response_value_as_binary_state(entity=entity, value=values[0])
+
+
+def get_api_response_value_as_binary_state(
+    entity: BinarySensorEntity,
+    value: Optional[ApiResponseValue],
+) -> Union[None, bool]:
+    if value is None:
+        return None
+    return bool(value)
+
+
+def get_battery_calibration_status(
+    entity: BinarySensorEntity,
+    values: list[Optional[ApiResponseValue]],
+) -> Union[None, bool]:
+    if len(values) <= 0:
+        return None
+    value = values[0]
+
+    if isinstance(value, int):
+        return value & 1032 != 0
+    return None
+
+
+def get_battery_balancing_status(
+    entity: BinarySensorEntity,
+    values: list[Optional[ApiResponseValue]],
+) -> Union[None, bool]:
+    if len(values) <= 0:
+        return None
+    value = values[0]
+
+    if isinstance(value, int):
+        return value & 2048 != 0
+    return None

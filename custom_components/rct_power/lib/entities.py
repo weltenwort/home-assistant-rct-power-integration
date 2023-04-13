@@ -5,10 +5,16 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from rctclient.registry import REGISTRY
 
 from .device_info_helpers import get_battery_device_info, get_inverter_device_info
-from .entity import EntityUpdatePriority, RctPowerSensorEntityDescription
+from .entity import (
+    EntityUpdatePriority,
+    RctPowerSensorEntityDescription,
+    RctPowerBinarySensorEntityDescription,
+)
 from .state_helpers import (
     get_first_api_reponse_value_as_absolute_state,
     sum_api_response_values_as_state,
+    get_battery_calibration_status,
+    get_battery_balancing_status,
 )
 
 
@@ -188,6 +194,31 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Battery Cycles",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+]
+
+battery_binary_sensor_entity_descriptions: List[
+    RctPowerBinarySensorEntityDescription
+] = [
+    RctPowerBinarySensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="battery.bat_status.calibrating",
+        object_names=["battery.bat_status"],
+        name="Battery Is Calibrating",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        get_native_binary_value=get_battery_calibration_status,
+    ),
+    RctPowerBinarySensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="battery.bat_status.balancing",
+        # 'battery.status2' is not required here, this is just a hack
+        # so that this entity's generated id doesn't conflict with
+        # "battery.bat_status.calibrating"
+        # changing the id generation scheme would break existing installations
+        object_names=["battery.bat_status", "battery.status2"],
+        name="Battery Is Balancing",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        get_native_binary_value=get_battery_balancing_status,
     ),
 ]
 
@@ -717,4 +748,9 @@ sensor_entity_descriptions = [
     *fault_sensor_entity_descriptions,
 ]
 
-all_entity_descriptions = [*sensor_entity_descriptions]
+binary_sensor_entity_descriptions = [*battery_binary_sensor_entity_descriptions]
+
+all_entity_descriptions = [
+    *sensor_entity_descriptions,
+    *binary_sensor_entity_descriptions,
+]
