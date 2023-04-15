@@ -8,7 +8,9 @@
     }
   },
   "name": "RCT Power integration development",
-  "appPort": ["8123:8123"],
+  "appPort": [
+    "8123:8123"
+  ],
   "extensions": [
     "ms-python.python",
     "github.vscode-pull-request-github",
@@ -29,6 +31,12 @@
       "editor.defaultFormatter": "ms-python.python"
     }
   },
-  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "runArgs": [
+    "--userns=keep-id"
+  ],
+  "containerEnv": {
+    "HOME": "/home/vscode"
+  },
   "postCreateCommand": "poetry install"
 }
