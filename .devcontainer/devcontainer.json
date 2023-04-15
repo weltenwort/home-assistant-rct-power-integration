@@ -29,6 +29,10 @@
       "editor.defaultFormatter": "ms-python.python"
     }
   },
-  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "runArgs": ["--userns=keep-id"],
+  "containerEnv": {
+    "HOME": "/home/vscode"
+  },
   "postCreateCommand": "poetry install"
 }
