@@ -21,14 +21,14 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Install poetry
-        run: pipx install poetry
-
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
           cache: "poetry"
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Install Python modules
         run: |
