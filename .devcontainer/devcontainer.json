@@ -1,34 +1,40 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "..",
-    "args": {
-      "VARIANT": "3.9"
-    }
-  },
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
   "name": "RCT Power integration development",
   "appPort": ["8123:8123"],
-  "extensions": [
-    "ms-python.python",
-    "github.vscode-pull-request-github",
-    "ms-python.vscode-pylance",
-    "bungcip.better-toml",
-    "esbenp.prettier-vscode"
-  ],
-  "settings": {
-    "terminal.integrated.defaultProfile.linux": "zsh",
-    "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.formatting.provider": "black",
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[python]": {
-      "editor.defaultFormatter": "ms-python.python"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "github.vscode-pull-request-github",
+        "ms-python.vscode-pylance",
+        "bungcip.better-toml",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.linting.flake8Enabled": true,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.python"
+        }
+      }
     }
   },
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {}
+  },
+  "containerUser": "vscode",
   "remoteUser": "vscode",
+  "runArgs": ["--userns=keep-id"],
+  "containerEnv": {
+    "HOME": "/home/vscode"
+  },
   "postCreateCommand": "poetry install"
 }

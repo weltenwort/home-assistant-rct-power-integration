@@ -1,12 +1,12 @@
 {
   "domain": "rct_power",
   "name": "RCT Power",
-  "documentation": "https://github.com/weltenwort/home-assistant-rct-power-integration",
-  "issue_tracker": "https://github.com/weltenwort/home-assistant-rct-power-integration/issues",
-  "iot_class": "local_polling",
-  "dependencies": [],
-  "config_flow": true,
   "codeowners": ["@weltenwort"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/weltenwort/home-assistant-rct-power-integration",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/weltenwort/home-assistant-rct-power-integration/issues",
   "requirements": ["rctclient==0.0.3"],
   "version": "0.10.0"
 }
