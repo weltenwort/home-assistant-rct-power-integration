@@ -204,7 +204,7 @@ battery_binary_sensor_entity_descriptions: List[
         get_device_info=get_battery_device_info,
         key="battery.bat_status.calibrating",
         object_names=["battery.bat_status"],
-        name="Battery Is Calibrating",
+        name="Battery Calibration Active",
         update_priority=EntityUpdatePriority.FREQUENT,
         get_native_binary_value=get_battery_calibration_status,
     ),
@@ -216,7 +216,7 @@ battery_binary_sensor_entity_descriptions: List[
         # "battery.bat_status.calibrating"
         # changing the id generation scheme would break existing installations
         object_names=["battery.bat_status", "battery.status2"],
-        name="Battery Is Balancing",
+        name="Battery Balancing Active",
         update_priority=EntityUpdatePriority.FREQUENT,
         get_native_binary_value=get_battery_balancing_status,
     ),
