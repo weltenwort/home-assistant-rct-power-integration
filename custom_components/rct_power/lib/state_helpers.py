@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from homeassistant.components.sensor import Entity, SensorEntity
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.typing import StateType
 
