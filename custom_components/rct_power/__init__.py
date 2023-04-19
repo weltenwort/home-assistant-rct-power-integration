@@ -2,7 +2,7 @@
 Custom integration to integrate RCT Power with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/weltenwort/rct-power
+https://github.com/weltenwort/home-assistant-rct-power-integration
 """
 import asyncio
 from datetime import timedelta
