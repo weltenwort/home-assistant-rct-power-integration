@@ -1,6 +1,6 @@
 """Constants for RCT Power."""
 # Base component constants
-from enum import Enum, auto
+from enum import Enum, IntFlag, auto
 
 
 NAME = "RCT Power"
@@ -51,3 +51,9 @@ class EntityUpdatePriority(Enum):
     FREQUENT = auto()
     INFREQUENT = auto()
     STATIC = auto()
+
+
+class BatteryStatusFlag(IntFlag):
+    normal = 0
+    calibrating = 1032
+    balancing = 2048

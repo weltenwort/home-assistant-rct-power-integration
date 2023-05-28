@@ -1,11 +1,14 @@
-from typing import Optional, Union
+from typing import Literal, Optional
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.typing import StateType
 
 from .api import ApiResponseValue
-from .const import FREQUENCY_STATE_DECIMAL_DIGITS, NUMERIC_STATE_DECIMAL_DIGITS
+from .const import (
+    FREQUENCY_STATE_DECIMAL_DIGITS,
+    NUMERIC_STATE_DECIMAL_DIGITS,
+    BatteryStatusFlag,
+)
 
 
 def get_first_api_response_value_as_state(
@@ -57,52 +60,49 @@ def sum_api_response_values_as_state(
     values: list[Optional[ApiResponseValue]],
 ) -> StateType:
     return sum(
-        get_api_response_value_as_state(entity, value)
-        for value in values
-        if isinstance(value, (int, float))
+        (
+            float(state_value)
+            for value in values
+            if isinstance(
+                state_value := get_api_response_value_as_state(entity, value),
+                (int, float),
+            )
+        ),
+        0.0,
     )
 
 
-def get_first_api_response_value_as_binary_state(
-    entity: BinarySensorEntity,
-    values: list[Optional[ApiResponseValue]],
-) -> Union[None, bool]:
-    if len(values) <= 0:
-        return None
+#
+# Battery status
+#
 
-    return get_api_response_value_as_binary_state(entity=entity, value=values[0])
+BatteryStatus = Literal["normal", "calibrating", "balancing"]
 
 
-def get_api_response_value_as_binary_state(
-    entity: BinarySensorEntity,
+def get_api_response_value_as_battery_status(
+    entity: SensorEntity,
     value: Optional[ApiResponseValue],
-) -> Union[None, bool]:
-    if value is None:
+) -> BatteryStatus | None:
+    if not isinstance(value, int):
         return None
-    return bool(value)
 
+    match BatteryStatusFlag(value):
+        case BatteryStatusFlag.calibrating:
+            return "calibrating"
+        case BatteryStatusFlag.balancing:
+            return "balancing"
+        case _:
+            return "normal"
 
-def get_battery_calibration_status(
-    entity: BinarySensorEntity,
-    values: list[Optional[ApiResponseValue]],
-) -> Union[None, bool]:
-    if len(values) <= 0:
-        return None
-    value = values[0]
-
-    if isinstance(value, int):
-        return value & 1032 != 0
     return None
 
 
-def get_battery_balancing_status(
-    entity: BinarySensorEntity,
+def get_first_api_response_value_as_battery_status(
+    entity: SensorEntity,
     values: list[Optional[ApiResponseValue]],
-) -> Union[None, bool]:
-    if len(values) <= 0:
-        return None
-    value = values[0]
-
-    if isinstance(value, int):
-        return value & 2048 != 0
-    return None
+) -> BatteryStatus | None:
+    match values:
+        case [firstValue, *_] if firstValue is not None:
+            return get_api_response_value_as_battery_status(entity, firstValue)
+        case _:
+            return None
