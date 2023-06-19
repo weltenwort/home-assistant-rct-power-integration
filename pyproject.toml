@@ -15,7 +15,7 @@ flake8 = "^6.0.0"
 homeassistant = "^2022.6.5"
 pre-commit = "^3.2.2"
 rctclient = "^0.0.3"
-reorder-python-imports = "^3.9.0"
+reorder-python-imports = "^3.10.0"
 pytest-homeassistant-custom-component = "^0.9.17"
 
 [build-system]
