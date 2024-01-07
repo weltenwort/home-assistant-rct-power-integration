@@ -117,7 +117,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
         return {}
 
-    @cached_property
+    @property
     def device_info(self):
         return self.entity_description.get_device_info(self)
 
@@ -125,7 +125,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
     entity_description: "RctPowerSensorEntityDescription"  # pyright: ignore [reportIncompatibleVariableOverride]
 
-    @cached_property
+    @property
     def device_class(self):
         """Return the device class of the sensor."""
         if device_class := super().device_class:
