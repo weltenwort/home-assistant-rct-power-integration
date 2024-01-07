@@ -1,41 +1,38 @@
 from homeassistant.const import (
-    ELECTRIC_CURRENT_AMPERE,
-    ELECTRIC_CURRENT_MILLIAMPERE,
-    ELECTRIC_POTENTIAL_MILLIVOLT,
-    ELECTRIC_POTENTIAL_VOLT,
-    ENERGY_KILO_WATT_HOUR,
-    ENERGY_WATT_HOUR,
-    POWER_KILO_WATT,
-    POWER_VOLT_AMPERE,
-    POWER_WATT,
-    TEMP_CELSIUS,
-    TEMP_FAHRENHEIT,
-    TEMP_KELVIN,
+    UnitOfPower,
+    UnitOfApparentPower,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
+    UnitOfEnergy,
+    UnitOfTemperature,
 )
-
 from homeassistant.components.sensor import SensorDeviceClass
 
 
 def guess_device_class_from_unit(unit: str):
-    if unit in [TEMP_CELSIUS, TEMP_FAHRENHEIT, TEMP_KELVIN]:
+    if unit in [
+        UnitOfTemperature.CELSIUS,
+        UnitOfTemperature.FAHRENHEIT,
+        UnitOfTemperature.KELVIN,
+    ]:
         return SensorDeviceClass.TEMPERATURE
     elif unit in [
-        ELECTRIC_POTENTIAL_VOLT,
-        ELECTRIC_POTENTIAL_MILLIVOLT,
+        UnitOfElectricPotential.VOLT,
+        UnitOfElectricPotential.MILLIVOLT,
     ]:
         return SensorDeviceClass.VOLTAGE
     elif unit in [
-        ELECTRIC_CURRENT_AMPERE,
-        ELECTRIC_CURRENT_MILLIAMPERE,
+        UnitOfElectricCurrent.AMPERE,
+        UnitOfElectricCurrent.MILLIAMPERE,
     ]:
         return SensorDeviceClass.CURRENT
     elif unit in [
-        POWER_WATT,
-        POWER_KILO_WATT,
-        POWER_VOLT_AMPERE,
+        UnitOfPower.WATT,
+        UnitOfPower.KILO_WATT,
+        UnitOfApparentPower.VOLT_AMPERE,
     ]:
         return SensorDeviceClass.POWER
-    elif unit in [ENERGY_KILO_WATT_HOUR, ENERGY_WATT_HOUR]:
+    elif unit in [UnitOfEnergy.KILO_WATT_HOUR, UnitOfEnergy.WATT_HOUR]:
         return SensorDeviceClass.ENERGY
 
     return None
