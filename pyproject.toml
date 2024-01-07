@@ -6,17 +6,17 @@ authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.11,<3.13"
 
 [tool.poetry.dev-dependencies]
 async_timeout = "^4.0.0"
 black = "^23.12.1"
 flake8 = "^6.0.0"
-homeassistant = "^2022.6.7"
+homeassistant = "^2024.1.0"
 pre-commit = "^3.3.3"
 rctclient = "^0.0.3"
 reorder-python-imports = "^3.12.0"
-pytest-homeassistant-custom-component = "^0.9.17"
+pytest-homeassistant-custom-component = { git = "https://github.com/MatthewFlamm/pytest-homeassistant-custom-component.git", tag = "0.13.87" }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

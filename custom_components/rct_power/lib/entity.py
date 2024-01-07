@@ -1,10 +1,13 @@
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from datetime import date, datetime
+from decimal import Decimal
+from functools import cached_property
+from typing import Any, Callable, List, Mapping, Optional
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo, EntityDescription
-from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.typing import StateType, UndefinedType
 from rctclient.registry import REGISTRY, ObjectInfo
 
 from .api import (
@@ -23,6 +26,7 @@ from .update_coordinator import RctPowerDataUpdateCoordinator
 
 class RctPowerEntity(MultiCoordinatorEntity):
     entity_description: "RctPowerEntityDescription"
+    object_infos: List[ObjectInfo]
 
     def __init__(
         self,
@@ -32,7 +36,10 @@ class RctPowerEntity(MultiCoordinatorEntity):
     ):
         super().__init__(coordinators)
         self.config_entry = config_entry
-        self.entity_description = entity_description
+        self.entity_description = (  # pyright: ignore [reportIncompatibleVariableOverride]
+            entity_description
+        )
+        self.object_infos = resolve_object_infos(self.entity_description)
 
     def get_api_response_by_id(
         self, object_id: int, default: Optional[ApiResponse] = None
@@ -67,30 +74,22 @@ class RctPowerEntity(MultiCoordinatorEntity):
         )
 
     @property
-    def object_infos(self):
-        return self.entity_description.object_infos
-
-    @property
-    def object_ids(self):
-        return [object_info.object_id for object_info in self.object_infos]
-
-    @property
     def config_entry_data(self):
         return RctPowerConfigEntryData.from_config_entry(self.config_entry)
 
-    @property
-    def unique_id(self):
+    @cached_property
+    def unique_id(self) -> str | None:
         """Return a unique ID to use for this entity."""
         # this allows for keeping the entity identity stable for existing
         # sensors when the algorithm below changes
         if uid := self.entity_description.unique_id:
             return f"{self.config_entry.entry_id}-{uid}"
 
-        object_ids = [str(object_id) for object_id in self.object_ids]
+        object_ids = [str(object_info.object_id) for object_info in self.object_infos]
         return "-".join([self.config_entry.entry_id, *object_ids])
 
-    @property
-    def name(self):
+    @cached_property
+    def name(self) -> str | UndefinedType | None:
         """Return the name of the entity."""
         entity_name = self.entity_description.name or slugify_entity_name(
             self.object_infos[0].name
@@ -101,30 +100,32 @@ class RctPowerEntity(MultiCoordinatorEntity):
     @property
     def available(self) -> bool:
         return all(
-            isinstance(self.get_api_response_by_id(object_id), ValidApiResponse)
-            for object_id in self.object_ids
+            isinstance(
+                self.get_api_response_by_id(object_info.object_id), ValidApiResponse
+            )
+            for object_info in self.object_infos
         )
 
-    @property
+    @cached_property
     def unit_of_measurement(self):
         if unit_of_measurement := super().unit_of_measurement:
             return unit_of_measurement
 
         return self.object_infos[0].unit
 
-    @property
-    def extra_state_attributes(self) -> Dict[str, Any]:
+    @cached_property
+    def extra_state_attributes(self) -> Mapping[str, Any] | None:
         return {}
 
-    @property
+    @cached_property
     def device_info(self):
         return self.entity_description.get_device_info(self)
 
 
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
-    entity_description: "RctPowerSensorEntityDescription"
+    entity_description: "RctPowerSensorEntityDescription"  # pyright: ignore [reportIncompatibleVariableOverride]
 
-    @property
+    @cached_property
     def device_class(self):
         """Return the device class of the sensor."""
         if device_class := super().device_class:
@@ -136,14 +137,14 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
         return None
 
     @property
-    def native_value(self):
+    def native_value(self) -> StateType | date | datetime | Decimal:
         values = [
-            self.get_valid_api_response_value_by_id(object_id, None)
-            for object_id in self.object_ids
+            self.get_valid_api_response_value_by_id(object_info.object_id, None)
+            for object_info in self.object_infos
         ]
         return self.entity_description.get_native_value(self, values)
 
-    @property
+    @cached_property
     def native_unit_of_measurement(self):
         if native_unit_of_measurement := super().native_unit_of_measurement:
             return native_unit_of_measurement
@@ -155,8 +156,8 @@ class RctPowerFaultSensorEntity(RctPowerSensorEntity):
     @property
     def fault_bitmasks(self):
         return [
-            self.get_valid_api_response_value_by_id(object_id, 0)
-            for object_id in self.object_ids
+            self.get_valid_api_response_value_by_id(object_info.object_id, 0)
+            for object_info in self.object_infos
         ]
 
     @property
@@ -168,7 +169,7 @@ class RctPowerFaultSensorEntity(RctPowerSensorEntity):
 
         return None
 
-    @property
+    @cached_property
     def native_unit_of_measurement(self):
         return None
 
@@ -180,25 +181,17 @@ class RctPowerFaultSensorEntity(RctPowerSensorEntity):
         }
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class RctPowerEntityDescription(EntityDescription):
-    icon: Optional[str] = ICON
-    object_infos: List[ObjectInfo] = field(init=False)
-    object_names: List[str] = field(default_factory=list)
+    icon: Optional[str] = field(default=ICON)
+    object_names: Optional[List[str]] = None
     # to allow for stable enitity identities even if the object ids change
     unique_id: Optional[str] = None
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
     get_device_info: Callable[[RctPowerEntity], Optional[DeviceInfo]] = lambda e: None
 
-    def __post_init__(self):
-        if not self.object_names:
-            self.object_names = [self.key]
-        self.object_infos = [
-            REGISTRY.get_by_name(object_name) for object_name in self.object_names
-        ]
 
-
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class RctPowerSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
@@ -209,6 +202,11 @@ class RctPowerSensorEntityDescription(
 
 def slugify_entity_name(name: str):
     return name.replace(".", "_").replace("[", "_").replace("]", "_").replace("?", "_")
+
+
+def resolve_object_infos(entity_description: RctPowerEntityDescription):
+    object_names = entity_description.object_names or [entity_description.key]
+    return [REGISTRY.get_by_name(object_name) for object_name in object_names]
 
 
 known_faults = [
