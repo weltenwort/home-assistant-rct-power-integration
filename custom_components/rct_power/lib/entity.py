@@ -1,22 +1,32 @@
-from dataclasses import dataclass, field
-from datetime import date, datetime
+from dataclasses import dataclass
+from dataclasses import field
+from datetime import date
+from datetime import datetime
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Mapping
+from typing import Optional
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import DeviceInfo, EntityDescription
-from homeassistant.helpers.typing import StateType, UndefinedType
-from rctclient.registry import REGISTRY, ObjectInfo
+from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.entity import EntityDescription
+from homeassistant.helpers.typing import StateType
+from homeassistant.helpers.typing import UNDEFINED
+from homeassistant.helpers.typing import UndefinedType
+from rctclient.registry import ObjectInfo
+from rctclient.registry import REGISTRY
 
-from .api import (
-    ApiResponse,
-    ApiResponseValue,
-    ValidApiResponse,
-    get_valid_response_value_or,
-)
-from .const import ICON, EntityUpdatePriority
+from .api import ApiResponse
+from .api import ApiResponseValue
+from .api import get_valid_response_value_or
+from .api import ValidApiResponse
+from .const import EntityUpdatePriority
+from .const import ICON
 from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
@@ -88,11 +98,13 @@ class RctPowerEntity(MultiCoordinatorEntity):
         object_ids = [str(object_info.object_id) for object_info in self.object_infos]
         return "-".join([self.config_entry.entry_id, *object_ids])
 
-    @cached_property
+    @property
     def name(self) -> str | UndefinedType | None:
         """Return the name of the entity."""
-        entity_name = self.entity_description.name or slugify_entity_name(
-            self.object_infos[0].name
+        entity_name = (
+            self.entity_description.name
+            if self.entity_description.name != UNDEFINED
+            else slugify_entity_name(self.object_infos[0].name)
         )
 
         return f"{self.config_entry_data.entity_prefix} {entity_name}"
