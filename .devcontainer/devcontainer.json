@@ -12,7 +12,8 @@
         "esbenp.prettier-vscode",
         "ms-python.flake8",
         "ms-python.black-formatter",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "thebutlah.reorder-python-imports"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
@@ -20,7 +21,11 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter"
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": false,
+            "source.organizeImports.reorder-python-imports": true
+          }
         }
       }
     }
