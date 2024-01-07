@@ -34,15 +34,15 @@ async def test_setup_unload_and_reload_entry(hass, bypass_get_data):
     # call, no code from custom_components/rct_power/api.py actually runs.
     assert await async_setup_entry(hass, config_entry)
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert (
-        isinstance(hass.data[DOMAIN][config_entry.entry_id], RctPowerDataUpdateCoordinator)
+    assert isinstance(
+        hass.data[DOMAIN][config_entry.entry_id], RctPowerDataUpdateCoordinator
     )
 
     # Reload the entry and assert that the data from above is still there
     assert await async_reload_entry(hass, config_entry) is None
     assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert (
-        isinstance(hass.data[DOMAIN][config_entry.entry_id], RctPowerDataUpdateCoordinator)
+    assert isinstance(
+        hass.data[DOMAIN][config_entry.entry_id], RctPowerDataUpdateCoordinator
     )
 
     # Unload the entry and verify that the data has been removed
