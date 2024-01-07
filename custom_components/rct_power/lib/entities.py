@@ -219,11 +219,13 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="db.core_temp",
+        name="Core Temperature",
         state_class=SensorStateClass.MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="db.temp1",
+        name="Heat Sink Temperature",
         state_class=SensorStateClass.MEASUREMENT,
     ),
     RctPowerSensorEntityDescription(
