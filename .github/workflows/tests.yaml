@@ -16,7 +16,7 @@ jobs:
     name: Pre-commit
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install poetry
         run: pipx install poetry
@@ -40,7 +40,7 @@ jobs:
     name: HACS
     steps:
       - name: Check out the repository
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: HACS validation
         uses: "hacs/action@22.5.0"
@@ -52,7 +52,7 @@ jobs:
     name: Hassfest
     steps:
       - name: Check out the repository
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: Hassfest validation
         uses: "home-assistant/actions/hassfest@master"
@@ -61,7 +61,7 @@ jobs:
   #   name: Run tests
   #   steps:
   #     - name: Check out code from GitHub
-  #       uses: "actions/checkout@v3"
+  #       uses: "actions/checkout@v4"
   #     - name: Setup Python
   #       uses: "actions/setup-python@v5"
   #       with:
