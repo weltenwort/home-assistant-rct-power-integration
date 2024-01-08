@@ -44,7 +44,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version-file: pyproject.toml
-          cache: "poetry"
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
