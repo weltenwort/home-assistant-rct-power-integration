@@ -129,6 +129,7 @@ depending on your preference.
 | Battery State of Health        | %    | the estimated state of health of the battery                                  |
 | Battery Stored Energy          | Wh   | the cumulative energy fed into the battery                                    |
 | Battery Used Energy            | Wh   | the cumulative energy consumed from the battery                               |
+| Battery Status                 |      | the current battery status (incomplete)                                       |
 
 ### Household consumers and producers
 
