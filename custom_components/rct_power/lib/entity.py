@@ -10,6 +10,7 @@ from typing import List
 from typing import Mapping
 from typing import Optional
 
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
@@ -30,6 +31,7 @@ from .const import ICON
 from .device_class_helpers import guess_device_class_from_unit
 from .entry import RctPowerConfigEntryData
 from .multi_coordinator_entity import MultiCoordinatorEntity
+from .state_helpers import get_api_response_values_as_bitfield
 from .state_helpers import get_first_api_response_value_as_state
 from .update_coordinator import RctPowerDataUpdateCoordinator
 
@@ -137,6 +139,12 @@ class RctPowerEntity(MultiCoordinatorEntity):
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
     entity_description: "RctPowerSensorEntityDescription"  # pyright: ignore [reportIncompatibleVariableOverride]
 
+    def get_valid_api_responses(self):
+        return [
+            self.get_valid_api_response_value_by_id(object_info.object_id, None)
+            for object_info in self.object_infos
+        ]
+
     @property
     def device_class(self):
         """Return the device class of the sensor."""
@@ -150,11 +158,9 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
 
     @property
     def native_value(self) -> StateType | date | datetime | Decimal:
-        values = [
-            self.get_valid_api_response_value_by_id(object_info.object_id, None)
-            for object_info in self.object_infos
-        ]
-        return self.entity_description.get_native_value(self, values)
+        return self.entity_description.get_native_value(
+            self, self.get_valid_api_responses()
+        )
 
     @cached_property
     def native_unit_of_measurement(self):
@@ -164,32 +170,29 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
         return self.object_infos[0].unit
 
 
-class RctPowerFaultSensorEntity(RctPowerSensorEntity):
-    @property
-    def fault_bitmasks(self):
-        return [
-            self.get_valid_api_response_value_by_id(object_info.object_id, 0)
-            for object_info in self.object_infos
-        ]
-
-    @property
-    def native_value(self):
-        fault_bitmasks = self.fault_bitmasks
-
-        if all(isinstance(bitmask, int) for bitmask in fault_bitmasks):
-            return "{0:b}{1:b}{2:b}{3:b}".format(*fault_bitmasks)
-
+class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
+    @cached_property
+    def native_unit_of_measurement(self) -> str | None:
         return None
 
-    @cached_property
-    def native_unit_of_measurement(self):
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        if device_class := super().device_class:
+            return device_class
+
+        if self.options:
+            return SensorDeviceClass.ENUM
+
         return None
 
     @property
     def extra_state_attributes(self):
         return {
             **(super().extra_state_attributes),
-            "fault_bitmasks": self.fault_bitmasks,
+            "bitfield": get_api_response_values_as_bitfield(
+                self, self.get_valid_api_responses()
+            ),
         }
 
 
@@ -210,6 +213,15 @@ class RctPowerSensorEntityDescription(
     get_native_value: Callable[
         [RctPowerSensorEntity, list[Optional[ApiResponseValue]]], StateType
     ] = get_first_api_response_value_as_state
+
+
+@dataclass(frozen=True, kw_only=True)
+class RctPowerBitfieldSensorEntityDescription(
+    RctPowerEntityDescription, SensorEntityDescription
+):
+    get_native_value: Callable[
+        [RctPowerSensorEntity, list[Optional[ApiResponseValue]]], StateType
+    ] = get_api_response_values_as_bitfield
 
 
 def slugify_entity_name(name: str):
