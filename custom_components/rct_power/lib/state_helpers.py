@@ -1,14 +1,14 @@
-from typing import Literal, Optional
+from typing import get_args
+from typing import Literal
+from typing import Optional
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
 
 from .api import ApiResponseValue
-from .const import (
-    FREQUENCY_STATE_DECIMAL_DIGITS,
-    NUMERIC_STATE_DECIMAL_DIGITS,
-    BatteryStatusFlag,
-)
+from .const import BatteryStatusFlag
+from .const import FREQUENCY_STATE_DECIMAL_DIGITS
+from .const import NUMERIC_STATE_DECIMAL_DIGITS
 
 
 def get_first_api_response_value_as_state(
@@ -75,8 +75,8 @@ def sum_api_response_values_as_state(
 #
 # Battery status
 #
-
-BatteryStatus = Literal["normal", "calibrating", "balancing"]
+BatteryStatus = Literal["normal", "calibrating", "balancing", "other"]
+available_battery_status: list[BatteryStatus] = list(get_args(BatteryStatus))
 
 
 def get_api_response_value_as_battery_status(
@@ -91,10 +91,10 @@ def get_api_response_value_as_battery_status(
             return "calibrating"
         case BatteryStatusFlag.balancing:
             return "balancing"
-        case _:
+        case BatteryStatusFlag.normal:
             return "normal"
-
-    return None
+        case _:
+            return "other"
 
 
 def get_first_api_response_value_as_battery_status(
@@ -106,3 +106,17 @@ def get_first_api_response_value_as_battery_status(
             return get_api_response_value_as_battery_status(entity, firstValue)
         case _:
             return None
+
+
+#
+# Bitfield
+#
+
+
+def get_api_response_values_as_bitfield(
+    entity: SensorEntity,
+    values: list[Optional[ApiResponseValue]],
+) -> StateType:
+    return "".join(f"{value:b}" for value in values if isinstance(value, int))
+    # if all(isinstance(bitmask, int) for bitmask in values):
+    #     return "{0:b}{1:b}{2:b}{3:b}".format(*values)
