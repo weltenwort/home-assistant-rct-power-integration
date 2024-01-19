@@ -111,12 +111,8 @@ def get_first_api_response_value_as_battery_status(
 #
 # Bitfield
 #
-
-
 def get_api_response_values_as_bitfield(
     entity: SensorEntity,
     values: list[Optional[ApiResponseValue]],
 ) -> StateType:
     return "".join(f"{value:b}" for value in values if isinstance(value, int))
-    # if all(isinstance(bitmask, int) for bitmask in values):
-    #     return "{0:b}{1:b}{2:b}{3:b}".format(*values)
