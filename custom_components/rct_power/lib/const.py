@@ -6,9 +6,9 @@ from enum import Enum, IntFlag, auto
 NAME = "RCT Power"
 DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.10.0"
+VERSION = "0.11.1"
 
-ISSUE_URL = "https://github.com/weltenwort/rct-power/issues"
+ISSUE_URL = "https://github.com/weltenwort/home-assistant-rct-power-integration/issues"
 
 # Inverter
 INVERTER_MODEL = "RCT Power Storage"

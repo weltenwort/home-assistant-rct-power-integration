@@ -1,6 +1,6 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "name": "RCT Power integration development",
   "appPort": ["8123:8123"],
   "customizations": {
@@ -9,20 +9,23 @@
         "ms-python.python",
         "github.vscode-pull-request-github",
         "ms-python.vscode-pylance",
-        "bungcip.better-toml",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "ms-python.flake8",
+        "ms-python.black-formatter",
+        "tamasfe.even-better-toml",
+        "thebutlah.reorder-python-imports"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
         "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
-        "python.linting.enabled": true,
-        "python.linting.pylintEnabled": false,
-        "python.linting.flake8Enabled": true,
-        "python.formatting.provider": "black",
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[python]": {
-          "editor.defaultFormatter": "ms-python.python"
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": false,
+            "source.organizeImports.reorder-python-imports": true
+          }
         }
       }
     }
@@ -36,5 +39,5 @@
   "containerEnv": {
     "HOME": "/home/vscode"
   },
-  "postCreateCommand": "poetry install"
+  "postCreateCommand": "poetry install --no-root"
 }

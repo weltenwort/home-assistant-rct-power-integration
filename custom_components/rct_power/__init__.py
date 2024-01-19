@@ -2,7 +2,7 @@
 Custom integration to integrate RCT Power with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/weltenwort/rct-power
+https://github.com/weltenwort/home-assistant-rct-power-integration
 """
 import asyncio
 from datetime import timedelta
@@ -23,7 +23,7 @@ from .lib.const import (
 from .lib.context import RctPowerContext
 from .lib.domain_data import get_domain_data
 from .lib.entities import all_entity_descriptions
-from .lib.entity import EntityUpdatePriority
+from .lib.entity import EntityUpdatePriority, resolve_object_infos
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
@@ -54,7 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.FREQUENT
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
@@ -71,7 +71,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
@@ -90,7 +90,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.STATIC
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     static_update_coordinator = RctPowerDataUpdateCoordinator(
