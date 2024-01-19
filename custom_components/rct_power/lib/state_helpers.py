@@ -75,7 +75,9 @@ def sum_api_response_values_as_state(
 #
 # Battery status
 #
-BatteryStatus = Literal["normal", "calibrating", "balancing", "other"]
+BatteryStatus = Literal[
+    "normal", "charging", "discharging", "calibrating", "balancing", "other"
+]
 available_battery_status: list[BatteryStatus] = list(get_args(BatteryStatus))
 
 
@@ -89,6 +91,10 @@ def get_api_response_value_as_battery_status(
     match BatteryStatusFlag(value):
         case BatteryStatusFlag.calibrating:
             return "calibrating"
+        case BatteryStatusFlag.charging:
+            return "charging"
+        case BatteryStatusFlag.discharging:
+            return "discharging"
         case BatteryStatusFlag.balancing:
             return "balancing"
         case BatteryStatusFlag.normal:
