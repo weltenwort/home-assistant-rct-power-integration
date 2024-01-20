@@ -234,6 +234,12 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
+        key="db.temp2",
+        name="Heat Sink (battery actuator) Temperature",
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
         key="dc_conv.dc_conv_struct[0].enabled",
         name="Generator A Connected",
     ),
