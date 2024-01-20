@@ -13,6 +13,7 @@ from .entity import RctPowerSensorEntityDescription
 from .state_helpers import available_battery_status
 from .state_helpers import get_first_api_reponse_value_as_absolute_state
 from .state_helpers import get_first_api_response_value_as_battery_status
+from .state_helpers import get_first_api_response_value_as_timestamp
 from .state_helpers import sum_api_response_values_as_state
 
 
@@ -206,6 +207,14 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Battery Cycles",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.bat_next_calib_date",
+        name="Next Battery Calibration Date",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        device_class=SensorDeviceClass.TIMESTAMP,
+        get_native_value=get_first_api_response_value_as_timestamp,
     ),
 ]
 
