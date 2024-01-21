@@ -2,21 +2,9 @@
 from dataclasses import asdict
 
 import pytest
-from custom_components.rct_power import (
-    async_reload_entry,
-)
-from custom_components.rct_power import (
-    async_setup_entry,
-)
-from custom_components.rct_power import (
-    async_unload_entry,
-)
-from custom_components.rct_power import (
-    RctPowerDataUpdateCoordinator,
-)
-from custom_components.rct_power.lib.const import (
-    DOMAIN,
-)
+from custom_components.rct_power import async_setup_entry
+from custom_components.rct_power import async_unload_entry
+from custom_components.rct_power.lib.const import DOMAIN
 from custom_components.rct_power.lib.context import RctPowerContext
 from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 from homeassistant.core import HomeAssistant
