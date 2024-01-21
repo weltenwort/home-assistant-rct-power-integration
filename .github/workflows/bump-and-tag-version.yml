@@ -1,0 +1,20 @@
+name: "Bump and tag new version"
+
+on:
+  workflow_dispatch:
+    inputs:
+      newVersion:
+        description: "New version"
+        required: true
+        type: string
+
+jobs:
+  pre-commit:
+    runs-on: "ubuntu-latest"
+    name: "Run tbump"
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install tbump
+        run: 'pipx run tbump --non-interactive "${{ inputs.newVersion }}"'
