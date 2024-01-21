@@ -1,0 +1,23 @@
+name: "Bump and tag new version"
+
+on:
+  workflow_dispatch:
+    inputs:
+      newVersion:
+        description: "New version"
+        required: true
+        type: string
+
+jobs:
+  pre-commit:
+    runs-on: "ubuntu-latest"
+    name: "Run tbump"
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Bump version and push the tag
+        run: |
+          pipx run tbump --non-interactive "${{ inputs.newVersion }}"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
