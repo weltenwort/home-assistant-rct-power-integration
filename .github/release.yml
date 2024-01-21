@@ -4,25 +4,35 @@ changelog:
       - "ignore for release"
   categories:
     - title: ":boom: Breaking Changes"
-      label: "breaking"
+      labels:
+        - "breaking"
     - title: ":rocket: Features"
-      label: "enhancement"
+      labels:
+        - "enhancement"
     - title: ":fire: Removals and Deprecations"
-      label: "removal"
+      labels:
+        - "removal"
     - title: ":beetle: Fixes"
-      label: "bug"
+      labels:
+        - "bug"
     - title: ":racehorse: Performance"
-      label: "performance"
+      labels:
+        - "performance"
     - title: ":rotating_light: Testing"
-      label: "testing"
+      labels:
+        - "testing"
     - title: ":construction_worker: Continuous Integration"
-      label: "ci"
+      labels:
+        - "ci"
     - title: ":books: Documentation"
-      label: "documentation"
+      labels:
+        - "documentation"
     - title: ":hammer: Refactoring"
-      label: "refactoring"
+      labels:
+        - "refactoring"
     - title: ":lipstick: Style"
-      label: "style"
+      labels:
+        - "style"
     - title: ":package: Dependencies"
       labels:
         - "dependencies"
