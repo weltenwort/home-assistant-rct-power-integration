@@ -73,3 +73,6 @@
 - name: major version
   description: This change warrants a major release
   color: df5f27
+- name: ignore for release
+  description: This change won't be included in the changelog
+  color: cfd3d7
