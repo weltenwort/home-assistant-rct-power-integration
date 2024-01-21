@@ -84,4 +84,4 @@ jobs:
           verbose: true
           emoji: true
           job-summary: true
-          click-to-expand: true
+          click-to-expand: false
