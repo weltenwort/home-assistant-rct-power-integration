@@ -1,4 +1,4 @@
-name: Linting
+name: "Linting and Testing"
 
 on:
   push:
