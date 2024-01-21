@@ -19,5 +19,5 @@ jobs:
       - name: Bump version and push the tag
         run: |
           pipx run tbump --non-interactive "${{ inputs.newVersion }}"
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name "Felix Stürmer"
+          git config user.email weltenwort@users.noreply.github.com
