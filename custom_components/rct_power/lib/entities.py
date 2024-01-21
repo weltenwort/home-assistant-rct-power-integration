@@ -165,6 +165,7 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Battery Minimum State of Charge",
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
@@ -172,6 +173,7 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Battery Maximum State of Charge",
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
