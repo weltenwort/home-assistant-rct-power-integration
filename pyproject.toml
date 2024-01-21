@@ -28,3 +28,6 @@ typeCheckingMode = "strict"
 reportMissingTypeStubs = "warning"
 reportImportCycles = "warning"
 useLibraryCodeForTypes = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

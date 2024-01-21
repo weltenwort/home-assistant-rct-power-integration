@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import get_args
 from typing import Literal
 from typing import Optional
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
+from homeassistant.util.dt import as_local
 
 from .api import ApiResponseValue
 from .const import BatteryStatusFlag
@@ -122,3 +124,26 @@ def get_api_response_values_as_bitfield(
     values: list[Optional[ApiResponseValue]],
 ) -> StateType:
     return "".join(f"{value:b}" for value in values if isinstance(value, int))
+
+
+#
+# Timestamp
+#
+def get_first_api_response_value_as_timestamp(
+    entity: SensorEntity,
+    values: list[Optional[ApiResponseValue]],
+) -> StateType:
+    if len(values) <= 0:
+        return None
+
+    return get_api_response_value_as_timestamp(entity=entity, value=values[0])
+
+
+def get_api_response_value_as_timestamp(
+    entity: SensorEntity,
+    value: Optional[ApiResponseValue],
+) -> StateType:
+    if isinstance(value, int):
+        return as_local(datetime.fromtimestamp(value))
+
+    return None
