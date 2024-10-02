@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/weltenwort/rct-power",
+        "description": "If you need help with the configuration have a look here: https://github.com/weltenwort/home-assistant-rct-power-integration",
         "data": {
           "model": "Model",
           "hostname": "Host name",

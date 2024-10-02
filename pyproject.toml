@@ -1,22 +1,26 @@
 [tool.poetry]
 name = "rct-power"
-version = "0.10.0"
+version = "0.13.1"
 description = ""
 authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-
-[tool.poetry.dev-dependencies]
 async_timeout = "^4.0.0"
-black = "^22.6"
-flake8 = "^6.0.0"
-homeassistant = "^2022.6.5"
-pre-commit = "^2.20.0"
+homeassistant = "^2024.1.3"
+python = ">=3.11,<3.13"
 rctclient = "^0.0.3"
-reorder-python-imports = "^3.8.2"
-pytest-homeassistant-custom-component = "^0.9.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.1"
+flake8 = "^7.0.0"
+homeassistant-stubs = "^2024.1.3"
+pre-commit = "^3.6.2"
+pytest = "^7.4.3"
+pytest-emoji = "^0.2.0"
+pytest-homeassistant-custom-component = "^0.13.89"
+pytest-md = "^0.2.0"
+reorder-python-imports = "^3.12.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -24,6 +28,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
 typeCheckingMode = "strict"
-reportMissingTypeStubs = "warning"
+reportMissingTypeStubs = "none"
 reportImportCycles = "warning"
 useLibraryCodeForTypes = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

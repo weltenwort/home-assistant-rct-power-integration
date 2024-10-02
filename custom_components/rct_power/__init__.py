@@ -2,12 +2,15 @@
 Custom integration to integrate RCT Power with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/weltenwort/rct-power
+https://github.com/weltenwort/home-assistant-rct-power-integration
 """
 import asyncio
-from datetime import timedelta
 import logging
-from typing import Any, Callable, cast
+from datetime import timedelta
+from typing import Any
+from typing import Callable
+from typing import cast
+from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
@@ -15,16 +18,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .lib.api import RctPowerApiClient
-from .lib.const import (
-    DOMAIN,
-    PLATFORMS,
-    STARTUP_MESSAGE,
-)
+from .lib.const import DOMAIN
+from .lib.const import PLATFORMS
+from .lib.const import STARTUP_MESSAGE
 from .lib.context import RctPowerContext
 from .lib.domain_data import get_domain_data
 from .lib.entities import all_entity_descriptions
 from .lib.entity import EntityUpdatePriority
-from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
+from .lib.entity import resolve_object_infos
+from .lib.entry import RctPowerConfigEntryData
+from .lib.entry import RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -37,7 +40,7 @@ async def async_setup(hass: HomeAssistant, config: Config):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[True]:
     """Set up this integration using UI."""
     if len(domain_data := get_domain_data(hass)) == 0:
         _LOGGER.info(STARTUP_MESSAGE)
@@ -54,7 +57,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.FREQUENT
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
@@ -71,7 +74,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
@@ -90,7 +93,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             object_info.object_id
             for entity_description in all_entity_descriptions
             if entity_description.update_priority == EntityUpdatePriority.STATIC
-            for object_info in entity_description.object_infos
+            for object_info in resolve_object_infos(entity_description)
         }
     )
     static_update_coordinator = RctPowerDataUpdateCoordinator(

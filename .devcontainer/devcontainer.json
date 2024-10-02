@@ -1,34 +1,43 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "..",
-    "args": {
-      "VARIANT": "3.9"
-    }
-  },
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "name": "RCT Power integration development",
   "appPort": ["8123:8123"],
-  "extensions": [
-    "ms-python.python",
-    "github.vscode-pull-request-github",
-    "ms-python.vscode-pylance",
-    "bungcip.better-toml",
-    "esbenp.prettier-vscode"
-  ],
-  "settings": {
-    "terminal.integrated.defaultProfile.linux": "zsh",
-    "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.formatting.provider": "black",
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[python]": {
-      "editor.defaultFormatter": "ms-python.python"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "github.vscode-pull-request-github",
+        "ms-python.vscode-pylance",
+        "esbenp.prettier-vscode",
+        "ms-python.flake8",
+        "ms-python.black-formatter",
+        "tamasfe.even-better-toml",
+        "thebutlah.reorder-python-imports"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": false,
+            "source.organizeImports.reorder-python-imports": true
+          }
+        }
+      }
     }
   },
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {}
+  },
+  "containerUser": "vscode",
   "remoteUser": "vscode",
-  "postCreateCommand": "poetry install"
+  "runArgs": ["--userns=keep-id"],
+  "containerEnv": {
+    "HOME": "/home/vscode"
+  },
+  "postCreateCommand": "poetry install --no-root"
 }
