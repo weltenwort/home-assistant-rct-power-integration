@@ -4,6 +4,9 @@ version = "0.13.1"
 description = ""
 authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
 license = "MIT"
+packages = [
+    { include = "rct_power", from = "custom_components" },
+]
 
 [tool.poetry.dependencies]
 async_timeout = "^4.0.0"
