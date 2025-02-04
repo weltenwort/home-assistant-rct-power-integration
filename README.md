@@ -142,6 +142,7 @@ depending on your preference.
 | Consumer Power                                   | W    | the instantaneous power consumed by the household                      |
 | Consumer Power P1/P2/P3                          | W    | the instantaneous power consumed by the household on phase 1/2/3       |
 | External Energy Production Day/Month/Year/Total  | Wh   | the cumulative energy produced by the external producer (if installed) |
+| Externel Generator S0 Power                      | W    | the instantaneous power produced by external device connected to S0 in |
 
 ### Photovoltaic generators
 
