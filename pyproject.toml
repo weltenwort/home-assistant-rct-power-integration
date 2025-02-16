@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rct-power"
-version = "0.13.1"
+version = "0.14.0"
 description = ""
 authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
 license = "MIT"
@@ -10,18 +10,18 @@ packages = [
 
 [tool.poetry.dependencies]
 async_timeout = "^4.0.0"
-homeassistant = "^2024.1.3"
-python = ">=3.11,<3.13"
+homeassistant = "^2025.2.4"
+python = ">=3.13,<3.14"
 rctclient = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.1"
 flake8 = "^7.0.0"
-homeassistant-stubs = "^2024.1.3"
+homeassistant-stubs = "^2025.2.4"
 pre-commit = "^3.6.2"
-pytest = "^7.4.3"
+pytest = "^8.3.4"
 pytest-emoji = "^0.2.0"
-pytest-homeassistant-custom-component = "^0.13.89"
+pytest-homeassistant-custom-component = "^0.13.214"
 pytest-md = "^0.2.0"
 reorder-python-imports = "^3.12.0"
 
