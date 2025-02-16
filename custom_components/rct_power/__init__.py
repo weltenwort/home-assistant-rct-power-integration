@@ -4,18 +4,16 @@ Custom integration to integrate RCT Power with Home Assistant.
 For more details about this integration, please refer to
 https://github.com/weltenwort/home-assistant-rct-power-integration
 """
+
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any
-from typing import Callable
-from typing import cast
 from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.typing import ConfigType
 
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN
@@ -35,7 +33,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(hass: HomeAssistant, config: ConfigType):
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -118,14 +116,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
 
     remove_update_listener = entry.add_update_listener(async_reload_entry)
 
-    for platform in PLATFORMS:
-        hass.async_add_job(  # type: ignore
-            cast(
-                Callable[[Any, Any], Any],
-                hass.config_entries.async_forward_entry_setup(entry, platform),
-            )
-        )
-
     domain_data[entry.entry_id] = RctPowerContext(
         update_coordinators={
             EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
@@ -134,6 +124,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
         },
         clean_up=remove_update_listener,
     )
+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
