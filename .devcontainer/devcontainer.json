@@ -1,8 +1,10 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
   "name": "RCT Power integration development",
-  "appPort": ["8123:8123"],
+  "appPort": [
+    "8123:8123"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -35,7 +37,9 @@
   },
   "containerUser": "vscode",
   "remoteUser": "vscode",
-  "runArgs": ["--userns=keep-id"],
+  "runArgs": [
+    "--userns=keep-id"
+  ],
   "containerEnv": {
     "HOME": "/home/vscode"
   },

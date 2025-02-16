@@ -69,7 +69,7 @@ You can run the tests using the following commands from the root folder:
 
 ```bash
 # Create a virtual environment
-python3 -m venv venv
+python3.13 -m venv venv
 source venv/bin/activate
 # Install requirements
 pip install -r requirements_test.txt
