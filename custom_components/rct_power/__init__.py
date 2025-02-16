@@ -119,14 +119,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
 
     remove_update_listener = entry.add_update_listener(async_reload_entry)
 
-    for platform in PLATFORMS:
-        hass.async_add_job(  # type: ignore
-            cast(
-                Callable[[Any, Any], Any],
-                hass.config_entries.async_forward_entry_setup(entry, platform),
-            )
-        )
-
     domain_data[entry.entry_id] = RctPowerContext(
         update_coordinators={
             EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
@@ -135,6 +127,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
         },
         clean_up=remove_update_listener,
     )
+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
