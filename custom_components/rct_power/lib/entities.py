@@ -162,6 +162,14 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="power_mng.soc_min_island",
+        name="Battery Minimum State of Charge (island)",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.soc_min",
         name="Battery Minimum State of Charge",
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=SensorStateClass.MEASUREMENT,
@@ -730,6 +738,13 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
         get_native_value=sum_api_response_values_as_state,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="io_board.s0_external_power",
+        name="External Generator S0 Power",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="W",
     ),
 ]
 
