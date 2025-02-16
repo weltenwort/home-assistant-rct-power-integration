@@ -8,9 +8,6 @@ https://github.com/weltenwort/home-assistant-rct-power-integration
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any
-from typing import Callable
-from typing import cast
 from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
