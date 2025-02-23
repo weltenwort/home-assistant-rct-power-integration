@@ -39,5 +39,5 @@
     "VIRTUAL_ENV": "/home/vscode/.venv",
     "UV_PROJECT_ENVIRONMENT": "/home/vscode/.venv"
   },
-  "postCreateCommand": "uv sync --locked"
+  "postCreateCommand": "uv sync --all-extras --dev --locked"
 }

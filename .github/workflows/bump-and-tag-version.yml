@@ -20,4 +20,4 @@ jobs:
         run: |
           git config user.name "Felix Stürmer"
           git config user.email weltenwort@users.noreply.github.com
-          pipx run tbump --non-interactive "${{ inputs.newVersion }}"
+          uvx run tbump --non-interactive "${{ inputs.newVersion }}"

@@ -18,18 +18,20 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: pyproject.toml
-          cache: "poetry"
 
-      - name: Install Python modules
+      - name: Install Python dependencies
         run: |
-          poetry install --no-root
+          uv sync --all-extras --dev --locked
 
       - name: Run pre-commit on all files
         run: |
@@ -64,23 +66,25 @@ jobs:
       - name: Check out the repository
         uses: "actions/checkout@v4"
 
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version-file: pyproject.toml
-          cache: "poetry"
 
-      - name: Install Python modules
+      - name: Install Python dependencies
         run: |
-          poetry install --no-root
+          uv sync --all-extras --dev --locked
 
       - name: Run pytest
         uses: pavelzw/pytest-action@v2
         with:
-          custom-pytest: "poetry run pytest"
+          custom-pytest: "uv run pytest"
           verbose: true
           emoji: true
           job-summary: true
