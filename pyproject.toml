@@ -1,33 +1,39 @@
-[tool.poetry]
+[project]
 name = "rct-power"
 version = "0.14.1"
 description = ""
-authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
+authors = [{ name = "Felix Stürmer", email = "stuermer@weltenwort.de" }]
+requires-python = ">=3.13,<3.14"
 license = "MIT"
-packages = [
-    { include = "rct_power", from = "custom_components" },
+dependencies = [
+    "async_timeout>=4.0.0,<5",
+    "homeassistant>=2025.2.4,<2026",
+    "rctclient>=0.0.3,<0.0.4",
 ]
 
-[tool.poetry.dependencies]
-async_timeout = "^4.0.0"
-homeassistant = "^2025.2.4"
-python = ">=3.13,<3.14"
-rctclient = "^0.0.3"
+[dependency-groups]
+dev = [
+    "homeassistant-stubs>=2025.2.4,<2026",
+    "pre-commit>=3.6.2,<4",
+    "pytest>=8.3.4,<9",
+    "pytest-emoji>=0.2.0,<0.3",
+    "pytest-homeassistant-custom-component>=0.13.214,<0.14",
+    "pytest-md>=0.2.0,<0.3",
+    "ruff>=0.9.7,<0.10",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
-flake8 = "^7.1.2"
-homeassistant-stubs = "^2025.2.4"
-pre-commit = "^3.6.2"
-pytest = "^8.3.4"
-pytest-emoji = "^0.2.0"
-pytest-homeassistant-custom-component = "^0.13.214"
-pytest-md = "^0.2.0"
-reorder-python-imports = "^3.12.0"
+[tool.hatch.build.targets.sdist]
+include = ["custom_components/rct_power"]
+
+[tool.hatch.build.targets.wheel]
+include = ["custom_components/rct_power"]
+
+[tool.hatch.build.targets.wheel.sources]
+"custom_components/rct_power" = "rct_power"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pyright]
 typeCheckingMode = "strict"
@@ -37,3 +43,5 @@ useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[tool.ruff]
