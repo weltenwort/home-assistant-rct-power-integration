@@ -15,8 +15,7 @@
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
-        // "python.venvPath": "/home/vscode/.cache/pypoetry/virtualenvs",
-        "python.venvPath": "${workspaceFolder}/.venv",
+        "python.venvPath": "/home/vscode/.venv",
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[python]": {
