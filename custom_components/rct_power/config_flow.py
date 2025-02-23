@@ -1,4 +1,5 @@
 """Adds config flow for RCT Power."""
+
 from dataclasses import asdict
 from logging import Logger, getLogger
 
