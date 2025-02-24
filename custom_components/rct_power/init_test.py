@@ -1,4 +1,5 @@
 """Test RCT Power setup process."""
+
 from dataclasses import asdict
 
 import pytest
