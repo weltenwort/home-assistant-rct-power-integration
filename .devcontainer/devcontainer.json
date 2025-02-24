@@ -10,10 +10,8 @@
         "github.vscode-pull-request-github",
         "ms-python.vscode-pylance",
         "esbenp.prettier-vscode",
-        "ms-python.flake8",
-        "ms-python.black-formatter",
         "tamasfe.even-better-toml",
-        "thebutlah.reorder-python-imports"
+        "charliermarsh.ruff"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
@@ -21,10 +19,9 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.defaultFormatter": "charliermarsh.ruff",
           "editor.codeActionsOnSave": {
-            "source.organizeImports": false,
-            "source.organizeImports.reorder-python-imports": true
+            "source.organizeImports": "always"
           }
         }
       }

@@ -6,26 +6,11 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.7
     hooks:
-      - id: black
-        name: black
-        entry: black
-        language: system
-        types: [python]
-        require_serial: true
-      - id: flake8
-        name: flake8
-        entry: flake8
-        language: system
-        types: [python]
-        require_serial: true
-      # - id: reorder-python-imports
-      #   name: Reorder python imports
-      #   entry: reorder-python-imports
-      #   language: system
-      #   types: [python]
-      #   args: [--application-directories=custom_components]
+      - id: ruff
+      - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.3.1
     hooks:

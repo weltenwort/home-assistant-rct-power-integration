@@ -1,4 +1,5 @@
 """Sample API Client."""
+
 from asyncio import StreamReader, StreamWriter, TimeoutError, open_connection
 from asyncio.locks import Lock
 from dataclasses import dataclass
@@ -154,9 +155,7 @@ class RctPowerApiClient:
                             str,
                             Tuple[datetime, Dict[datetime, int]],
                             Tuple[datetime, Dict[datetime, EventEntry]],
-                        ] = decode_value(
-                            data_type, response_frame.data
-                        )  # type: ignore
+                        ] = decode_value(data_type, response_frame.data)  # type: ignore
 
                         _LOGGER.debug(
                             "Decoded data for object %x (%s): %s",

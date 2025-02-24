@@ -1,4 +1,5 @@
 """Sensor platform for RCT Power."""
+
 from typing import Callable
 from typing import List
 

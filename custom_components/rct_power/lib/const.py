@@ -1,4 +1,5 @@
 """Constants for RCT Power."""
+
 # Base component constants
 from enum import Enum, IntFlag, auto, KEEP
 
