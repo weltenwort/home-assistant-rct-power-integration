@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 async_timeout = "^4.0.0"
-homeassistant = "^2025.2.4"
+homeassistant = "^2025.2.5"
 python = ">=3.13,<3.14"
 rctclient = "^0.0.3"
 
