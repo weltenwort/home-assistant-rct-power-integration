@@ -24,7 +24,7 @@ pytest-emoji = "^0.2.0"
 pytest-homeassistant-custom-component = "^0.13.214"
 pytest-md = "^0.2.0"
 reorder-python-imports = "^3.12.0"
-ruff = "^0.9.7"
+ruff = "^0.9.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
