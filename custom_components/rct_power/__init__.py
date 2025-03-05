@@ -16,16 +16,12 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.typing import ConfigType
 
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN
-from .lib.const import PLATFORMS
-from .lib.const import STARTUP_MESSAGE
+from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
 from .lib.context import RctPowerContext
 from .lib.domain_data import get_domain_data
 from .lib.entities import all_entity_descriptions
-from .lib.entity import EntityUpdatePriority
-from .lib.entity import resolve_object_infos
-from .lib.entry import RctPowerConfigEntryData
-from .lib.entry import RctPowerConfigEntryOptions
+from .lib.entity import EntityUpdatePriority, resolve_object_infos
+from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
