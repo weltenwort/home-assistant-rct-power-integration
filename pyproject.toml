@@ -1,9 +1,17 @@
-[tool.poetry]
+[build-system]
+requires = ["poetry-core>=2.2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
 name = "rct-power"
 version = "0.14.2"
-description = ""
-authors = ["Felix Stürmer <stuermer@weltenwort.de>"]
 license = "MIT"
+description = ""
+authors = [{ name = "Felix Stürmer", email = "stuermer@weltenwort.de" }]
+requires-python = ">=3.13"
+dynamic = ["classifiers", "dependencies"]
+
+[tool.poetry]
 packages = [
     { include = "rct_power", from = "custom_components" },
 ]
@@ -20,10 +28,6 @@ pytest-emoji = "^0.2.0"
 pytest-homeassistant-custom-component = "^0.13.215"
 pytest-md = "^0.2.0"
 ruff = "^0.14.8"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
 typeCheckingMode = "strict"
