@@ -45,7 +45,7 @@ def get_api_response_value_as_state(
     return value
 
 
-def get_first_api_reponse_value_as_absolute_state(
+def get_first_api_response_value_as_absolute_state(
     entity: SensorEntity,
     values: list[Optional[ApiResponseValue]],
 ) -> StateType:
