@@ -1,6 +1,8 @@
 """Sensor platform for RCT Power."""
 
-from typing import Callable, List
+from __future__ import annotations
+
+from collections.abc import Callable
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -18,7 +20,7 @@ from .lib.entity import RctPowerBitfieldSensorEntity, RctPowerSensorEntity
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
-    async_add_entities: Callable[[List[Entity]], None],
+    async_add_entities: Callable[[list[Entity]], None],
 ):
     """Setup sensor platform."""
     if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:

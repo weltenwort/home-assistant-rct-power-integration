@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Literal, Optional, get_args
+from typing import Literal, get_args
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
@@ -15,7 +17,7 @@ from .const import (
 
 def get_first_api_response_value_as_state(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> StateType:
     if len(values) <= 0:
         return None
@@ -25,7 +27,7 @@ def get_first_api_response_value_as_state(
 
 def get_api_response_value_as_state(
     entity: SensorEntity,
-    value: Optional[ApiResponseValue],
+    value: ApiResponseValue | None,
 ) -> StateType:
     if isinstance(value, bytes):
         return value.hex()
@@ -47,7 +49,7 @@ def get_api_response_value_as_state(
 
 def get_first_api_response_value_as_absolute_state(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> StateType:
     value = get_first_api_response_value_as_state(entity=entity, values=values)
 
@@ -59,7 +61,7 @@ def get_first_api_response_value_as_absolute_state(
 
 def sum_api_response_values_as_state(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> StateType:
     return sum(
         (
@@ -85,7 +87,7 @@ available_battery_status: list[BatteryStatus] = list(get_args(BatteryStatus))
 
 def get_api_response_value_as_battery_status(
     entity: SensorEntity,
-    value: Optional[ApiResponseValue],
+    value: ApiResponseValue | None,
 ) -> BatteryStatus | None:
     if not isinstance(value, int):
         return None
@@ -107,7 +109,7 @@ def get_api_response_value_as_battery_status(
 
 def get_first_api_response_value_as_battery_status(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> BatteryStatus | None:
     match values:
         case [firstValue, *_] if firstValue is not None:
@@ -121,7 +123,7 @@ def get_first_api_response_value_as_battery_status(
 #
 def get_api_response_values_as_bitfield(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> StateType:
     return "".join(f"{value:b}" for value in values if isinstance(value, int))
 
@@ -131,7 +133,7 @@ def get_api_response_values_as_bitfield(
 #
 def get_first_api_response_value_as_timestamp(
     entity: SensorEntity,
-    values: list[Optional[ApiResponseValue]],
+    values: list[ApiResponseValue | None],
 ) -> StateType:
     if len(values) <= 0:
         return None
@@ -141,7 +143,7 @@ def get_first_api_response_value_as_timestamp(
 
 def get_api_response_value_as_timestamp(
     entity: SensorEntity,
-    value: Optional[ApiResponseValue],
+    value: ApiResponseValue | None,
 ) -> StateType:
     if isinstance(value, int):
         return as_local(datetime.fromtimestamp(value))

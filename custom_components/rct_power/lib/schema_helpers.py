@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import MISSING, Field, fields
-from typing import Any, List, Optional
+from typing import Any
 
 from voluptuous import Optional as OptionalField
 from voluptuous import Required as RequiredField
@@ -17,7 +19,7 @@ def get_schema_for_field(field: Field[Any]):
     return field.metadata.get("schema_type", field.type)
 
 
-def get_schema_for_dataclass(cls: type, allow_fields: Optional[List[str]] = None):
+def get_schema_for_dataclass(cls: type, allow_fields: list[str] | None = None):
     return Schema(
         {
             get_key_for_field(field): get_schema_for_field(field)

@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -32,14 +35,14 @@ from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
 class RctPowerEntity(MultiCoordinatorEntity):
-    entity_description: "RctPowerEntityDescription"
-    object_infos: List[ObjectInfo]
+    entity_description: RctPowerEntityDescription
+    object_infos: list[ObjectInfo]
 
     def __init__(
         self,
-        coordinators: List[RctPowerDataUpdateCoordinator],
+        coordinators: list[RctPowerDataUpdateCoordinator],
         config_entry: ConfigEntry,
-        entity_description: "RctPowerEntityDescription",
+        entity_description: RctPowerEntityDescription,
     ):
         super().__init__(coordinators)
         self.config_entry = config_entry
@@ -49,7 +52,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
         self.object_infos = resolve_object_infos(self.entity_description)
 
     def get_api_response_by_id(
-        self, object_id: int, default: Optional[ApiResponse] = None
+        self, object_id: int, default: ApiResponse | None = None
     ):
         for coordinator in self.coordinators:
             latest_response = coordinator.get_latest_response(object_id)
@@ -60,21 +63,21 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return default
 
     def get_api_response_by_name(
-        self, object_name: str, default: Optional[ApiResponse] = None
+        self, object_name: str, default: ApiResponse | None = None
     ):
         return self.get_api_response_by_id(
             REGISTRY.get_by_name(object_name).object_id, default
         )
 
     def get_valid_api_response_value_by_id(
-        self, object_id: int, default: Optional[ApiResponseValue] = None
+        self, object_id: int, default: ApiResponseValue | None = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_id(object_id, None), default
         )
 
     def get_valid_api_response_value_by_name(
-        self, object_name: str, default: Optional[ApiResponseValue] = None
+        self, object_name: str, default: ApiResponseValue | None = None
     ):
         return get_valid_response_value_or(
             self.get_api_response_by_name(object_name, None), default
@@ -132,7 +135,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
 
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
-    entity_description: "RctPowerSensorEntityDescription"  # pyright: ignore [reportIncompatibleVariableOverride]
+    entity_description: RctPowerSensorEntityDescription  # pyright: ignore [reportIncompatibleVariableOverride]
 
     def get_valid_api_responses(self):
         return [
@@ -193,12 +196,12 @@ class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
 
 @dataclass(frozen=True, kw_only=True)
 class RctPowerEntityDescription(EntityDescription):
-    icon: Optional[str] = field(default=ICON)
-    object_names: Optional[List[str]] = None
+    icon: str | None = field(default=ICON)
+    object_names: list[str] | None = None
     # to allow for stable entity identities even if the object ids change
-    unique_id: Optional[str] = None
+    unique_id: str | None = None
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
-    get_device_info: Callable[[RctPowerEntity], Optional[DeviceInfo]] = lambda e: None
+    get_device_info: Callable[[RctPowerEntity], DeviceInfo | None] = lambda e: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -206,7 +209,7 @@ class RctPowerSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
     get_native_value: Callable[
-        [RctPowerSensorEntity, list[Optional[ApiResponseValue]]], StateType
+        [RctPowerSensorEntity, list[ApiResponseValue | None]], StateType
     ] = get_first_api_response_value_as_state
 
 
@@ -215,7 +218,7 @@ class RctPowerBitfieldSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
     get_native_value: Callable[
-        [RctPowerSensorEntity, list[Optional[ApiResponseValue]]], StateType
+        [RctPowerSensorEntity, list[ApiResponseValue | None]], StateType
     ] = get_api_response_values_as_bitfield
 
 

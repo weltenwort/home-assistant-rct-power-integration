@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from datetime import timedelta
 from logging import Logger
-from typing import List, Optional
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -17,8 +18,8 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         name: str,
         logger: Logger,
         client: RctPowerApiClient,
-        object_ids: List[int],
-        update_interval: Optional[timedelta] = None,
+        object_ids: list[int],
+        update_interval: timedelta | None = None,
     ) -> None:
         self.client = client
         self.object_ids = object_ids

@@ -1,5 +1,7 @@
 """Test RCT Power setup process."""
 
+from __future__ import annotations
+
 from dataclasses import asdict
 
 import pytest
