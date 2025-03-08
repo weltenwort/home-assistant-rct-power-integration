@@ -11,7 +11,6 @@ from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions, get_title
 
-
 _LOGGER: Logger = getLogger(__package__)
 
 

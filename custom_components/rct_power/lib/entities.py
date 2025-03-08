@@ -1,20 +1,22 @@
 import re
 from typing import List
 
-from homeassistant.components.sensor import SensorDeviceClass
-from homeassistant.components.sensor import SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from rctclient.registry import REGISTRY
 
-from .device_info_helpers import get_battery_device_info
-from .device_info_helpers import get_inverter_device_info
-from .entity import EntityUpdatePriority
-from .entity import RctPowerBitfieldSensorEntityDescription
-from .entity import RctPowerSensorEntityDescription
-from .state_helpers import available_battery_status
-from .state_helpers import get_first_api_reponse_value_as_absolute_state
-from .state_helpers import get_first_api_response_value_as_battery_status
-from .state_helpers import get_first_api_response_value_as_timestamp
-from .state_helpers import sum_api_response_values_as_state
+from .device_info_helpers import get_battery_device_info, get_inverter_device_info
+from .entity import (
+    EntityUpdatePriority,
+    RctPowerBitfieldSensorEntityDescription,
+    RctPowerSensorEntityDescription,
+)
+from .state_helpers import (
+    available_battery_status,
+    get_first_api_reponse_value_as_absolute_state,
+    get_first_api_response_value_as_battery_status,
+    get_first_api_response_value_as_timestamp,
+    sum_api_response_values_as_state,
+)
 
 
 def get_matching_names(expression: str):

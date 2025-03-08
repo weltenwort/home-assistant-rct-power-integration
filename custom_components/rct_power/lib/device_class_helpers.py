@@ -1,12 +1,12 @@
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
-    UnitOfPower,
     UnitOfApparentPower,
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
     UnitOfEnergy,
+    UnitOfPower,
     UnitOfTemperature,
 )
-from homeassistant.components.sensor import SensorDeviceClass
 
 
 def guess_device_class_from_unit(unit: str):
