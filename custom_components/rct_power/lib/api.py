@@ -1,14 +1,14 @@
 """Sample API Client."""
 
+import asyncio
 import logging
 import struct
-from asyncio import StreamReader, StreamWriter, TimeoutError, open_connection
+from asyncio import StreamReader, StreamWriter, open_connection
 from asyncio.locks import Lock
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, TypeVar, Union
 
-import async_timeout
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidCommand
 from rctclient.frame import ReceiveFrame, SendFrame
@@ -87,7 +87,7 @@ class RctPowerApiClient:
 
     async def async_get_data(self, object_ids: List[int]) -> RctPowerData:
         async with self._connection_lock:
-            async with async_timeout.timeout(CONNECTION_TIMEOUT):
+            async with asyncio.timeout(CONNECTION_TIMEOUT):
                 reader, writer = await open_connection(
                     host=self._hostname, port=self._port
                 )
@@ -117,7 +117,7 @@ class RctPowerApiClient:
         request_time = datetime.now()
 
         try:
-            async with async_timeout.timeout(READ_TIMEOUT):
+            async with asyncio.timeout(READ_TIMEOUT):
                 await writer.drain()
                 writer.write(read_command_frame.data)
 
