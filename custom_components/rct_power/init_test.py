@@ -3,14 +3,14 @@
 from dataclasses import asdict
 
 import pytest
-from custom_components.rct_power import async_setup_entry
-from custom_components.rct_power import async_unload_entry
-from custom_components.rct_power.lib.const import DOMAIN
-from custom_components.rct_power.lib.context import RctPowerContext
-from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+from custom_components.rct_power import async_setup_entry, async_unload_entry
+from custom_components.rct_power.lib.const import DOMAIN
+from custom_components.rct_power.lib.context import RctPowerContext
+from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 
 
 # We can pass fixtures as defined in conftest.py to tell pytest to use the fixture

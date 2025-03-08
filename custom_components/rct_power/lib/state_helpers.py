@@ -1,16 +1,16 @@
 from datetime import datetime
-from typing import get_args
-from typing import Literal
-from typing import Optional
+from typing import Literal, Optional, get_args
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
 from homeassistant.util.dt import as_local
 
 from .api import ApiResponseValue
-from .const import BatteryStatusFlag
-from .const import FREQUENCY_STATE_DECIMAL_DIGITS
-from .const import NUMERIC_STATE_DECIMAL_DIGITS
+from .const import (
+    FREQUENCY_STATE_DECIMAL_DIGITS,
+    NUMERIC_STATE_DECIMAL_DIGITS,
+    BatteryStatusFlag,
+)
 
 
 def get_first_api_response_value_as_state(
