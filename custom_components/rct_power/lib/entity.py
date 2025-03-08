@@ -195,7 +195,7 @@ class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
 class RctPowerEntityDescription(EntityDescription):
     icon: Optional[str] = field(default=ICON)
     object_names: Optional[List[str]] = None
-    # to allow for stable enitity identities even if the object ids change
+    # to allow for stable entity identities even if the object ids change
     unique_id: Optional[str] = None
     update_priority: EntityUpdatePriority = EntityUpdatePriority.FREQUENT
     get_device_info: Callable[[RctPowerEntity], Optional[DeviceInfo]] = lambda e: None

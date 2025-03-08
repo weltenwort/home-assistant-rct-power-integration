@@ -12,7 +12,7 @@ from .entity import (
 )
 from .state_helpers import (
     available_battery_status,
-    get_first_api_reponse_value_as_absolute_state,
+    get_first_api_response_value_as_absolute_state,
     get_first_api_response_value_as_battery_status,
     get_first_api_response_value_as_timestamp,
     sum_api_response_values_as_state,
@@ -164,7 +164,7 @@ battery_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="power_mng.soc_min_island",
-        name="Battery Minimum State of Charge (island)",
+        name="Battery Minimum State of Charge (Island)",
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement="%",
@@ -618,7 +618,7 @@ inverter_sensor_entity_descriptions: List[RctPowerSensorEntityDescription] = [
         name="Grid Energy Production Absolute Total",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        get_native_value=get_first_api_reponse_value_as_absolute_state,
+        get_native_value=get_first_api_response_value_as_absolute_state,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
