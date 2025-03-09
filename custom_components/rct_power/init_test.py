@@ -9,9 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.rct_power import async_setup_entry, async_unload_entry
+from custom_components.rct_power import RctData, async_setup_entry, async_unload_entry
 from custom_components.rct_power.lib.const import DOMAIN
-from custom_components.rct_power.lib.context import RctPowerContext
 from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 
 
@@ -36,17 +35,19 @@ async def test_setup_unload_and_reload_entry(
     # them to be. Because we have patched the RctPowerDataUpdateCoordinator.async_get_data
     # call, no code from custom_components/rct_power/api.py actually runs.
     assert await hass.config_entries.async_setup(config_entry.entry_id)
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert isinstance(hass.data[DOMAIN][config_entry.entry_id], RctPowerContext)
+    await hass.async_block_till_done()
+    assert DOMAIN in hass.data
+    assert isinstance(config_entry.runtime_data, RctData)
 
     # Reload the entry and assert that the data from above is still there
     assert await hass.config_entries.async_reload(config_entry.entry_id)
-    assert DOMAIN in hass.data and config_entry.entry_id in hass.data[DOMAIN]
-    assert isinstance(hass.data[DOMAIN][config_entry.entry_id], RctPowerContext)
+    await hass.async_block_till_done()
+    assert isinstance(config_entry.runtime_data, RctData)
 
     # Unload the entry and verify that the data has been removed
     assert await async_unload_entry(hass, config_entry)
-    assert config_entry.entry_id not in hass.data[DOMAIN]
+    await hass.async_block_till_done()
+    assert DOMAIN not in hass.data
 
 
 async def test_setup_entry_exception(hass: HomeAssistant, error_on_get_data: None):

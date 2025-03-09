@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 
-from .lib.context import RctPowerContext
+from . import RctConfigEntry
 from .lib.entities import (
     battery_sensor_entity_descriptions,
     bitfield_sensor_entity_descriptions,
@@ -19,16 +18,15 @@ from .lib.entity import RctPowerBitfieldSensorEntity, RctPowerSensorEntity
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: RctConfigEntry,
     async_add_entities: Callable[[list[Entity]], None],
 ):
     """Setup sensor platform."""
-    if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:
-        return False
+    data = entry.runtime_data
 
     battery_sensor_entities = [
         RctPowerSensorEntity(
-            coordinators=list(context.update_coordinators.values()),
+            coordinators=list(data.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
         )
@@ -37,7 +35,7 @@ async def async_setup_entry(
 
     inverter_sensor_entities = [
         RctPowerSensorEntity(
-            coordinators=list(context.update_coordinators.values()),
+            coordinators=list(data.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
         )
@@ -46,7 +44,7 @@ async def async_setup_entry(
 
     bitfield_sensor_entities = [
         RctPowerBitfieldSensorEntity(
-            coordinators=list(context.update_coordinators.values()),
+            coordinators=list(data.update_coordinators.values()),
             config_entry=entry,
             entity_description=entity_description,
         )
