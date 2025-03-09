@@ -9,20 +9,16 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-homeassistant = "^2025.2.5"
 python = ">=3.13,<3.14"
+homeassistant = "^2025.2.5"
 rctclient = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
-flake8 = "^7.1.2"
-homeassistant-stubs = "^2025.2.4"
 pre-commit = "^4.1.0"
 pytest = "^8.3.4"
 pytest-emoji = "^0.2.0"
 pytest-homeassistant-custom-component = "^0.13.215"
 pytest-md = "^0.2.0"
-reorder-python-imports = "^3.12.0"
 ruff = "^0.9.10"
 
 [build-system]
