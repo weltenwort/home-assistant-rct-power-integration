@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from asyncio.tasks import gather
-from typing import List
 
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
@@ -10,7 +11,7 @@ from .update_coordinator import RctPowerDataUpdateCoordinator
 class MultiCoordinatorEntity(Entity):
     """A class for entities using multiple DataUpdateCoordinators."""
 
-    def __init__(self, coordinators: List[RctPowerDataUpdateCoordinator]) -> None:
+    def __init__(self, coordinators: list[RctPowerDataUpdateCoordinator]) -> None:
         self.coordinators = coordinators
 
     @property

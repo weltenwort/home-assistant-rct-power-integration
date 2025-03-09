@@ -1,5 +1,7 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Dict
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -11,7 +13,7 @@ from .update_coordinator import RctPowerDataUpdateCoordinator
 
 @dataclass
 class RctPowerContext:
-    update_coordinators: Dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
+    update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
     clean_up: Callable[[], None]
 
     @classmethod

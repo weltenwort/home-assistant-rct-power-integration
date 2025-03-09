@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.const import (
     UnitOfApparentPower,

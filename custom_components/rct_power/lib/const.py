@@ -1,5 +1,7 @@
 """Constants for RCT Power."""
 
+from __future__ import annotations
+
 # Base component constants
 from enum import KEEP, Enum, IntFlag, auto
 
