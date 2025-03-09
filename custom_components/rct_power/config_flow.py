@@ -1,5 +1,7 @@
 """Adds config flow for RCT Power."""
 
+from __future__ import annotations
+
 from dataclasses import asdict
 from logging import Logger, getLogger
 
