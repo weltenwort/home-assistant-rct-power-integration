@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
 from functools import cached_property
@@ -197,7 +197,7 @@ class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
 
 @dataclass(frozen=True, kw_only=True)
 class RctPowerEntityDescription(EntityDescription):
-    icon: str | None = field(default=ICON)
+    icon: str | None = ICON
     object_names: list[str] | None = None
     # to allow for stable entity identities even if the object ids change
     unique_id: str | None = None

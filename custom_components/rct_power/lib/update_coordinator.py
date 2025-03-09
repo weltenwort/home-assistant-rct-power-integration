@@ -31,14 +31,14 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     def get_latest_response(self, object_id: int):
         if self.data is not None:  # pyright: ignore [reportUnnecessaryComparison]
             return self.data.get(object_id)
+        return None
 
     def get_valid_value_or(self, object_id: int, default_value: ApiResponseValue):
         latest_response = self.get_latest_response(object_id)
 
         if isinstance(latest_response, ValidApiResponse):
             return latest_response.value
-        else:
-            return default_value
+        return default_value
 
     def has_valid_value(self, object_id: int):
         return isinstance(self.get_latest_response(object_id), ValidApiResponse)

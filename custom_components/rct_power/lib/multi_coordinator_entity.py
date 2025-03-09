@@ -11,12 +11,10 @@ from .update_coordinator import RctPowerDataUpdateCoordinator
 class MultiCoordinatorEntity(Entity):
     """A class for entities using multiple DataUpdateCoordinators."""
 
+    _attr_should_poll = False
+
     def __init__(self, coordinators: list[RctPowerDataUpdateCoordinator]) -> None:
         self.coordinators = coordinators
-
-    @property
-    def should_poll(self) -> bool:
-        return False
 
     @property
     def available(self) -> bool:
