@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 
 from .const import BATTERY_MODEL, DOMAIN, INVERTER_MODEL, NAME
 from .entity import RctPowerEntity
