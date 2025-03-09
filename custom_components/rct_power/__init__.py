@@ -19,9 +19,9 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.util.hass_dict import HassEntryKey
 
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
+from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
-from .lib.entity import EntityUpdatePriority, resolve_object_infos
+from .lib.entity import resolve_object_infos
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
