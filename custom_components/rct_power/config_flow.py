@@ -22,10 +22,6 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
-    def __init__(self):
-        """Initialize."""
-        self._errors = {}
-
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
         errors = {}
@@ -49,7 +45,7 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "connect"
 
             except MultipleInvalid as exc:
-                errors.update({err.path: err.msg for err in exc.errors})
+                errors.update({str(err.path): err.msg for err in exc.errors})
 
         return self.async_show_form(
             step_id="user",
@@ -93,7 +89,7 @@ class RctPowerOptionsFlowHandler(config_entries.OptionsFlow):
                     data=self.options,
                 )
             except MultipleInvalid as exc:
-                errors.update({err.path: err.msg for err in exc.errors})
+                errors.update({str(err.path): err.msg for err in exc.errors})
 
         return self.async_show_form(
             step_id="user",
