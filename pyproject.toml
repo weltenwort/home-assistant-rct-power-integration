@@ -14,7 +14,7 @@ homeassistant = "^2025.2.5"
 rctclient = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^4.1.0"
+pre-commit = "^4.2.0"
 pytest = "^8.3.4"
 pytest-emoji = "^0.2.0"
 pytest-homeassistant-custom-component = "^0.13.215"
