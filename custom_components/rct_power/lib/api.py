@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 import struct
 from asyncio import StreamReader, StreamWriter, open_connection
 from asyncio.locks import Lock
@@ -18,10 +17,11 @@ from rctclient.registry import REGISTRY
 from rctclient.types import Command, EventEntry
 from rctclient.utils import decode_value
 
+from ..const import LOGGER
+
 CONNECTION_TIMEOUT = 20
 READ_TIMEOUT = 2
 INVERTER_SN_OID = 0x7924ABD9
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 ApiResponseValue = (
     bool
@@ -113,7 +113,7 @@ class RctPowerApiClient:
         object_name = REGISTRY.get_by_id(object_id).name
         read_command_frame = SendFrame(command=Command.READ, id=object_id)
 
-        _LOGGER.debug(
+        LOGGER.debug(
             "Requesting RCT Power data for object %x (%s)...", object_id, object_name
         )
         request_time = datetime.now()
@@ -140,7 +140,7 @@ class RctPowerApiClient:
 
                         # ignore, if this is not the answer to the latest request
                         if object_id != response_frame.id:
-                            _LOGGER.debug(
+                            LOGGER.debug(
                                 "Mismatch of requested and received object ids: requested %x (%s), but received %x (%s)",
                                 object_id,
                                 object_name,
@@ -159,7 +159,7 @@ class RctPowerApiClient:
                             | tuple[datetime, dict[datetime, EventEntry]]
                         ) = decode_value(data_type, response_frame.data)  # type: ignore
 
-                        _LOGGER.debug(
+                        LOGGER.debug(
                             "Decoded data for object %x (%s): %s",
                             response_frame.id,
                             received_object_name,
@@ -172,7 +172,7 @@ class RctPowerApiClient:
                             value=decoded_value,
                         )
                     else:
-                        _LOGGER.debug(
+                        LOGGER.debug(
                             "Error decoding object %x (%s): %s",
                             object_id,
                             object_name,
@@ -183,7 +183,7 @@ class RctPowerApiClient:
                         )
 
         except TimeoutError as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
@@ -192,35 +192,35 @@ class RctPowerApiClient:
                 cause="OBJECT_READ_TIMEOUT",
             )
         except FrameCRCMismatch as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="CRC_ERROR"
             )
         except FrameLengthExceeded as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="FRAME_LENGTH_EXCEEDED"
             )
         except InvalidCommand as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="INVALID_COMMAND"
             )
         except struct.error as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="PARSING_ERROR"
             )
         except Exception as exc:
-            _LOGGER.debug(
+            LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )
             return InvalidApiResponse(

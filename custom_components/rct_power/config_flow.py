@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from logging import Logger, getLogger
 
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -12,8 +11,6 @@ from voluptuous.error import MultipleInvalid
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions, get_title
-
-_LOGGER: Logger = getLogger(__package__)
 
 
 class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

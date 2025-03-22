@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from logging import Logger
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
+from .const import LOGGER
 from .lib.api import ApiResponseValue, RctPowerApiClient, RctPowerData, ValidApiResponse
 from .lib.const import DOMAIN
 
@@ -19,7 +19,6 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
     def __init__(
         self,
         hass: HomeAssistant,
-        logger: Logger,
         entry: ConfigEntry,
         *,
         name_suffix: str,
@@ -32,7 +31,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         super().__init__(
             hass=hass,
             config_entry=entry,
-            logger=logger,
+            logger=LOGGER,
             name=f"{DOMAIN} {entry.unique_id} {name_suffix}",
             update_interval=update_interval,
         )
