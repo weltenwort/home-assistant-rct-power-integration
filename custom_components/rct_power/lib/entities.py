@@ -5,9 +5,9 @@ import re
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from rctclient.registry import REGISTRY
 
+from .const import EntityUpdatePriority
 from .device_info_helpers import get_battery_device_info, get_inverter_device_info
 from .entity import (
-    EntityUpdatePriority,
     RctPowerBitfieldSensorEntityDescription,
     RctPowerSensorEntityDescription,
 )

@@ -14,7 +14,6 @@ from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.typing import ConfigType
 
 from .lib.api import RctPowerApiClient
@@ -101,16 +100,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
         client=client,
     )
 
-    await frequent_update_coordinator.async_refresh()
-    await infrequent_update_coordinator.async_refresh()
-    await static_update_coordinator.async_refresh()
-
-    if not (
-        frequent_update_coordinator.last_update_success
-        and infrequent_update_coordinator.last_update_success
-        and static_update_coordinator.last_update_success
-    ):
-        raise ConfigEntryNotReady
+    await frequent_update_coordinator.async_config_entry_first_refresh()
+    await infrequent_update_coordinator.async_config_entry_first_refresh()
+    await static_update_coordinator.async_config_entry_first_refresh()
 
     remove_update_listener = entry.add_update_listener(async_reload_entry)
 
