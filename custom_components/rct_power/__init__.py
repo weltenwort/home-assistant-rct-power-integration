@@ -7,27 +7,34 @@ https://github.com/weltenwort/home-assistant-rct-power-integration
 
 from __future__ import annotations
 
-import asyncio
 import logging
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import Literal
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.util.hass_dict import HassEntryKey
 
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE
-from .lib.context import RctPowerContext
-from .lib.domain_data import get_domain_data
+from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
-from .lib.entity import EntityUpdatePriority, resolve_object_infos
+from .lib.entity import resolve_object_infos
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
+RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+type RctConfigEntry = ConfigEntry[RctData]
+
+
+@dataclass
+class RctData:
+    update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType):
@@ -35,10 +42,13 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[True]:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: RctConfigEntry
+) -> Literal[True]:
     """Set up this integration using UI."""
-    if len(domain_data := get_domain_data(hass)) == 0:
+    if not (data := hass.data.setdefault(DOMAIN, {})):
         _LOGGER.info(STARTUP_MESSAGE)
+        data["startup_message"] = True
 
     config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
     config_entry_options = RctPowerConfigEntryOptions.from_config_entry(entry)
@@ -104,44 +114,32 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> Literal[
     await infrequent_update_coordinator.async_config_entry_first_refresh()
     await static_update_coordinator.async_config_entry_first_refresh()
 
-    remove_update_listener = entry.add_update_listener(async_reload_entry)
-
-    domain_data[entry.entry_id] = RctPowerContext(
-        update_coordinators={
+    entry.runtime_data = RctData(
+        {
             EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
             EntityUpdatePriority.INFREQUENT: infrequent_update_coordinator,
             EntityUpdatePriority.STATIC: static_update_coordinator,
-        },
-        clean_up=remove_update_listener,
+        }
     )
 
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Handle removal of an entry."""
-    if (context := RctPowerContext.get_from_domain_data(hass, entry)) is None:
-        return False
-
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-            ]
-        )
-    )
-
-    if unloaded:
-        context.clean_up()
-        context.remove_from_domain_data(hass, entry)
-
-    return unloaded
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if (
+        unload_ok
+        and len(entries := hass.config_entries.async_loaded_entries(DOMAIN)) == 1
+        and entries[0].entry_id == entry.entry_id
+    ):
+        hass.data.pop(DOMAIN)
+    return unload_ok
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_reload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> None:
     """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    await hass.config_entries.async_reload(entry.entry_id)
