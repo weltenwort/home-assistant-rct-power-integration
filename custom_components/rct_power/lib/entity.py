@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
@@ -54,7 +54,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
     def get_api_response_by_id(
         self, object_id: int, default: ApiResponse | None = None
-    ):
+    ) -> ApiResponse | None:
         for coordinator in self.coordinators:
             latest_response = coordinator.get_latest_response(object_id)
 
@@ -65,27 +65,27 @@ class RctPowerEntity(MultiCoordinatorEntity):
 
     def get_api_response_by_name(
         self, object_name: str, default: ApiResponse | None = None
-    ):
+    ) -> ApiResponse | None:
         return self.get_api_response_by_id(
             REGISTRY.get_by_name(object_name).object_id, default
         )
 
-    def get_valid_api_response_value_by_id(
-        self, object_id: int, default: ApiResponseValue | None = None
-    ):
+    def get_valid_api_response_value_by_id[R: ApiResponseValue](
+        self, object_id: int, default: R | None = None
+    ) -> ApiResponseValue | R | None:
         return get_valid_response_value_or(
             self.get_api_response_by_id(object_id, None), default
         )
 
-    def get_valid_api_response_value_by_name(
-        self, object_name: str, default: ApiResponseValue | None = None
-    ):
+    def get_valid_api_response_value_by_name[R: ApiResponseValue](
+        self, object_name: str, default: R | None = None
+    ) -> ApiResponseValue | R | None:
         return get_valid_response_value_or(
             self.get_api_response_by_name(object_name, None), default
         )
 
     @property
-    def config_entry_data(self):
+    def config_entry_data(self) -> RctPowerConfigEntryData:
         return RctPowerConfigEntryData.from_config_entry(self.config_entry)
 
     @cached_property
@@ -120,32 +120,32 @@ class RctPowerEntity(MultiCoordinatorEntity):
         )
 
     @cached_property
-    def unit_of_measurement(self):
+    def unit_of_measurement(self) -> str | None:
         if unit_of_measurement := super().unit_of_measurement:
             return unit_of_measurement
 
         return self.object_infos[0].unit
 
     @cached_property
-    def extra_state_attributes(self) -> Mapping[str, Any] | None:
+    def extra_state_attributes(self) -> dict[str, Any] | None:
         return {}
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo | None:
         return self.entity_description.get_device_info(self)
 
 
 class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
     entity_description: RctPowerSensorEntityDescription  # pyright: ignore [reportIncompatibleVariableOverride]
 
-    def get_valid_api_responses(self):
+    def get_valid_api_responses(self) -> list[ApiResponseValue | None]:
         return [
             self.get_valid_api_response_value_by_id(object_info.object_id, None)
             for object_info in self.object_infos
         ]
 
     @property
-    def device_class(self):
+    def device_class(self) -> SensorDeviceClass | None:
         """Return the device class of the sensor."""
         if device_class := super().device_class:
             return device_class
@@ -162,7 +162,7 @@ class RctPowerSensorEntity(SensorEntity, RctPowerEntity):
         )
 
     @cached_property
-    def native_unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str | None:
         if native_unit_of_measurement := super().native_unit_of_measurement:
             return native_unit_of_measurement
 
@@ -175,7 +175,7 @@ class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
         return None
 
     @property
-    def device_class(self):
+    def device_class(self) -> SensorDeviceClass | None:
         """Return the device class of the sensor."""
         if device_class := super().device_class:
             return device_class
@@ -186,9 +186,9 @@ class RctPowerBitfieldSensorEntity(RctPowerSensorEntity):
         return None
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {
-            **(super().extra_state_attributes),
+            **(super().extra_state_attributes or {}),
             "bitfield": get_api_response_values_as_bitfield(
                 self, self.get_valid_api_responses()
             ),
@@ -210,7 +210,8 @@ class RctPowerSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
     get_native_value: Callable[
-        [RctPowerSensorEntity, list[ApiResponseValue | None]], StateType
+        [RctPowerSensorEntity, list[ApiResponseValue | None]],
+        StateType | date | datetime | Decimal,
     ] = get_first_api_response_value_as_state
 
 
@@ -219,20 +220,23 @@ class RctPowerBitfieldSensorEntityDescription(
     RctPowerEntityDescription, SensorEntityDescription
 ):
     get_native_value: Callable[
-        [RctPowerSensorEntity, list[ApiResponseValue | None]], StateType
+        [RctPowerSensorEntity, list[ApiResponseValue | None]],
+        StateType | date | datetime | Decimal,
     ] = get_api_response_values_as_bitfield
 
 
-def slugify_entity_name(name: str):
+def slugify_entity_name(name: str) -> str:
     return name.replace(".", "_").replace("[", "_").replace("]", "_").replace("?", "_")
 
 
-def resolve_object_infos(entity_description: RctPowerEntityDescription):
+def resolve_object_infos(
+    entity_description: RctPowerEntityDescription,
+) -> list[ObjectInfo]:
     object_names = entity_description.object_names or [entity_description.key]
     return [REGISTRY.get_by_name(object_name) for object_name in object_names]
 
 
-known_faults = [
+known_faults: list[str] = [
     "TRAP occurred",
     "RTC can't be configured",
     "RTC 1Hz signal timeout",

@@ -62,7 +62,7 @@ def get_first_api_response_value_as_absolute_state(
 def sum_api_response_values_as_state(
     entity: SensorEntity,
     values: list[ApiResponseValue | None],
-) -> StateType:
+) -> float:
     return sum(
         (
             float(state_value)
@@ -124,7 +124,7 @@ def get_first_api_response_value_as_battery_status(
 def get_api_response_values_as_bitfield(
     entity: SensorEntity,
     values: list[ApiResponseValue | None],
-) -> StateType:
+) -> str:
     return "".join(f"{value:b}" for value in values if isinstance(value, int))
 
 
@@ -134,7 +134,7 @@ def get_api_response_values_as_bitfield(
 def get_first_api_response_value_as_timestamp(
     entity: SensorEntity,
     values: list[ApiResponseValue | None],
-) -> StateType:
+) -> datetime | None:
     if len(values) <= 0:
         return None
 
@@ -144,7 +144,7 @@ def get_first_api_response_value_as_timestamp(
 def get_api_response_value_as_timestamp(
     entity: SensorEntity,
     value: ApiResponseValue | None,
-) -> StateType:
+) -> datetime | None:
     if isinstance(value, int):
         return as_local(datetime.fromtimestamp(value))
 

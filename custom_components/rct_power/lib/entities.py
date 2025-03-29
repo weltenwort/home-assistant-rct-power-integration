@@ -20,7 +20,7 @@ from .state_helpers import (
 )
 
 
-def get_matching_names(expression: str):
+def get_matching_names(expression: str) -> list[str]:
     compiled_expression = re.compile(expression)
     return [
         object_info.name

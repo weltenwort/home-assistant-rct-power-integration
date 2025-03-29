@@ -11,7 +11,7 @@ from homeassistant.const import (
 )
 
 
-def guess_device_class_from_unit(unit: str):
+def guess_device_class_from_unit(unit: str) -> SensorDeviceClass | None:
     if unit in [
         UnitOfTemperature.CELSIUS,
         UnitOfTemperature.FAHRENHEIT,

@@ -8,7 +8,6 @@ from asyncio import StreamReader, StreamWriter, open_connection
 from asyncio.locks import Lock
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TypeVar
 
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidCommand
@@ -23,7 +22,7 @@ CONNECTION_TIMEOUT = 20
 READ_TIMEOUT = 2
 INVERTER_SN_OID = 0x7924ABD9
 
-ApiResponseValue = (
+type ApiResponseValue = (
     bool
     | bytes
     | float
@@ -32,7 +31,6 @@ ApiResponseValue = (
     | tuple[datetime, dict[datetime, int]]
     | tuple[datetime, dict[datetime, EventEntry]]
 )
-DefaultResponseValue = TypeVar("DefaultResponseValue")
 
 
 @dataclass
@@ -51,14 +49,13 @@ class InvalidApiResponse(BaseApiResponse):
     cause: str
 
 
-ApiResponse = ValidApiResponse | InvalidApiResponse
-RctPowerData = dict[int, ApiResponse]
+type ApiResponse = ValidApiResponse | InvalidApiResponse
+type RctPowerData = dict[int, ApiResponse]
 
 
-def get_valid_response_value_or(
-    response: ApiResponse | None,
-    defaultValue: DefaultResponseValue,
-) -> ApiResponseValue | DefaultResponseValue:
+def get_valid_response_value_or[_R](
+    response: ApiResponse | None, defaultValue: _R
+) -> ApiResponseValue | _R:
     if isinstance(response, ValidApiResponse):
         return response.value
     else:
@@ -109,7 +106,7 @@ class RctPowerApiClient:
 
     async def _read_object(
         self, reader: StreamReader, writer: StreamWriter, object_id: int
-    ):
+    ) -> ApiResponse:
         object_name = REGISTRY.get_by_id(object_id).name
         read_command_frame = SendFrame(command=Command.READ, id=object_id)
 
@@ -149,15 +146,9 @@ class RctPowerApiClient:
                             )
                             continue
 
-                        decoded_value: (
-                            bool
-                            | bytes
-                            | float
-                            | int
-                            | str
-                            | tuple[datetime, dict[datetime, int]]
-                            | tuple[datetime, dict[datetime, EventEntry]]
-                        ) = decode_value(data_type, response_frame.data)  # type: ignore
+                        decoded_value: ApiResponseValue = decode_value(
+                            data_type, response_frame.data
+                        )  # type: ignore
 
                         LOGGER.debug(
                             "Decoded data for object %x (%s): %s",
