@@ -18,6 +18,7 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, StateType, UndefinedType
 from rctclient.registry import REGISTRY, ObjectInfo
 
+from ..coordinator import RctPowerDataUpdateCoordinator
 from .api import (
     ApiResponse,
     ApiResponseValue,
@@ -32,7 +33,6 @@ from .state_helpers import (
     get_api_response_values_as_bitfield,
     get_first_api_response_value_as_state,
 )
-from .update_coordinator import RctPowerDataUpdateCoordinator
 
 
 class RctPowerEntity(MultiCoordinatorEntity):

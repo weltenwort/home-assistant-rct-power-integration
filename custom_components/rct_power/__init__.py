@@ -17,12 +17,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.util.hass_dict import HassEntryKey
 
+from .coordinator import RctPowerDataUpdateCoordinator
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
 from .lib.entity import resolve_object_infos
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
-from .lib.update_coordinator import RctPowerDataUpdateCoordinator
 
 SCAN_INTERVAL = timedelta(seconds=30)
 RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
@@ -68,7 +68,8 @@ async def async_setup_entry(
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=f"{DOMAIN} {entry.unique_id} frequent",
+        entry=entry,
+        name_suffix="frequent",
         update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
         object_ids=frequently_updated_object_ids,
         client=client,
@@ -85,7 +86,8 @@ async def async_setup_entry(
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=f"{DOMAIN} {entry.unique_id} infrequent",
+        entry=entry,
+        name_suffix="infrequent",
         update_interval=timedelta(
             seconds=config_entry_options.infrequent_scan_interval
         ),
@@ -104,7 +106,8 @@ async def async_setup_entry(
     static_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         logger=_LOGGER,
-        name=f"{DOMAIN} {entry.unique_id} static",
+        entry=entry,
+        name_suffix="static",
         update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
         object_ids=static_object_ids,
         client=client,
