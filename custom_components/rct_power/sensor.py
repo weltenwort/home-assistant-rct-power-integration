@@ -20,7 +20,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: RctConfigEntry,
     async_add_entities: Callable[[list[Entity]], None],
-):
+) -> None:
     """Setup sensor platform."""
     data = entry.runtime_data
 
