@@ -5,7 +5,7 @@ from asyncio.tasks import gather
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
 
-from .update_coordinator import RctPowerDataUpdateCoordinator
+from ..coordinator import RctPowerDataUpdateCoordinator
 
 
 class MultiCoordinatorEntity(Entity):
