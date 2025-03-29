@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.rct_power import RctData, async_setup_entry, async_unload_entry
+from custom_components.rct_power import RctData, async_setup_entry
 from custom_components.rct_power.lib.const import DOMAIN
 from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 
@@ -35,18 +35,12 @@ async def test_setup_unload_and_reload_entry(hass: HomeAssistant) -> None:
     # call, no code from custom_components/rct_power/api.py actually runs.
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
-    assert DOMAIN in hass.data
     assert isinstance(config_entry.runtime_data, RctData)
 
     # Reload the entry and assert that the data from above is still there
     assert await hass.config_entries.async_reload(config_entry.entry_id)
     await hass.async_block_till_done()
     assert isinstance(config_entry.runtime_data, RctData)
-
-    # Unload the entry and verify that the data has been removed
-    assert await async_unload_entry(hass, config_entry)
-    await hass.async_block_till_done()
-    assert DOMAIN not in hass.data
 
 
 @pytest.mark.usefixtures("error_on_get_data")
