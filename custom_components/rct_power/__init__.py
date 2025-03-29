@@ -7,7 +7,6 @@ https://github.com/weltenwort/home-assistant-rct-power-integration
 
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import Literal
@@ -19,15 +18,13 @@ from homeassistant.util.hass_dict import HassEntryKey
 
 from .coordinator import RctPowerDataUpdateCoordinator
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN, PLATFORMS, STARTUP_MESSAGE, EntityUpdatePriority
+from .lib.const import DOMAIN, PLATFORMS, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
 from .lib.entity import resolve_object_infos
 from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
 
 SCAN_INTERVAL = timedelta(seconds=30)
 RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 type RctConfigEntry = ConfigEntry[RctData]
 
@@ -46,9 +43,6 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: RctConfigEntry
 ) -> Literal[True]:
     """Set up this integration using UI."""
-    if not (data := hass.data.setdefault(DOMAIN, {})):
-        _LOGGER.info(STARTUP_MESSAGE)
-        data["startup_message"] = True
 
     config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
     config_entry_options = RctPowerConfigEntryOptions.from_config_entry(entry)
@@ -67,7 +61,6 @@ async def async_setup_entry(
     )
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
-        logger=_LOGGER,
         entry=entry,
         name_suffix="frequent",
         update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
@@ -85,7 +78,6 @@ async def async_setup_entry(
     )
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
-        logger=_LOGGER,
         entry=entry,
         name_suffix="infrequent",
         update_interval=timedelta(
@@ -105,7 +97,6 @@ async def async_setup_entry(
     )
     static_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
-        logger=_LOGGER,
         entry=entry,
         name_suffix="static",
         update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
@@ -133,14 +124,7 @@ async def async_setup_entry(
 
 async def async_unload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Handle removal of an entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if (
-        unload_ok
-        and len(entries := hass.config_entries.async_loaded_entries(DOMAIN)) == 1
-        and entries[0].entry_id == entry.entry_id
-    ):
-        hass.data.pop(DOMAIN)
-    return unload_ok
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> None:
