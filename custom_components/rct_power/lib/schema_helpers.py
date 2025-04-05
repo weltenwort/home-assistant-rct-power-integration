@@ -4,6 +4,7 @@ from dataclasses import MISSING, Field, fields
 from typing import Any
 
 import voluptuous as vol
+from homeassistant.helpers.typing import VolSchemaType
 
 
 def get_key_for_field(field: Field[Any]):
@@ -13,11 +14,13 @@ def get_key_for_field(field: Field[Any]):
     return vol.Optional(field.name, default=field.default)
 
 
-def get_schema_for_field(field: Field[Any]):
+def get_schema_for_field(field: Field[Any]) -> Any:
     return field.metadata.get("schema_type", field.type)
 
 
-def get_schema_for_dataclass(cls: type, allow_fields: list[str] | None = None):
+def get_schema_for_dataclass(
+    cls: type, allow_fields: list[str] | None = None
+) -> VolSchemaType:
     return vol.Schema(
         {
             get_key_for_field(field): get_schema_for_field(field)
