@@ -12,7 +12,6 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.typing import ConfigType
 from homeassistant.util.hass_dict import HassEntryKey
 
 from .coordinator import RctPowerDataUpdateCoordinator
@@ -31,11 +30,6 @@ type RctConfigEntry = ConfigEntry[RctData]
 @dataclass
 class RctData:
     update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
-
-
-async def async_setup(hass: HomeAssistant, config: ConfigType):
-    """Set up this integration using YAML is not supported."""
-    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
