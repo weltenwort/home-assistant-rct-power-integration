@@ -16,7 +16,8 @@ from .const import (
     CONF_HOSTNAME,
     DEFAULT_ENTITY_PREFIX,
     DEFAULT_PORT,
-    ScanInterval,
+    ConfScanInterval,
+    ScanIntervalDefault,
 )
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN
@@ -104,13 +105,13 @@ CONFIG_FLOW_SCHEMA = vol.Schema(
 OPTIONS_SCHEMA = vol.Schema(
     {
         vol.Optional(
-            ScanInterval.FREQUENT.key, default=ScanInterval.FREQUENT.default
+            ConfScanInterval.FREQUENT.value, default=ScanIntervalDefault.FREQUENT
         ): cv.positive_int,
         vol.Optional(
-            ScanInterval.INFREQUENT.key, default=ScanInterval.INFREQUENT.default
+            ConfScanInterval.INFREQUENT.value, default=ScanIntervalDefault.INFREQUENT
         ): cv.positive_int,
         vol.Optional(
-            ScanInterval.STATIC.key, default=ScanInterval.STATIC.default
+            ConfScanInterval.STATIC.value, default=ScanIntervalDefault.STATIC
         ): cv.positive_int,
     }
 )

@@ -15,7 +15,7 @@ from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.util.hass_dict import HassEntryKey
 
-from .const import CONF_HOSTNAME, ScanInterval
+from .const import CONF_HOSTNAME, ConfScanInterval, ScanIntervalDefault
 from .coordinator import RctPowerDataUpdateCoordinator
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN, PLATFORMS, EntityUpdatePriority
@@ -53,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         name_suffix="frequent",
         update_interval=timedelta(
             seconds=entry.options.get(
-                ScanInterval.FREQUENT.key, ScanInterval.FREQUENT.default
+                ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT
             )
         ),
         object_ids=frequently_updated_object_ids,
@@ -74,7 +74,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         name_suffix="infrequent",
         update_interval=timedelta(
             seconds=entry.options.get(
-                ScanInterval.INFREQUENT.key, ScanInterval.INFREQUENT.default
+                ConfScanInterval.INFREQUENT, ScanIntervalDefault.INFREQUENT
             ),
         ),
         object_ids=infrequently_updated_object_ids,
@@ -95,7 +95,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         name_suffix="static",
         update_interval=timedelta(
             seconds=entry.options.get(
-                ScanInterval.STATIC.key, ScanInterval.STATIC.default
+                ConfScanInterval.STATIC, ScanIntervalDefault.STATIC
             ),
         ),
         object_ids=static_object_ids,

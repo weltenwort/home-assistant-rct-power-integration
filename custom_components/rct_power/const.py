@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from enum import Enum
+from enum import IntEnum, StrEnum
 from typing import Final
 
 LOGGER = logging.getLogger(__package__)
@@ -14,16 +14,13 @@ DEFAULT_ENTITY_PREFIX: Final = "RCT Power Storage"
 DEFAULT_PORT: Final = 8899
 
 
-class ScanInterval(Enum):
-    FREQUENT = ("frequent_scan_interval", 30)
-    INFREQUENT = ("infrequent_scan_interval", 60 * 3)
-    STATIC = ("static_scan_interval", 60 * 60)
+class ConfScanInterval(StrEnum):
+    FREQUENT = "frequent_scan_interval"
+    INFREQUENT = "infrequent_scan_interval"
+    STATIC = "static_scan_interval"
 
-    @property
-    def key(self) -> str:
-        return self.value[0]
 
-    @property
-    def default(self) -> int:
-        """Default scan interval in seconds."""
-        return self.value[1]
+class ScanIntervalDefault(IntEnum):
+    FREQUENT = 30
+    INFREQUENT = 60 * 3
+    STATIC = 60 * 60
