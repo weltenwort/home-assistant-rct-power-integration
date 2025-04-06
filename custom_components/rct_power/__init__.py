@@ -52,7 +52,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="frequent",
         update_interval=timedelta(
-            entry.options.get(ScanInterval.FREQUENT.key, ScanInterval.FREQUENT.default)
+            seconds=entry.options.get(
+                ScanInterval.FREQUENT.key, ScanInterval.FREQUENT.default
+            )
         ),
         object_ids=frequently_updated_object_ids,
         client=client,
@@ -71,7 +73,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="infrequent",
         update_interval=timedelta(
-            entry.options.get(
+            seconds=entry.options.get(
                 ScanInterval.INFREQUENT.key, ScanInterval.INFREQUENT.default
             ),
         ),
@@ -92,7 +94,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="static",
         update_interval=timedelta(
-            entry.options.get(ScanInterval.STATIC.key, ScanInterval.STATIC.default),
+            seconds=entry.options.get(
+                ScanInterval.STATIC.key, ScanInterval.STATIC.default
+            ),
         ),
         object_ids=static_object_ids,
         client=client,
