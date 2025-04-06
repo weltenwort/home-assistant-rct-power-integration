@@ -24,11 +24,6 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 PLATFORMS = [SENSOR]
 
-# Configuration and options
-CONF_ENABLED = "enabled"
-CONF_HOSTNAME = "hostname"
-CONF_PORT = "port"
-CONF_SCAN_INTERVAL = "scan_interval"
 
 # Defaults
 DEFAULT_NAME = DOMAIN

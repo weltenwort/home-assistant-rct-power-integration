@@ -2,16 +2,20 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
-
 import pytest
+from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.rct_power import RctData, async_setup_entry
+from custom_components.rct_power.const import (
+    CONF_ENTITY_PREFIX,
+    CONF_HOSTNAME,
+    DEFAULT_ENTITY_PREFIX,
+    DEFAULT_PORT,
+)
 from custom_components.rct_power.lib.const import DOMAIN
-from custom_components.rct_power.lib.entry import RctPowerConfigEntryData
 
 
 # We can pass fixtures as defined in conftest.py to tell pytest to use the fixture
@@ -25,7 +29,11 @@ async def test_setup_unload_and_reload_entry(hass: HomeAssistant) -> None:
     # Create a mock entry so we don't have to go through config flow
     config_entry = MockConfigEntry(
         domain=DOMAIN,
-        data=asdict(RctPowerConfigEntryData(hostname="localhost")),
+        data={
+            CONF_HOSTNAME: "localhost",
+            CONF_PORT: DEFAULT_PORT,
+            CONF_ENTITY_PREFIX: DEFAULT_ENTITY_PREFIX,
+        },
         entry_id="test",
     )
 
@@ -48,7 +56,11 @@ async def test_setup_entry_exception(hass: HomeAssistant) -> None:
     """Test ConfigEntryNotReady when API raises an exception during entry setup."""
     config_entry = MockConfigEntry(
         domain=DOMAIN,
-        data=asdict(RctPowerConfigEntryData(hostname="localhost")),
+        data={
+            CONF_HOSTNAME: "localhost",
+            CONF_PORT: DEFAULT_PORT,
+            CONF_ENTITY_PREFIX: DEFAULT_ENTITY_PREFIX,
+        },
         entry_id="test",
     )
 
