@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PORT
@@ -21,6 +22,7 @@ from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN, PLATFORMS, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
 from .lib.entity import resolve_object_infos
+from .models import RctConfEntryData, RctConfEntryOptions
 
 RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
 
@@ -34,9 +36,12 @@ class RctData:
 
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Set up this integration using UI."""
+    data = cast(RctConfEntryData, entry.data)
+    options = cast(RctConfEntryOptions, entry.options)
+
     client = RctPowerApiClient(
-        hostname=entry.data[CONF_HOSTNAME],
-        port=entry.data[CONF_PORT],
+        hostname=data[CONF_HOSTNAME],
+        port=data[CONF_PORT],
     )
 
     frequently_updated_object_ids = list(
@@ -52,9 +57,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="frequent",
         update_interval=timedelta(
-            seconds=entry.options.get(
-                ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT
-            )
+            seconds=options.get(ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT)
         ),
         object_ids=frequently_updated_object_ids,
         client=client,
@@ -73,7 +76,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="infrequent",
         update_interval=timedelta(
-            seconds=entry.options.get(
+            seconds=options.get(
                 ConfScanInterval.INFREQUENT, ScanIntervalDefault.INFREQUENT
             ),
         ),
@@ -94,9 +97,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="static",
         update_interval=timedelta(
-            seconds=entry.options.get(
-                ConfScanInterval.STATIC, ScanIntervalDefault.STATIC
-            ),
+            seconds=options.get(ConfScanInterval.STATIC, ScanIntervalDefault.STATIC),
         ),
         object_ids=static_object_ids,
         client=client,
