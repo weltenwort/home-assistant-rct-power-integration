@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import LOGGER
+from .const import DOMAIN, LOGGER
 from .lib.api import (
     ApiResponseValue,
     InvalidApiResponse,
@@ -14,7 +14,6 @@ from .lib.api import (
     RctPowerData,
     ValidApiResponse,
 )
-from .lib.const import DOMAIN
 
 
 class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
