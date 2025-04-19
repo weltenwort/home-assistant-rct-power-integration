@@ -9,19 +9,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import cast
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.util.hass_dict import HassEntryKey
 
+from .const import CONF_HOSTNAME, ConfScanInterval, ScanIntervalDefault
 from .coordinator import RctPowerDataUpdateCoordinator
 from .lib.api import RctPowerApiClient
 from .lib.const import DOMAIN, PLATFORMS, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
 from .lib.entity import resolve_object_infos
-from .lib.entry import RctPowerConfigEntryData, RctPowerConfigEntryOptions
+from .models import RctConfEntryData, RctConfEntryOptions
 
-SCAN_INTERVAL = timedelta(seconds=30)
 RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
 
 type RctConfigEntry = ConfigEntry[RctData]
@@ -34,12 +36,12 @@ class RctData:
 
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Set up this integration using UI."""
-
-    config_entry_data = RctPowerConfigEntryData.from_config_entry(entry)
-    config_entry_options = RctPowerConfigEntryOptions.from_config_entry(entry)
+    data = cast(RctConfEntryData, entry.data)
+    options = cast(RctConfEntryOptions, entry.options)
 
     client = RctPowerApiClient(
-        hostname=config_entry_data.hostname, port=config_entry_data.port
+        hostname=data[CONF_HOSTNAME],
+        port=data[CONF_PORT],
     )
 
     frequently_updated_object_ids = list(
@@ -54,7 +56,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         hass=hass,
         entry=entry,
         name_suffix="frequent",
-        update_interval=timedelta(seconds=config_entry_options.frequent_scan_interval),
+        update_interval=timedelta(
+            seconds=options.get(ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT)
+        ),
         object_ids=frequently_updated_object_ids,
         client=client,
     )
@@ -72,7 +76,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         entry=entry,
         name_suffix="infrequent",
         update_interval=timedelta(
-            seconds=config_entry_options.infrequent_scan_interval
+            seconds=options.get(
+                ConfScanInterval.INFREQUENT, ScanIntervalDefault.INFREQUENT
+            ),
         ),
         object_ids=infrequently_updated_object_ids,
         client=client,
@@ -90,7 +96,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         hass=hass,
         entry=entry,
         name_suffix="static",
-        update_interval=timedelta(seconds=config_entry_options.static_scan_interval),
+        update_interval=timedelta(
+            seconds=options.get(ConfScanInterval.STATIC, ScanIntervalDefault.STATIC),
+        ),
         object_ids=static_object_ids,
         client=client,
     )
