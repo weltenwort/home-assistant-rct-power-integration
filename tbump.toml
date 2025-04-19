@@ -22,7 +22,3 @@ search = '^version = "{current_version}"$'
 [[file]]
 src = "custom_components/rct_power/manifest.json"
 search = '"version": "{current_version}"'
-
-[[file]]
-src = "custom_components/rct_power/lib/const.py"
-search = '^VERSION = "{current_version}"'
