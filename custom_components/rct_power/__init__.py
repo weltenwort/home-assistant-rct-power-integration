@@ -8,7 +8,6 @@ https://github.com/weltenwort/home-assistant-rct-power-integration
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
 from typing import cast
 
 from homeassistant.config_entries import ConfigEntry
@@ -34,6 +33,18 @@ class RctData:
     update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
 
 
+def object_ids_for_update_priority(update_priority: EntityUpdatePriority) -> list[int]:
+    """Collect all object_ids for an update_priority."""
+    return list(
+        {
+            object_info.object_id
+            for entity_description in all_entity_descriptions
+            if entity_description.update_priority == update_priority
+            for object_info in resolve_object_infos(entity_description)
+        }
+    )
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Set up this integration using UI."""
     data = cast(RctConfEntryData, entry.data)
@@ -44,63 +55,37 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         port=data[CONF_PORT],
     )
 
-    frequently_updated_object_ids = list(
-        {
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.FREQUENT
-            for object_info in resolve_object_infos(entity_description)
-        }
-    )
     frequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         entry=entry,
-        name_suffix="frequent",
-        update_interval=timedelta(
-            seconds=options.get(ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT)
-        ),
-        object_ids=frequently_updated_object_ids,
         client=client,
+        name_suffix="frequent",
+        object_ids=object_ids_for_update_priority(EntityUpdatePriority.FREQUENT),
+        update_interval=options.get(
+            ConfScanInterval.FREQUENT, ScanIntervalDefault.FREQUENT
+        ),
     )
 
-    infrequently_updated_object_ids = list(
-        {
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.INFREQUENT
-            for object_info in resolve_object_infos(entity_description)
-        }
-    )
     infrequent_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         entry=entry,
-        name_suffix="infrequent",
-        update_interval=timedelta(
-            seconds=options.get(
-                ConfScanInterval.INFREQUENT, ScanIntervalDefault.INFREQUENT
-            ),
-        ),
-        object_ids=infrequently_updated_object_ids,
         client=client,
+        name_suffix="infrequent",
+        object_ids=object_ids_for_update_priority(EntityUpdatePriority.INFREQUENT),
+        update_interval=options.get(
+            ConfScanInterval.INFREQUENT, ScanIntervalDefault.INFREQUENT
+        ),
     )
 
-    static_object_ids = list(
-        {
-            object_info.object_id
-            for entity_description in all_entity_descriptions
-            if entity_description.update_priority == EntityUpdatePriority.STATIC
-            for object_info in resolve_object_infos(entity_description)
-        }
-    )
     static_update_coordinator = RctPowerDataUpdateCoordinator(
         hass=hass,
         entry=entry,
-        name_suffix="static",
-        update_interval=timedelta(
-            seconds=options.get(ConfScanInterval.STATIC, ScanIntervalDefault.STATIC),
-        ),
-        object_ids=static_object_ids,
         client=client,
+        name_suffix="static",
+        object_ids=object_ids_for_update_priority(EntityUpdatePriority.STATIC),
+        update_interval=options.get(
+            ConfScanInterval.STATIC, ScanIntervalDefault.STATIC
+        ),
     )
 
     await frequent_update_coordinator.async_config_entry_first_refresh()
