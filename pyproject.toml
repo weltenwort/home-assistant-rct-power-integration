@@ -9,8 +9,8 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.13,<3.14"
-homeassistant = "^2025.2.5"
+python = ">=3.13.2,<3.15"
+homeassistant = ">=2025.11.0"
 rctclient = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
