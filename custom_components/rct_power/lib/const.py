@@ -8,7 +8,7 @@ from enum import KEEP, Enum, IntFlag, auto
 NAME = "RCT Power"
 DOMAIN = "rct_power"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.14.1"
+VERSION = "0.14.2"
 
 # Inverter
 INVERTER_MODEL = "RCT Power Storage"
