@@ -44,11 +44,11 @@ People _love_ thorough bug reports. I'm not even kidding.
 
 ## Use a Consistent Coding Style
 
-Use [black](https://github.com/ambv/black) and [prettier](https://prettier.io/)
+Use [ruff](https://docs.astral.sh/ruff/) and [prettier](https://prettier.io/)
 to make sure the code follows the style.
 
 Or use the `pre-commit` settings implemented in this repository
-(see deicated section below).
+(see dedicated section below).
 
 ## Test your code modification
 
@@ -72,7 +72,8 @@ You can run the tests using the following commands from the root folder:
 python3.13 -m venv venv
 source venv/bin/activate
 # Install requirements
-pip install -r requirements_test.txt
+pip install poetry
+poetry install
 # Run tests and get a summary of successes/failures and code coverage
 pytest --durations=10 --cov-report term-missing --cov=custom_components.rct_power tests
 ```
