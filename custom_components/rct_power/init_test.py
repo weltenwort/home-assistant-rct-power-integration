@@ -14,8 +14,8 @@ from custom_components.rct_power.const import (
     CONF_HOSTNAME,
     DEFAULT_ENTITY_PREFIX,
     DEFAULT_PORT,
+    DOMAIN,
 )
-from custom_components.rct_power.lib.const import DOMAIN
 
 
 # We can pass fixtures as defined in conftest.py to tell pytest to use the fixture

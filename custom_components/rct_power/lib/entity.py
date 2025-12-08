@@ -18,7 +18,7 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, StateType, UndefinedType
 from rctclient.registry import REGISTRY, ObjectInfo
 
-from ..const import CONF_ENTITY_PREFIX
+from ..const import CONF_ENTITY_PREFIX, ICON, EntityUpdatePriority
 from ..coordinator import RctPowerDataUpdateCoordinator
 from .api import (
     ApiResponse,
@@ -26,7 +26,6 @@ from .api import (
     ValidApiResponse,
     get_valid_response_value_or,
 )
-from .const import ICON, EntityUpdatePriority
 from .device_class_helpers import guess_device_class_from_unit
 from .multi_coordinator_entity import MultiCoordinatorEntity
 from .state_helpers import (
