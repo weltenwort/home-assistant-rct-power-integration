@@ -3,12 +3,18 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: daily
-  - package-ecosystem: pip
-    directory: "/.github/workflows"
-    schedule:
-      interval: daily
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+    labels:
+      - "dependencies"
+      - "github_actions"
   - package-ecosystem: pip
     directory: "/"
     schedule:
-      interval: daily
+      interval: "weekly"
+      day: "monday"
+      time: "05:00"
+    labels:
+      - "dependencies"
+      - "python"
