@@ -16,11 +16,11 @@ from .const import (
     CONF_HOSTNAME,
     DEFAULT_ENTITY_PREFIX,
     DEFAULT_PORT,
+    DOMAIN,
     ConfScanInterval,
     ScanIntervalDefault,
 )
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN
 
 
 class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

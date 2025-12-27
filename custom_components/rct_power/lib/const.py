@@ -2,40 +2,12 @@
 
 from __future__ import annotations
 
-# Base component constants
-from enum import KEEP, Enum, IntFlag, auto
-
-NAME = "RCT Power"
-DOMAIN = "rct_power"
-DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.14.2"
-
-# Inverter
-INVERTER_MODEL = "RCT Power Storage"
-
-# Battery
-BATTERY_MODEL = "RCT Power Battery"
-
-# Icons
-ICON = "mdi:solar-power"
-
-# Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-PLATFORMS = [SENSOR]
-
+from enum import KEEP, IntFlag
+from typing import Final
 
 # Defaults
-DEFAULT_NAME = DOMAIN
-
-NUMERIC_STATE_DECIMAL_DIGITS = 1
-FREQUENCY_STATE_DECIMAL_DIGITS = 3
-
-
-class EntityUpdatePriority(Enum):
-    FREQUENT = auto()
-    INFREQUENT = auto()
-    STATIC = auto()
+NUMERIC_STATE_DECIMAL_DIGITS: Final = 1
+FREQUENCY_STATE_DECIMAL_DIGITS: Final = 3
 
 
 class BatteryStatusFlag(IntFlag, boundary=KEEP):
