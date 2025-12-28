@@ -30,7 +30,7 @@ class RctPowerDataUpdateCoordinator(DataUpdateCoordinator[RctPowerData]):
         client: RctPowerApiClient,
         name_suffix: str,
         object_ids: list[int],
-        update_interval: int,
+        update_interval: int,  # in seconds
     ) -> None:
         self.client = client
         self.object_ids = object_ids
