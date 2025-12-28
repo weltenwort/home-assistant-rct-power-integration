@@ -16,10 +16,16 @@ from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.util.hass_dict import HassEntryKey
 
-from .const import CONF_HOSTNAME, ConfScanInterval, ScanIntervalDefault
+from .const import (
+    CONF_HOSTNAME,
+    DOMAIN,
+    PLATFORMS,
+    ConfScanInterval,
+    EntityUpdatePriority,
+    ScanIntervalDefault,
+)
 from .coordinator import RctPowerDataUpdateCoordinator
 from .lib.api import RctPowerApiClient
-from .lib.const import DOMAIN, PLATFORMS, EntityUpdatePriority
 from .lib.entities import all_entity_descriptions
 from .lib.entity import resolve_object_infos
 from .models import RctConfEntryData, RctConfEntryOptions
