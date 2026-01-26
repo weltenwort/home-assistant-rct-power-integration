@@ -27,7 +27,7 @@ pytest = "^9.0.0"
 pytest-emoji = "^0.2.0"
 pytest-homeassistant-custom-component = "^0.13.215"
 pytest-md = "^0.2.0"
-ruff = "^0.14.13"
+ruff = "^0.14.14"
 
 [tool.pyright]
 typeCheckingMode = "strict"
