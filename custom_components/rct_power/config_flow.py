@@ -48,6 +48,9 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=self.get_title(user_input),
                     data=user_input,
+                    description_placeholders={
+                        "repo_url": "https://github.com/weltenwort/home-assistant-rct-power-integration"
+                    },
                 )
             else:
                 errors["base"] = "connect"
