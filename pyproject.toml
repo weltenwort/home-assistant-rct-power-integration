@@ -8,7 +8,7 @@ version = "0.14.2"
 license = "MIT"
 description = ""
 authors = [{ name = "Felix Stürmer", email = "stuermer@weltenwort.de" }]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dynamic = ["classifiers", "dependencies"]
 
 [tool.poetry]
@@ -17,15 +17,15 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.13.2,<3.15"
-homeassistant = ">=2025.11.0"
+python = ">=3.14.2,<3.16"
+homeassistant = ">=2026.3.0"
 rctclient = "^0.0.4"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.5.1"
 pytest = "^9.0.0"
 pytest-emoji = "^0.2.0"
-pytest-homeassistant-custom-component = "^0.13.215"
+pytest-homeassistant-custom-component = "^0.13.317"
 pytest-md = "^0.2.0"
 ruff = "^0.15.0"
 
