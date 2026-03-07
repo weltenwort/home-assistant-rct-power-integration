@@ -10,6 +10,9 @@ jobs:
   labeler:
     name: Labeler
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Check out the repository
         uses: actions/checkout@v6
