@@ -134,6 +134,12 @@ depending on your preference.
 | Battery Used Energy                      | Wh   | the cumulative energy consumed from the battery                               |
 | Battery Status                           |      | the current battery status (incomplete)                                       |
 | Next Battery Calibration Date            |      | the date and time of the next planned battery calibration                     |
+| Battery State of Charge Strategy         |      | SOC target selection SOC" = 0x00, "Constant" = 0x01, "External" = 0x02, "Middle battery voltage" = 0x03, "Internal" = 0x04, "Schedule" = 0x05 |
+| Battery State of Charge force set        | %    | Force SOC target (used on external strategy)                                  |
+| Trigger for charging to SOC_min          | %    | SOC min maintenance charge (below load is forced)                             |
+| Charging power to reach SOC target       | W    | Maintenance charge power (to reach SOC_min when below)                        |
+| Battery target power                     | W    | Battery target power (positive = discharge)                                   |
+| Max battery to grid power                | W    | Max. battery to grid power (unload to grid until target SOC is reached)       |
 
 ### Household consumers and producers
 
@@ -174,6 +180,8 @@ depending on your preference.
 | Core Temperature                                | °C   | the instantaneous temperature of the invertor core              |
 | Heat Sink Temperature                           | °C   | the instantaneous temperature of the invertor heat sink         |
 | Heat Sink (battery actuator) Temperature        | °C   | the instantaneous temperature of the battery actuator heat sink |
+| External power reduction                        | %    | External power reduction based on solar plant peak power        |
+| Use Grid Power                                  |      | Utilize external Inverter energy                                |
 
 ## Contributions are welcome!
 
