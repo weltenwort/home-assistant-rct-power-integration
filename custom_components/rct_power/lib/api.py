@@ -84,7 +84,9 @@ class RctPowerApiClient:
         else:
             return None
 
-    async def async_write_object(self, object_name: str, value: float | int | bool | str) -> bool:
+    async def async_write_object(
+        self, object_name: str, value: float | int | bool | str
+    ) -> bool:
         """Write a value to the inverter. Returns True on success."""
         object_info = REGISTRY.get_by_name(object_name)
         encoded = encode_value(data_type=object_info.request_data_type, value=value)
