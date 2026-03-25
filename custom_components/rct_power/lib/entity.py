@@ -37,6 +37,7 @@ from .state_helpers import (
 class RctPowerEntity(MultiCoordinatorEntity):
     entity_description: RctPowerEntityDescription
     object_infos: list[ObjectInfo]
+    _last_valid_responses: dict[int, ValidApiResponse]
 
     def __init__(
         self,
@@ -50,6 +51,7 @@ class RctPowerEntity(MultiCoordinatorEntity):
             entity_description
         )
         self.object_infos = resolve_object_infos(self.entity_description)
+        self._last_valid_responses = {}
 
     def get_api_response_by_id(
         self, object_id: int, default: ApiResponse | None = None
@@ -57,8 +59,19 @@ class RctPowerEntity(MultiCoordinatorEntity):
         for coordinator in self.coordinators:
             latest_response = coordinator.get_latest_response(object_id)
 
-            if latest_response is not None:
+            if isinstance(latest_response, ValidApiResponse):
+                self._last_valid_responses[object_id] = latest_response
                 return latest_response
+
+            if latest_response is not None:
+                # Invalid response — return last known good value if available
+                if object_id in self._last_valid_responses:
+                    return self._last_valid_responses[object_id]
+                return latest_response
+
+        # No response at all — return last known good value if available
+        if object_id in self._last_valid_responses:
+            return self._last_valid_responses[object_id]
 
         return default
 
