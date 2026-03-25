@@ -93,6 +93,7 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         name="Battery Charge Total",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
@@ -100,6 +101,7 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         name="Battery Discharge Total",
         update_priority=EntityUpdatePriority.INFREQUENT,
         state_class=SensorStateClass.TOTAL_INCREASING,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
@@ -194,6 +196,20 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         update_priority=EntityUpdatePriority.FREQUENT,
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement="%",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="power_mng.soc_strategy",
+        name="Battery Charging Strategy",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="power_mng.use_grid_power_enable",
+        name="Use Grid Power",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,

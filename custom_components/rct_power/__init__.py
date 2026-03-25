@@ -10,9 +10,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryNotReady
 from homeassistant.const import CONF_PORT
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util.hass_dict import HassEntryKey
 
 from .const import (
@@ -100,9 +101,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
         ),
     )
 
-    await frequent_update_coordinator.async_config_entry_first_refresh()
-    await infrequent_update_coordinator.async_config_entry_first_refresh()
-    await static_update_coordinator.async_config_entry_first_refresh()
+    try:
+        await frequent_update_coordinator.async_config_entry_first_refresh()
+        await infrequent_update_coordinator.async_config_entry_first_refresh()
+        await static_update_coordinator.async_config_entry_first_refresh()
+    except UpdateFailed as exc:
+        raise ConfigEntryNotReady from exc
 
     entry.runtime_data = RctData(
         update_coordinators={
