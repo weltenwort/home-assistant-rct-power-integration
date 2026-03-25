@@ -135,8 +135,12 @@ async def async_setup_entry(
         return
 
     client: RctPowerApiClient = entry.runtime_data.client  # type: ignore[assignment]
-    static_coordinator = entry.runtime_data.update_coordinators[EntityUpdatePriority.STATIC]
-    frequent_coordinator = entry.runtime_data.update_coordinators[EntityUpdatePriority.FREQUENT]
+    static_coordinator = entry.runtime_data.update_coordinators[
+        EntityUpdatePriority.STATIC
+    ]
+    frequent_coordinator = entry.runtime_data.update_coordinators[
+        EntityUpdatePriority.FREQUENT
+    ]
 
     def _get_value(obj_name: str, default=None):
         try:
@@ -177,14 +181,20 @@ async def async_setup_entry(
     try:
         obj_info = REGISTRY.get_by_name("buf_v_control.power_reduction_max_solar_grid")
         response = static_coordinator.get_latest_response(obj_info.object_id)
-        if isinstance(response, ValidApiResponse) and isinstance(response.value, (int, float)):
+        if isinstance(response, ValidApiResponse) and isinstance(
+            response.value, (int, float)
+        ):
             grid_feed_max = float(response.value)
     except Exception:
         pass  # Fall back to 6000W default
 
     entities = []
     for description in NUMBER_DESCRIPTIONS:
-        device_info = battery_device_info if description.device_type == "battery" else inverter_device_info
+        device_info = (
+            battery_device_info
+            if description.device_type == "battery"
+            else inverter_device_info
+        )
         override = grid_feed_max if description.key == "p_rec_lim[1]" else None
         entities.append(
             RctPowerNumberEntity(
@@ -197,4 +207,3 @@ async def async_setup_entry(
         )
 
     async_add_entities(entities)
-

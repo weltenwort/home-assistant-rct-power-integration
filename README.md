@@ -57,12 +57,12 @@ After installation the integration allows for the following configuration parame
 
 When write support is enabled, the following `number` entities become available:
 
-| Entity                         | Object name                       | Range          | Unit |
-| ------------------------------ | --------------------------------- | -------------- | ---- |
-| Battery Maximum State of Charge | `power_mng.soc_max`              | 10 – 100       | %    |
-| Battery Minimum State of Charge | `power_mng.soc_min`              | 5 – 50         | %    |
-| Battery External Power Target   | `power_mng.battery_power_extern` | -6000 – 6000   | W    |
-| Maximum Grid Feed Power         | `p_rec_lim[1]`                   | 0 – 6000       | W    |
+| Entity                          | Object name                      | Range        | Unit |
+| ------------------------------- | -------------------------------- | ------------ | ---- |
+| Battery Maximum State of Charge | `power_mng.soc_max`              | 10 – 100     | %    |
+| Battery Minimum State of Charge | `power_mng.soc_min`              | 5 – 50       | %    |
+| Battery External Power Target   | `power_mng.battery_power_extern` | -6000 – 6000 | W    |
+| Maximum Grid Feed Power         | `p_rec_lim[1]`                   | 0 – 6000     | W    |
 
 ## Usage with the built-in energy dashboard
 
