@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 
 from homeassistant.components.number import (
@@ -123,8 +122,14 @@ async def async_setup_entry(
     """Set up number platform."""
     from rctclient.registry import REGISTRY
 
-    from .const import BATTERY_MODEL, CONF_WRITE_SUPPORT, DOMAIN, INVERTER_MODEL, NAME, EntityUpdatePriority
-    from .lib.api import RctPowerApiClient
+    from .const import (
+        BATTERY_MODEL,
+        CONF_WRITE_SUPPORT,
+        DOMAIN,
+        INVERTER_MODEL,
+        NAME,
+        EntityUpdatePriority,
+    )
 
     if not entry.options.get(CONF_WRITE_SUPPORT, False):
         return
