@@ -14,7 +14,7 @@ from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidC
 from rctclient.frame import ReceiveFrame, SendFrame
 from rctclient.registry import REGISTRY
 from rctclient.types import Command, EventEntry
-from rctclient.utils import decode_value
+from rctclient.utils import decode_value, encode_value
 
 from ..const import LOGGER
 
@@ -83,6 +83,30 @@ class RctPowerApiClient:
             return inverter_sn_response.value
         else:
             return None
+
+    async def async_write_object(self, object_name: str, value: float | int | bool | str) -> bool:
+        """Write a value to the inverter. Returns True on success."""
+        object_info = REGISTRY.get_by_name(object_name)
+        encoded = encode_value(data_type=object_info.request_data_type, value=value)
+        frame = SendFrame(command=Command.WRITE, id=object_info.object_id, data=encoded)
+
+        async with self._connection_lock:
+            try:
+                async with asyncio.timeout(CONNECTION_TIMEOUT):
+                    reader, writer = await open_connection(
+                        host=self._hostname, port=self._port
+                    )
+                    try:
+                        await writer.drain()
+                        writer.write(frame.data)
+                        await writer.drain()
+                        LOGGER.debug("Wrote %s = %s to inverter", object_name, value)
+                        return True
+                    finally:
+                        writer.close()
+            except Exception as exc:
+                LOGGER.warning("Failed to write %s: %s", object_name, exc)
+                return False
 
     async def async_get_data(self, object_ids: list[int]) -> RctPowerData:
         async with self._connection_lock:
