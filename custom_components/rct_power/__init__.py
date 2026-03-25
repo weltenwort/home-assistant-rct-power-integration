@@ -8,7 +8,7 @@ https://github.com/weltenwort/home-assistant-rct-power-integration
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PORT
@@ -23,11 +23,9 @@ from .const import (
     EntityUpdatePriority,
     ScanIntervalDefault,
 )
-from .coordinator import RctPowerDataUpdateCoordinator
-from .lib.api import RctPowerApiClient
-from .lib.entities import all_entity_descriptions
-from .lib.entity import resolve_object_infos
-from .models import RctConfEntryData, RctConfEntryOptions
+
+if TYPE_CHECKING:
+    from .coordinator import RctPowerDataUpdateCoordinator
 
 RCT_DATA_KEY: HassEntryKey[RctData] = HassEntryKey(DOMAIN)
 
@@ -37,10 +35,14 @@ type RctConfigEntry = ConfigEntry[RctData]
 @dataclass
 class RctData:
     update_coordinators: dict[EntityUpdatePriority, RctPowerDataUpdateCoordinator]
+    client: object
 
 
 def object_ids_for_update_priority(update_priority: EntityUpdatePriority) -> list[int]:
     """Collect all object_ids for an update_priority."""
+    from .lib.entities import all_entity_descriptions
+    from .lib.entity import resolve_object_infos
+
     return list(
         {
             object_info.object_id
@@ -53,6 +55,10 @@ def object_ids_for_update_priority(update_priority: EntityUpdatePriority) -> lis
 
 async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     """Set up this integration using UI."""
+    from .coordinator import RctPowerDataUpdateCoordinator
+    from .lib.api import RctPowerApiClient
+    from .models import RctConfEntryData, RctConfEntryOptions
+
     data = cast(RctConfEntryData, entry.data)
     options = cast(RctConfEntryOptions, entry.options)
 
@@ -99,11 +105,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool:
     await static_update_coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = RctData(
-        {
+        update_coordinators={
             EntityUpdatePriority.FREQUENT: frequent_update_coordinator,
             EntityUpdatePriority.INFREQUENT: infrequent_update_coordinator,
             EntityUpdatePriority.STATIC: static_update_coordinator,
-        }
+        },
+        client=client,
     )
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
@@ -120,3 +127,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool
 async def async_reload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> None:
     """Reload config entry."""
     await hass.config_entries.async_reload(entry.entry_id)
+
