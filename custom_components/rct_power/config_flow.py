@@ -14,6 +14,7 @@ from homeassistant.core import callback
 from .const import (
     CONF_ENTITY_PREFIX,
     CONF_HOSTNAME,
+    CONF_WRITE_SUPPORT,
     DEFAULT_ENTITY_PREFIX,
     DEFAULT_PORT,
     DOMAIN,
@@ -116,5 +117,6 @@ OPTIONS_SCHEMA = vol.Schema(
         vol.Optional(
             ConfScanInterval.STATIC.value, default=ScanIntervalDefault.STATIC
         ): cv.positive_int,
+        vol.Optional(CONF_WRITE_SUPPORT, default=False): bool,
     }
 )

@@ -16,9 +16,10 @@
 
 **This component will set up the following platforms.**
 
-| Platform | Description                   |
-| -------- | ----------------------------- |
-| `sensor` | Show info from RCT Power API. |
+| Platform | Description                                                         |
+| -------- | ------------------------------------------------------------------- |
+| `sensor` | Show info from RCT Power API (read-only).                           |
+| `number` | Control battery SOC limits and power targets (optional, see below). |
 
 ## Installation
 
@@ -50,6 +51,18 @@ After installation the integration allows for the following configuration parame
 - `Frequent polling interval`: The polling interval in seconds for entities updated frequently, defaults to `30`.
 - `Infrequent polling interval`: The polling interval in seconds for entities updated infrequently, defaults to `180`.
 - `Static polling interval`: The polling interval in seconds for entities updated seldomly, defaults to `3600`.
+- `Enable write support`: When enabled, adds `number` entities to control battery SOC limits and power targets directly from Home Assistant. **Disabled by default.** Use with caution — writing incorrect values may affect inverter behaviour.
+
+### Write support entities
+
+When write support is enabled, the following `number` entities become available:
+
+| Entity                         | Object name                       | Range          | Unit |
+| ------------------------------ | --------------------------------- | -------------- | ---- |
+| Battery Maximum State of Charge | `power_mng.soc_max`              | 10 – 100       | %    |
+| Battery Minimum State of Charge | `power_mng.soc_min`              | 5 – 50         | %    |
+| Battery External Power Target   | `power_mng.battery_power_extern` | -6000 – 6000   | W    |
+| Maximum Grid Feed Power         | `p_rec_lim[1]`                   | 0 – 6000       | W    |
 
 ## Usage with the built-in energy dashboard
 

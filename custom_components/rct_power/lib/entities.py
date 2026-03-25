@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+from homeassistant.helpers.entity import EntityCategory
 from rctclient.registry import REGISTRY
 
 from ..const import EntityUpdatePriority
@@ -35,48 +36,56 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         key="battery.bms_sn",
         name="Battery Management System Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.bms_software_version",
         name="Battery Management System Software Version",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[0]",
         name="Battery Module 1 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[1]",
         name="Battery Module 2 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[2]",
         name="Battery Module 3 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[3]",
         name="Battery Module 4 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[4]",
         name="Battery Module 5 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
         key="battery.module_sn[5]",
         name="Battery Module 6 Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_battery_device_info,
@@ -261,18 +270,21 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         key="db.core_temp",
         name="Core Temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="db.temp1",
         name="Heat Sink Temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="db.temp2",
         name="Heat Sink (battery actuator) Temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
@@ -367,36 +379,42 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         key="iso_struct.Riso",
         name="Insulation Resistance",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="iso_struct.r_min",
         name="Minimum Insulation Resistance",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="iso_struct.Rn",
         name="Insulation Resistance Negative Input",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="iso_struct.Rp",
         name="Insulation Resistance Positive Input",
         state_class=SensorStateClass.MEASUREMENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="inverter_sn",
         name="Inverter Serial Number",
         update_priority=EntityUpdatePriority.STATIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
         key="svnversion",
         name="Inverter Software Version",
         update_priority=EntityUpdatePriority.INFREQUENT,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     RctPowerSensorEntityDescription(
         get_device_info=get_inverter_device_info,
