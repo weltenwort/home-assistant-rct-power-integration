@@ -127,4 +127,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> bool
 async def async_reload_entry(hass: HomeAssistant, entry: RctConfigEntry) -> None:
     """Reload config entry."""
     await hass.config_entries.async_reload(entry.entry_id)
-
