@@ -116,9 +116,7 @@ class RctPowerApiClient:
     async def _connect_and_read(self, object_ids: list[int]) -> RctPowerData:
         """Open a single TCP connection and read all requested object IDs."""
         async with asyncio.timeout(CONNECTION_TIMEOUT):
-            reader, writer = await open_connection(
-                host=self._hostname, port=self._port
-            )
+            reader, writer = await open_connection(host=self._hostname, port=self._port)
 
         try:
             if reader.at_eof():
