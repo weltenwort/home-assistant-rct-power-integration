@@ -21,6 +21,8 @@ from ..const import LOGGER
 CONNECTION_TIMEOUT = 20
 READ_TIMEOUT = 2
 INVERTER_SN_OID = 0x7924ABD9
+MAX_RETRIES = 2
+RETRY_DELAY = 5
 
 type ApiResponseValue = (
     bool
@@ -112,23 +114,44 @@ class RctPowerApiClient:
 
     async def async_get_data(self, object_ids: list[int]) -> RctPowerData:
         async with self._connection_lock:
-            async with asyncio.timeout(CONNECTION_TIMEOUT):
-                reader, writer = await open_connection(
-                    host=self._hostname, port=self._port
-                )
-
+            last_exc: TimeoutError | OSError | None = None
+            for attempt in range(MAX_RETRIES + 1):
+                if attempt > 0:
+                    LOGGER.warning(
+                        "Retrying connection to inverter (attempt %d/%d) in %ds...",
+                        attempt + 1,
+                        MAX_RETRIES + 1,
+                        RETRY_DELAY,
+                    )
+                    await asyncio.sleep(RETRY_DELAY)
                 try:
-                    if reader.at_eof():
-                        raise UpdateFailed("Read stream closed")
-
-                    return {
-                        object_id: await self._read_object(
-                            reader=reader, writer=writer, object_id=object_id
+                    async with asyncio.timeout(CONNECTION_TIMEOUT):
+                        reader, writer = await open_connection(
+                            host=self._hostname, port=self._port
                         )
-                        for object_id in object_ids
-                    }
-                finally:
-                    writer.close()
+
+                    try:
+                        if reader.at_eof():
+                            raise UpdateFailed("Read stream closed")
+
+                        return {
+                            object_id: await self._read_object(
+                                reader=reader, writer=writer, object_id=object_id
+                            )
+                            for object_id in object_ids
+                        }
+                    finally:
+                        writer.close()
+                except (TimeoutError, OSError) as exc:
+                    last_exc = exc
+                    LOGGER.warning(
+                        "Connection to inverter failed (attempt %d/%d): %s",
+                        attempt + 1,
+                        MAX_RETRIES + 1,
+                        exc,
+                    )
+            assert last_exc is not None
+            raise last_exc
 
     async def _read_object(
         self, reader: StreamReader, writer: StreamWriter, object_id: int
