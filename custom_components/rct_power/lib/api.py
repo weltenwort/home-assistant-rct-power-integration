@@ -14,13 +14,16 @@ from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidC
 from rctclient.frame import ReceiveFrame, SendFrame
 from rctclient.registry import REGISTRY
 from rctclient.types import Command, EventEntry
-from rctclient.utils import decode_value
+from rctclient.utils import decode_value, encode_value
 
 from ..const import LOGGER
 
 CONNECTION_TIMEOUT = 20
 READ_TIMEOUT = 2
 INVERTER_SN_OID = 0x7924ABD9
+MAX_RETRIES = 2
+RETRY_DELAY = 5
+RETRY_DELAY_LONG = 300
 
 type ApiResponseValue = (
     bool
@@ -84,25 +87,89 @@ class RctPowerApiClient:
         else:
             return None
 
-    async def async_get_data(self, object_ids: list[int]) -> RctPowerData:
+    async def async_write_object(
+        self, object_name: str, value: float | int | bool | str
+    ) -> bool:
+        """Write a value to the inverter. Returns True on success."""
+        object_info = REGISTRY.get_by_name(object_name)
+        encoded = encode_value(data_type=object_info.request_data_type, value=value)
+        frame = SendFrame(command=Command.WRITE, id=object_info.object_id, data=encoded)
+
         async with self._connection_lock:
-            async with asyncio.timeout(CONNECTION_TIMEOUT):
-                reader, writer = await open_connection(
-                    host=self._hostname, port=self._port
+            try:
+                async with asyncio.timeout(CONNECTION_TIMEOUT):
+                    reader, writer = await open_connection(
+                        host=self._hostname, port=self._port
+                    )
+                    try:
+                        await writer.drain()
+                        writer.write(frame.data)
+                        await writer.drain()
+                        LOGGER.debug("Wrote %s = %s to inverter", object_name, value)
+                        return True
+                    finally:
+                        writer.close()
+            except Exception as exc:
+                LOGGER.warning("Failed to write %s: %s", object_name, exc)
+                return False
+
+    async def _connect_and_read(self, object_ids: list[int]) -> RctPowerData:
+        """Open a single TCP connection and read all requested object IDs."""
+        async with asyncio.timeout(CONNECTION_TIMEOUT):
+            reader, writer = await open_connection(host=self._hostname, port=self._port)
+
+        try:
+            if reader.at_eof():
+                raise UpdateFailed("Read stream closed")
+
+            return {
+                object_id: await self._read_object(
+                    reader=reader, writer=writer, object_id=object_id
                 )
+                for object_id in object_ids
+            }
+        finally:
+            writer.close()
 
+    async def async_get_data(self, object_ids: list[int]) -> RctPowerData:
+        # Phase 1: quick retries (lock held throughout)
+        async with self._connection_lock:
+            last_exc: TimeoutError | OSError | None = None
+            for attempt in range(MAX_RETRIES + 1):
+                if attempt > 0:
+                    LOGGER.warning(
+                        "Retrying connection to inverter (attempt %d/%d) in %ds...",
+                        attempt + 1,
+                        MAX_RETRIES + 1,
+                        RETRY_DELAY,
+                    )
+                    await asyncio.sleep(RETRY_DELAY)
                 try:
-                    if reader.at_eof():
-                        raise UpdateFailed("Read stream closed")
+                    return await self._connect_and_read(object_ids)
+                except (TimeoutError, OSError) as exc:
+                    last_exc = exc
+                    LOGGER.warning(
+                        "Connection to inverter failed (attempt %d/%d): %s",
+                        attempt + 1,
+                        MAX_RETRIES + 1,
+                        exc,
+                    )
 
-                    return {
-                        object_id: await self._read_object(
-                            reader=reader, writer=writer, object_id=object_id
-                        )
-                        for object_id in object_ids
-                    }
-                finally:
-                    writer.close()
+        # Phase 2: long wait (lock released so other coordinators stay unblocked)
+        assert last_exc is not None
+        LOGGER.warning(
+            "All quick retries failed. Waiting %ds before final attempt...",
+            RETRY_DELAY_LONG,
+        )
+        await asyncio.sleep(RETRY_DELAY_LONG)
+
+        # Phase 3: one final attempt after the long wait
+        async with self._connection_lock:
+            try:
+                return await self._connect_and_read(object_ids)
+            except (TimeoutError, OSError) as exc:
+                LOGGER.warning("Final retry also failed: %s", exc)
+                raise exc
 
     async def _read_object(
         self, reader: StreamReader, writer: StreamWriter, object_id: int
