@@ -4092,20 +4092,18 @@ files = [
 
 [[package]]
 name = "rctclient"
-version = "0.0.4"
+version = "0.0.6"
 description = "Implementation of the RCT Power communication protocol"
 optional = false
-python-versions = ">=3.6"
+python-versions = "<4.0,>=3.11"
 groups = ["main"]
 files = [
-    {file = "rctclient-0.0.4-py3-none-any.whl", hash = "sha256:ce6563919ff715e64e133264bfd5a3f7fd5a2968dfa5c70312e0e3db75b92824"},
-    {file = "rctclient-0.0.4.tar.gz", hash = "sha256:5f041657d6dfbe37c0b1ec5ca228924c17d0ea16076c5449f71cd4f6dd736550"},
+    {file = "rctclient-0.0.6-py3-none-any.whl", hash = "sha256:0d59e9d5cb4809cf50798a5382873e86e1a2ee60255eb1c1a588ad338631de76"},
+    {file = "rctclient-0.0.6.tar.gz", hash = "sha256:60f9d8cb02ce691946e7cff705d3fb0c705e2f5ad33475b40c8b021815f4c621"},
 ]
 
 [package.extras]
-cli = ["click (>=7.0,<8.2)"]
-docs = ["Sphinx (>=2.0)", "click (>=7.0,<8.2)", "recommonmark (>=0.5.0)", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-rtd-theme"]
-tests = ["mypy", "pylint", "pytest", "pytest-cov", "pytest-pylint"]
+cli = ["click"]
 
 [[package]]
 name = "regex"
@@ -5384,4 +5382,4 @@ ifaddr = ">=0.1.7"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14.2,<3.16"
-content-hash = "aa58d68643ec3c0a2b2ed4c820a90a307dc43db062fb093bc20eda2b098f0acb"
+content-hash = "6053f77335ea15557836d8492581f2c30e41e836e7268688fbc920da26d9ce76"
