@@ -75,8 +75,10 @@ class RctPowerApiClient:
         # inverter's firmware doesn't handle it well at the time of writing
         self._connection_lock = Lock()
 
-    async def get_serial_number(self) -> str | None:
-        inverter_data = await self.async_get_data([INVERTER_SN_OID])
+    async def get_serial_number(self, allow_long_retry: bool = True) -> str | None:
+        inverter_data = await self.async_get_data(
+            [INVERTER_SN_OID], allow_long_retry=allow_long_retry
+        )
 
         inverter_sn_response = inverter_data.get(INVERTER_SN_OID)
 
@@ -105,7 +107,9 @@ class RctPowerApiClient:
         finally:
             writer.close()
 
-    async def async_get_data(self, object_ids: list[int]) -> RctPowerData:
+    async def async_get_data(
+        self, object_ids: list[int], allow_long_retry: bool = True
+    ) -> RctPowerData:
         # Phase 1: quick retries (connection lock held throughout)
         async with self._connection_lock:
             last_exc: TimeoutError | OSError | None = None
@@ -129,8 +133,12 @@ class RctPowerApiClient:
                         exc,
                     )
 
-        # Phase 2: long wait (lock released so other coordinators stay unblocked)
+        # Skip phase 2/3 for callers that can't tolerate a long wait (e.g. config flow)
         assert last_exc is not None
+        if not allow_long_retry:
+            raise last_exc
+
+        # Phase 2: long wait (lock released so other coordinators stay unblocked)
         LOGGER.warning(
             "All quick retries failed. Waiting %ds before a final attempt...",
             RETRY_DELAY_LONG,
@@ -141,9 +149,9 @@ class RctPowerApiClient:
         async with self._connection_lock:
             try:
                 return await self._connect_and_read(object_ids)
-            except (TimeoutError, OSError) as exc:
-                LOGGER.warning("Final retry also failed: %s", exc)
-                raise exc
+            except (TimeoutError, OSError):
+                LOGGER.warning("Final retry also failed.")
+                raise
 
     async def _read_object(
         self, reader: StreamReader, writer: StreamWriter, object_id: int
