@@ -40,7 +40,7 @@ class RctPowerFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 hostname=user_input[CONF_HOSTNAME],
                 port=user_input[CONF_PORT],
             )
-            serial_number = await client.get_serial_number()
+            serial_number = await client.get_serial_number(allow_long_retry=False)
 
             if serial_number is not None:
                 await self.async_set_unique_id(serial_number)
