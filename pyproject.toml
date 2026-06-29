@@ -25,7 +25,7 @@ rctclient = "^0.0.4"
 pre-commit = "^4.5.1"
 pytest = "^9.0.0"
 pytest-emoji = "^0.2.0"
-pytest-homeassistant-custom-component = "^0.13.317"
+pytest-homeassistant-custom-component = "^0.13.342"
 pytest-md = "^0.2.0"
 ruff = "^0.15.17"
 
