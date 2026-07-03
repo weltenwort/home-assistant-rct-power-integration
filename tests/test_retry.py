@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -18,7 +17,9 @@ def client() -> RctPowerApiClient:
     return RctPowerApiClient(hostname="127.0.0.1", port=8899)
 
 
-async def test_allow_long_retry_false_never_waits_300s(client: RctPowerApiClient) -> None:
+async def test_allow_long_retry_false_never_waits_300s(
+    client: RctPowerApiClient,
+) -> None:
     """When allow_long_retry=False, the 300s sleep must never be awaited and the
     call must raise quickly (only quick-retry delays apply)."""
     sleep_calls: list[float] = []
@@ -32,7 +33,9 @@ async def test_allow_long_retry_false_never_waits_300s(client: RctPowerApiClient
             "_connect_and_read",
             new=AsyncMock(side_effect=TimeoutError("unreachable")),
         ),
-        patch("custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep),
+        patch(
+            "custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep
+        ),
     ):
         with pytest.raises((TimeoutError, OSError)):
             await client.async_get_data([0x12345678], allow_long_retry=False)
@@ -56,7 +59,9 @@ async def test_allow_long_retry_true_does_wait_300s(client: RctPowerApiClient) -
             "_connect_and_read",
             new=AsyncMock(side_effect=TimeoutError("unreachable")),
         ),
-        patch("custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep),
+        patch(
+            "custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep
+        ),
     ):
         with pytest.raises((TimeoutError, OSError)):
             await client.async_get_data([0x12345678], allow_long_retry=True)
@@ -81,7 +86,9 @@ async def test_get_serial_number_allow_long_retry_false_never_waits_300s(
             "_connect_and_read",
             new=AsyncMock(side_effect=TimeoutError("unreachable")),
         ),
-        patch("custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep),
+        patch(
+            "custom_components.rct_power.lib.api.asyncio.sleep", side_effect=fake_sleep
+        ),
     ):
         with pytest.raises((TimeoutError, OSError)):
             await client.get_serial_number(allow_long_retry=False)

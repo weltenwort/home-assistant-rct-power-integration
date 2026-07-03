@@ -149,7 +149,7 @@ class RctPowerApiClient:
         async with self._connection_lock:
             try:
                 return await self._connect_and_read(object_ids)
-            except (TimeoutError, OSError):
+            except TimeoutError, OSError:
                 LOGGER.warning("Final retry also failed.")
                 raise
 
