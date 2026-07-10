@@ -229,6 +229,53 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         device_class=SensorDeviceClass.TIMESTAMP,
         get_native_value=get_first_api_response_value_as_timestamp,
     ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.soc_strategy",
+        name="Battery State of Charge Strategy",
+        update_priority=EntityUpdatePriority.INFREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.soc_target_set",
+        name="Battery State of Charge force set",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.soc_charge",
+        name="Battery trigger for charging to SOC_min",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.soc_charge_power",
+        name="Battery Charging power to reach SOC target",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="W",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="power_mng.battery_power_extern",
+        name="Battery target power",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="W",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_battery_device_info,
+        key="p_rec_lim[1]",
+        name="Battery Max to grid power",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="W",
+    ),
 ]
 
 inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
@@ -748,6 +795,19 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         name="External Generator S0 Power",
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement="W",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="buf_v_control.power_reduction",
+        name="External power reduction",
+        update_priority=EntityUpdatePriority.FREQUENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="%",
+    ),
+    RctPowerSensorEntityDescription(
+        get_device_info=get_inverter_device_info,
+        key="power_mng.use_grid_power_enable",
+        name="Use Grid Power",
     ),
 ]
 
