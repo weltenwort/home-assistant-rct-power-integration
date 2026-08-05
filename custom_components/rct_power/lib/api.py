@@ -7,7 +7,7 @@ import struct
 from asyncio import StreamReader, StreamWriter, open_connection
 from asyncio.locks import Lock
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from rctclient.exceptions import FrameCRCMismatch, FrameLengthExceeded, InvalidCommand
@@ -53,9 +53,9 @@ type ApiResponse = ValidApiResponse | InvalidApiResponse
 type RctPowerData = dict[int, ApiResponse]
 
 
-def get_valid_response_value_or[_R](
-    response: ApiResponse | None, defaultValue: _R
-) -> ApiResponseValue | _R:
+def get_valid_response_value_or[R](
+    response: ApiResponse | None, defaultValue: R
+) -> ApiResponseValue | R:
     if isinstance(response, ValidApiResponse):
         return response.value
     else:
@@ -113,7 +113,7 @@ class RctPowerApiClient:
         LOGGER.debug(
             "Requesting RCT Power data for object %x (%s)...", object_id, object_name
         )
-        request_time = datetime.now()
+        request_time = datetime.now(tz=UTC)
 
         try:
             async with asyncio.timeout(READ_TIMEOUT):
@@ -211,7 +211,7 @@ class RctPowerApiClient:
             return InvalidApiResponse(
                 object_id=object_id, time=request_time, cause="PARSING_ERROR"
             )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             LOGGER.debug(
                 "Error reading object %x (%s): %s", object_id, object_name, str(exc)
             )

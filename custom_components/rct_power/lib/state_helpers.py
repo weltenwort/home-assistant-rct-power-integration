@@ -146,6 +146,6 @@ def get_api_response_value_as_timestamp(
     value: ApiResponseValue | None,
 ) -> datetime | None:
     if isinstance(value, int):
-        return as_local(datetime.fromtimestamp(value))
+        return as_local(datetime.fromtimestamp(value))  # noqa: DTZ006
 
     return None
