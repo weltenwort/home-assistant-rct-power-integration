@@ -10,10 +10,10 @@ from rctclient.registry import REGISTRY
 
 from . import RctConfigEntry
 from .lib.entities import (
-    GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES,
     battery_sensor_entity_descriptions,
     bitfield_sensor_entity_descriptions,
     get_grid_voltage_sensor_entity_descriptions,
+    grid_voltage_smartmeter_object_names,
     inverter_sensor_entity_descriptions,
 )
 from .lib.entity import RctPowerBitfieldSensorEntity, RctPowerSensorEntity
@@ -54,7 +54,7 @@ async def async_setup_entry(
             entity_description=entity_description,
         )
         for entity_description in inverter_sensor_entity_descriptions
-        if entity_description.key not in GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES
+        if entity_description.key not in grid_voltage_smartmeter_object_names
     ]
 
     grid_voltage_sensor_entities = [
@@ -66,7 +66,7 @@ async def async_setup_entry(
         for entity_description in get_grid_voltage_sensor_entity_descriptions(
             [
                 _has_smartmeter_voltage(entry, object_name)
-                for object_name in GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES
+                for object_name in grid_voltage_smartmeter_object_names
             ]
         )
     ]

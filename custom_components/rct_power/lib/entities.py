@@ -19,12 +19,12 @@ from .state_helpers import (
     sum_api_response_values_as_state,
 )
 
-GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES = [
+grid_voltage_smartmeter_object_names = [
     "rb485.u_l_grid[0]",
     "rb485.u_l_grid[1]",
     "rb485.u_l_grid[2]",
 ]
-GRID_VOLTAGE_INVERTER_OBJECT_NAMES = [
+grid_voltage_inverter_object_names = [
     "g_sync.u_l_rms[0]",
     "g_sync.u_l_rms[1]",
     "g_sync.u_l_rms[2]",
@@ -58,8 +58,8 @@ def get_grid_voltage_sensor_entity_descriptions(
         ) in enumerate(
             zip(
                 smartmeter_voltage_available,
-                GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES,
-                GRID_VOLTAGE_INVERTER_OBJECT_NAMES,
+                grid_voltage_smartmeter_object_names,
+                grid_voltage_inverter_object_names,
                 strict=True,
             ),
             start=1,
