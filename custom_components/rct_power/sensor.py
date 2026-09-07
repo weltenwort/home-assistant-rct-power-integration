@@ -6,14 +6,28 @@ from collections.abc import Callable
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
+from rctclient.registry import REGISTRY
 
 from . import RctConfigEntry
 from .lib.entities import (
     battery_sensor_entity_descriptions,
     bitfield_sensor_entity_descriptions,
+    get_grid_voltage_sensor_entity_descriptions,
+    grid_voltage_smartmeter_object_names,
     inverter_sensor_entity_descriptions,
 )
 from .lib.entity import RctPowerBitfieldSensorEntity, RctPowerSensorEntity
+
+
+def _has_smartmeter_voltage(entry: RctConfigEntry, object_name: str) -> bool:
+    """Return whether the smart meter reports a non-zero voltage."""
+    object_id = REGISTRY.get_by_name(object_name).object_id
+
+    return any(
+        isinstance(value := coordinator.get_valid_value_or(object_id, 0), (int, float))
+        and value != 0
+        for coordinator in entry.runtime_data.update_coordinators.values()
+    )
 
 
 async def async_setup_entry(
@@ -40,6 +54,21 @@ async def async_setup_entry(
             entity_description=entity_description,
         )
         for entity_description in inverter_sensor_entity_descriptions
+        if entity_description.key not in grid_voltage_smartmeter_object_names
+    ]
+
+    grid_voltage_sensor_entities = [
+        RctPowerSensorEntity(
+            coordinators=list(data.update_coordinators.values()),
+            config_entry=entry,
+            entity_description=entity_description,
+        )
+        for entity_description in get_grid_voltage_sensor_entity_descriptions(
+            [
+                _has_smartmeter_voltage(entry, object_name)
+                for object_name in grid_voltage_smartmeter_object_names
+            ]
+        )
     ]
 
     bitfield_sensor_entities = [
@@ -55,6 +84,7 @@ async def async_setup_entry(
         [
             *battery_sensor_entities,
             *inverter_sensor_entities,
+            *grid_voltage_sensor_entities,
             *bitfield_sensor_entities,
         ]
     )
