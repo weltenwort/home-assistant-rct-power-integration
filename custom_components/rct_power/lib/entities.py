@@ -19,6 +19,53 @@ from .state_helpers import (
     sum_api_response_values_as_state,
 )
 
+GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES = [
+    "rb485.u_l_grid[0]",
+    "rb485.u_l_grid[1]",
+    "rb485.u_l_grid[2]",
+]
+GRID_VOLTAGE_INVERTER_OBJECT_NAMES = [
+    "g_sync.u_l_rms[0]",
+    "g_sync.u_l_rms[1]",
+    "g_sync.u_l_rms[2]",
+]
+
+
+def get_grid_voltage_sensor_entity_descriptions(
+    smartmeter_voltage_available: list[bool],
+) -> list[RctPowerSensorEntityDescription]:
+    """Prefer smart meter voltage and otherwise expose inverter voltage."""
+    return [
+        RctPowerSensorEntityDescription(
+            get_device_info=get_inverter_device_info,
+            key=smartmeter_object_name
+            if smartmeter_available
+            else inverter_object_name,
+            # Preserve the former smart meter entity ID during migration.
+            unique_id=(
+                None
+                if smartmeter_available
+                else str(REGISTRY.get_by_name(smartmeter_object_name).object_id)
+            ),
+            name=("Grid" if smartmeter_available else "Inverter Grid")
+            + f" Voltage P{phase}",
+            state_class=SensorStateClass.MEASUREMENT,
+        )
+        for phase, (
+            smartmeter_available,
+            smartmeter_object_name,
+            inverter_object_name,
+        ) in enumerate(
+            zip(
+                smartmeter_voltage_available,
+                GRID_VOLTAGE_SMARTMETER_OBJECT_NAMES,
+                GRID_VOLTAGE_INVERTER_OBJECT_NAMES,
+                strict=True,
+            ),
+            start=1,
+        )
+    ]
+
 
 def get_matching_names(expression: str) -> list[str]:
     compiled_expression = re.compile(expression)
@@ -230,6 +277,7 @@ battery_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
         get_native_value=get_first_api_response_value_as_timestamp,
     ),
 ]
+
 
 inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
     RctPowerSensorEntityDescription(
@@ -751,6 +799,7 @@ inverter_sensor_entity_descriptions: list[RctPowerSensorEntityDescription] = [
     ),
 ]
 
+
 bitfield_sensor_entity_descriptions: list[RctPowerBitfieldSensorEntityDescription] = [
     RctPowerBitfieldSensorEntityDescription(
         get_device_info=get_inverter_device_info,
@@ -778,6 +827,8 @@ bitfield_sensor_entity_descriptions: list[RctPowerBitfieldSensorEntityDescriptio
 sensor_entity_descriptions = [
     *battery_sensor_entity_descriptions,
     *inverter_sensor_entity_descriptions,
+    # Poll both sources; setup exposes exactly one voltage entity per phase.
+    *get_grid_voltage_sensor_entity_descriptions([False, False, False]),
     *bitfield_sensor_entity_descriptions,
 ]
 
