@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Hilfe zur Konfiguration findest du hier: {repo_url}",
+        "data": {
+          "model": "Modell",
+          "hostname": "Hostname",
+          "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "connect": "Verbindung zu {hostname}:{port} fehlgeschlagen."
+    },
+    "abort": {
+      "single_instance_allowed": "Es ist nur eine Instanz erlaubt."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "frequent_scan_interval": "Häufiges Abfrageintervall (Sekunden)",
+          "infrequent_scan_interval": "Seltenes Abfrageintervall (Sekunden)",
+          "static_scan_interval": "Statisches Abfrageintervall (Sekunden)",
+          "write_support": "Schreibunterstützung aktivieren (SOC-Grenzen, Batterieleistung)"
+        },
+        "data_description": {
+          "write_support": "Wenn aktiviert, werden Zahlen-Entities zum Steuern der SOC-Grenzen und Leistungsziele hinzugefügt. Vorsicht — falsche Werte können das Verhalten des Wechselrichters beeinflussen."
+        }
+      }
+    }
+  }
+}
