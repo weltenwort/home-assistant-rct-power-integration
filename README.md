@@ -109,7 +109,7 @@ depending on your preference.
 | Grid Frequency P1/P2/P3                      | Hz   | the instantaneous grid frequency on phase 1/2/3                                  |
 | Grid Power                                   | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the grid       |
 | Grid Power P1/P2/P3                          | W    | the instantaneous power consumed from or fed into the grid on phase 1/2/3        |
-| Grid Voltage P1/P2/P3                        | W    | the instantaneous grid voltage on phase 1/2/3                                    |
+| Grid Voltage P1/P2/P3                        | V    | the instantaneous grid voltage on phase 1/2/3                                    |
 | Grid Energy Consumption Day/Month/Year/Total | Wh   | the cumulative energy consumed from the grid                                     |
 | Grid Energy Production Day/Month/Year/Total  | Wh   | the cumulative energy fed into the grid                                          |
 | Grid Energy Production Absolute Total        | kWh  | the absolute value of the cumulative energy fed into the grid since installation |
