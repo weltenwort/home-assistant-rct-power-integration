@@ -25,7 +25,7 @@ rctclient = "^0.0.4"
 pre-commit = "^4.7.0"
 pytest = "^9.0.0"
 pytest-emoji = "^0.2.0"
-pytest-homeassistant-custom-component = "^0.13.342"
+pytest-homeassistant = "2026.11.0"
 pytest-md = "^0.2.0"
 ruff = "^0.17.3"
 
@@ -36,6 +36,8 @@ reportImportCycles = "warning"
 useLibraryCodeForTypes = true
 
 [tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-p no:respx"
 asyncio_mode = "auto"
 
 [tool.ruff.lint]
