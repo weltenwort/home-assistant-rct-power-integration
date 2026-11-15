@@ -22,7 +22,14 @@
       "user": {
         "data": {
           "objects": "Enabled objects",
-          "scan_interval": "Polling interval"
+          "scan_interval": "Polling interval",
+          "frequent_scan_interval": "Frequent polling interval (seconds)",
+          "infrequent_scan_interval": "Infrequent polling interval (seconds)",
+          "static_scan_interval": "Static polling interval (seconds)",
+          "write_support": "Enable write support (SOC limits, battery power control)"
+        },
+        "data_description": {
+          "write_support": "When enabled, adds number entities to control battery SOC limits and power targets. Use with caution — writing incorrect values may affect inverter behaviour."
         }
       }
     }
