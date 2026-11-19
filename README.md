@@ -117,23 +117,29 @@ depending on your preference.
 
 ### Battery
 
-| Entity name                              | Unit | Description                                                                   |
-| ---------------------------------------- | ---- | ----------------------------------------------------------------------------- |
-| Battery Power                            | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the battery |
-| Battery Current                          | A    | the instantaneous current flowing from or to the battery                      |
-| Battery Voltage                          | V    | the instantaneous voltage of the battery                                      |
-| Battery Temperature                      | °C   | the instantaneous temperature of the battery                                  |
-| Battery Cycles                           |      | the recorded full charge/discharge cycles of the battery                      |
-| Battery State of Charge                  | %    | the instantaneous state of charge of the battery                              |
-| Battery State of Charge Target           | %    | the state of charge of the battery aimed for by the system                    |
-| Battery Minimum State of Charge          | %    | the configured minimum state of charge of the battery for regular operation   |
-| Battery Minimum State of Charge (island) | %    | the minimum state of charge of the battery to maintain as an island backup    |
-| Battery Maximum State of Charge          | %    | the maximum state of charge of the battery to aim for to improve battery life |
-| Battery State of Health                  | %    | the estimated state of health of the battery                                  |
-| Battery Stored Energy                    | Wh   | the cumulative energy fed into the battery                                    |
-| Battery Used Energy                      | Wh   | the cumulative energy consumed from the battery                               |
-| Battery Status                           |      | the current battery status (incomplete)                                       |
-| Next Battery Calibration Date            |      | the date and time of the next planned battery calibration                     |
+| Entity name                              | Unit | Description                                                                                                                  |
+| ---------------------------------------- | ---- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Battery Power                            | W    | the instantaneous power consumed from (`> 0`) or fed into (`< 0`) the battery                                                |
+| Battery Current                          | A    | the instantaneous current flowing from or to the battery                                                                     |
+| Battery Voltage                          | V    | the instantaneous voltage of the battery                                                                                     |
+| Battery Temperature                      | °C   | the instantaneous temperature of the battery                                                                                 |
+| Battery Cycles                           |      | the recorded full charge/discharge cycles of the battery                                                                     |
+| Battery State of Charge                  | %    | the instantaneous state of charge of the battery                                                                             |
+| Battery State of Charge Target           | %    | the state of charge of the battery aimed for by the system                                                                   |
+| Battery Minimum State of Charge          | %    | the configured minimum state of charge of the battery for regular operation                                                  |
+| Battery Minimum State of Charge (island) | %    | the minimum state of charge of the battery to maintain as an island backup                                                   |
+| Battery Maximum State of Charge          | %    | the maximum state of charge of the battery to aim for to improve battery life                                                |
+| Battery State of Health                  | %    | the estimated state of health of the battery                                                                                 |
+| Battery Stored Energy                    | Wh   | the cumulative energy fed into the battery                                                                                   |
+| Battery Used Energy                      | Wh   | the cumulative energy consumed from the battery                                                                              |
+| Battery Status                           |      | the current battery status (incomplete)                                                                                      |
+| Next Battery Calibration Date            |      | the date and time of the next planned battery calibration                                                                    |
+| Battery State of Charge Strategy         |      | SOC target selection "SOC" = 0, "Constant" = 1, "External" = 2, "Middle battery voltage" = 3, "Internal" = 4, "Schedule" = 5 |
+| Battery State of Charge force set        | %    | Force SOC target (used on external strategy)                                                                                 |
+| Trigger for charging to SOC_min          | %    | SOC min maintenance charge (below load is forced)                                                                            |
+| Charging power to reach SOC target       | W    | Maintenance charge power (to reach SOC_min when below)                                                                       |
+| Battery target power                     | W    | Battery target power (positive = discharge)                                                                                  |
+| Max battery to grid power                | W    | Max. battery to grid power (unload to grid until target SOC is reached)                                                      |
 
 ### Household consumers and producers
 
@@ -174,6 +180,8 @@ depending on your preference.
 | Core Temperature                                | °C   | the instantaneous temperature of the invertor core              |
 | Heat Sink Temperature                           | °C   | the instantaneous temperature of the invertor heat sink         |
 | Heat Sink (battery actuator) Temperature        | °C   | the instantaneous temperature of the battery actuator heat sink |
+| External power reduction                        | %    | External power reduction based on solar plant peak power        |
+| Use Grid Power                                  |      | Utilize external Inverter energy                                |
 
 ## Contributions are welcome!
 
