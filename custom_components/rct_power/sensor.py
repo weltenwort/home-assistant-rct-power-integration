@@ -51,10 +51,12 @@ async def async_setup_entry(
         for entity_description in bitfield_sensor_entity_descriptions
     ]
 
+    # Add the inverter entities first so the inverter device exists in the
+    # device registry before the battery device links to it via via_device_id.
     async_add_entities(
         [
-            *battery_sensor_entities,
             *inverter_sensor_entities,
+            *battery_sensor_entities,
             *bitfield_sensor_entities,
         ]
     )
