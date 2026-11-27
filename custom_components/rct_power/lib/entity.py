@@ -15,7 +15,7 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import EntityDescription
-from homeassistant.helpers.typing import UNDEFINED, StateType, UndefinedType
+from homeassistant.helpers.typing import StateType
 from rctclient.registry import REGISTRY, ObjectInfo
 
 from ..const import CONF_ENTITY_PREFIX, ICON, EntityUpdatePriority
@@ -95,11 +95,14 @@ class RctPowerEntity(MultiCoordinatorEntity):
         return "-".join([self.config_entry.entry_id, *object_ids])
 
     @property
-    def name(self) -> str | UndefinedType | None:
+    def name(self) -> str | None:
         """Return the name of the entity."""
+        # An unset description name is the UNDEFINED sentinel (named Undefined
+        # since HA 2026.12), so test for a string instead of importing it.
+        description_name = self.entity_description.name
         entity_name = (
-            self.entity_description.name
-            if self.entity_description.name != UNDEFINED
+            description_name
+            if isinstance(description_name, str)
             else slugify_entity_name(self.object_infos[0].name)
         )
 
